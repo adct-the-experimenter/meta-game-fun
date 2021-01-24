@@ -1,8 +1,9 @@
 
-#ifndef SET_H
-#define SET_H
+#ifndef SYSTEM_H
+#define SYSTEM_H
 
 #include <set>
+#include "core/entity.h"
 
 class System
 {

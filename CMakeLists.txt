@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1.1)
 
 set (CMAKE_CXX_STANDARD 11)
 
-set(PROJECT_NAME alt-living)
+set(PROJECT_NAME meta-game-fun)
 project (${PROJECT_NAME} LANGUAGES C CXX)
 
 option(DATAPATH "Path to data Directory" ON)
@@ -17,7 +17,7 @@ INCLUDE(FindPkgConfig)
 #pkg_check_modules(openal REQUIRED openal)
 
 # Let CMake search for a raylib-config.cmake
-find_package(raylib 3.0 QUIET) 
+find_package(raylib 3.5 QUIET) 
 
 #Pugi XML parsing
 find_path(pugixml_INCLUDE_DIRS pugixml.hpp)
@@ -42,6 +42,7 @@ endif ()
 
 set(SOURCES 
 src/main.cpp
+src/systems/PhysicsSystem.cpp
 			 )
 
 #get_cmake_property(_variableNames VARIABLES)

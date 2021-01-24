@@ -3,7 +3,7 @@
 #define COMPONENT_ARRAY_H
 
 
-#include "component_array.h"
+#include "core/component_array.h"
 #include <any>
 #include <memory>
 #include <unordered_map>

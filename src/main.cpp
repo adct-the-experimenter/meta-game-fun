@@ -1,59 +1,56 @@
-#include "coordinator.h"
+#include "core/coordinator.h"
 #include "raylib.h"
 
 #include <chrono>
 #include <memory>
 
 #include <iostream>
+#include "systems/PhysicsSystem.h"
 
 //main
 
 //initialize manager for levels
 //initialize list of levels from XML
 
-
-
-//initialize entity manager
-
-
-//Initialize components for entities
-
-//initialize entities with components 
-
-//initialize systems with entities passed to it
-
-//load life world
-
-//game loop
-
-	//handle events through event manager
-
-	//run logic for all entities through systems
-
-	//run render for all entities in manager
-
-	//stop game loop 
 	
 Coordinator gCoordinator;
 
+//function to initialize main ECS
+void InitMainECS();
+
+//function to init raylib system
+void InitRaylibSystem();
+
+//function to close raylib system
+void CloseRaylibSystem();
+
+
 int main()
 {
+	InitRaylibSystem();
+	//load life world
+	
+	//initialize coordinator which initializes entity manager, component manager
 	gCoordinator.Init();
-
+	
+	//Initialize components for entities
 	gCoordinator.RegisterComponent<Gravity2D>();
 	gCoordinator.RegisterComponent<RigidBody2D>();
 	gCoordinator.RegisterComponent<Transform2D>();
 
-	//auto physicsSystem = gCoordinator.RegisterSystem<PhysicsSystem>();
-
+	auto physicsSystem = gCoordinator.RegisterSystem<PhysicsSystem>();
+	
+	//make system that only reacts to entitities with signature that has these components
 	Signature signature;
 	signature.set(gCoordinator.GetComponentType<Gravity2D>());
 	signature.set(gCoordinator.GetComponentType<RigidBody2D>());
 	signature.set(gCoordinator.GetComponentType<Transform2D>());
-	//gCoordinator.SetSystemSignature<PhysicsSystem>(signature);
-
+	gCoordinator.SetSystemSignature<PhysicsSystem>(signature);
+	
+	//make entities
 	std::vector<Entity> entities(MAX_ENTITIES);
-
+	
+	//initialize entities with components 
 	for (auto& entity : entities)
 	{
 		entity = gCoordinator.CreateEntity();
@@ -91,17 +88,56 @@ int main()
 	
 	while (!quit)
 	{
-		auto startTime = std::chrono::high_resolution_clock::now();
-
-		//physicsSystem->Update(dt);
-
-		auto stopTime = std::chrono::high_resolution_clock::now();
-
-		dt = std::chrono::duration<float, std::chrono::seconds::period>(stopTime - startTime).count();
 		
-		if(dt != 0){quit = true;}
+		// Main game loop
+		while (!WindowShouldClose())    // Detect window close button or ESC key
+		{			
+			//handle events through event manager
+
+			//run logic for all entities through systems
+			dt = GetFrameTime();
+			
+			physicsSystem->Update(dt);
+			
+			//run render for all entities in manager
+			
+			BeginDrawing();
+
+			ClearBackground(RAYWHITE);
+
+			DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+
+			EndDrawing();
+			
+		}
+		
+		quit = true;
 	}
 	
 	std::cout << "dt:" << dt << std::endl;
 	
+	CloseRaylibSystem();
+	
+	return 0;
+}
+
+void InitMainECS()
+{
+	
+}
+
+void InitRaylibSystem()
+{
+
+    const int screenWidth = 800;
+    const int screenHeight = 450;
+
+    InitWindow(screenWidth, screenHeight, "Meta Game Fun");
+
+    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+}
+
+void CloseRaylibSystem()
+{
+    CloseWindow();        // Close window and OpenGL context
 }

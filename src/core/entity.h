@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <bitset>
-#include "component.h"
+#include "core/component.h"
 
 // A simple type alias
 using Entity = std::uint32_t;

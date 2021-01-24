@@ -2,10 +2,10 @@
 #ifndef COORDINATOR_H
 #define COORDINATOR_H
 
-#include "component_manager.h"
-#include "entity_manager.h"
+#include "core/component_manager.h"
+#include "core/entity_manager.h"
 //#include "event_manager.h"
-#include "system_manager.h"
+#include "core/system_manager.h"
 
 #include <memory>
 

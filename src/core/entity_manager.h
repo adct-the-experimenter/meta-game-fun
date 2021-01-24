@@ -5,7 +5,7 @@
 #include <array>
 #include <cassert>
 #include <queue>
-#include "entity.h"
+#include "core/entity.h"
 
 class EntityManager
 {
