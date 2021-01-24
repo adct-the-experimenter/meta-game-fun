@@ -43,6 +43,7 @@ endif ()
 set(SOURCES 
 src/main.cpp
 src/systems/PhysicsSystem.cpp
+src/systems/WorldSystem.cpp
 			 )
 
 #get_cmake_property(_variableNames VARIABLES)

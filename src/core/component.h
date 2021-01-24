@@ -46,5 +46,11 @@ struct Transform2D
 	Vector2 position;
 };
 
+enum class PlayerTimeStatus : std::uint8_t { NONE=0, FREE, WORKING, SLEEPING};
+struct Player
+{
+	PlayerTimeStatus time_status;
+};
+
 
 #endif

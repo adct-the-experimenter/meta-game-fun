@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include "systems/PhysicsSystem.h"
+#include "systems/WorldSystem.h"
 
 //main
 
@@ -34,26 +35,41 @@ int main()
 	gCoordinator.Init();
 	
 	//Initialize components for entities
-	gCoordinator.RegisterComponent<Gravity2D>();
-	gCoordinator.RegisterComponent<RigidBody2D>();
-	gCoordinator.RegisterComponent<Transform2D>();
-
+	gCoordinator.RegisterComponent<Gravity2D>(); //id 0000000001
+	gCoordinator.RegisterComponent<RigidBody2D>(); // id 00000000010
+	gCoordinator.RegisterComponent<Transform2D>(); //id 00000000100
+	gCoordinator.RegisterComponent<Player>(); //id 00000001000
+	
 	auto physicsSystem = gCoordinator.RegisterSystem<PhysicsSystem>();
 	
-	//make system that only reacts to entitities with signature that has these components
+	//make physics system that only reacts to entitities 
+	//with signature that has these components
 	Signature signature;
 	signature.set(gCoordinator.GetComponentType<Gravity2D>());
 	signature.set(gCoordinator.GetComponentType<RigidBody2D>());
 	signature.set(gCoordinator.GetComponentType<Transform2D>());
 	gCoordinator.SetSystemSignature<PhysicsSystem>(signature);
 	
+	//make world system that only reacts to entitties
+	//with signature that has player component
+	auto worldSystem = gCoordinator.RegisterSystem<WorldSystem>();
+	worldSystem->Init();
+	
+	Signature sig_world;
+	sig_world.set(gCoordinator.GetComponentType<Player>());
+	gCoordinator.SetSystemSignature<WorldSystem>(sig_world);
+	
 	//make entities
 	std::vector<Entity> entities(MAX_ENTITIES);
+	
+	int it = 0;
 	
 	//initialize entities with components 
 	for (auto& entity : entities)
 	{
 		entity = gCoordinator.CreateEntity();
+		
+		if(it == 0){gCoordinator.AddComponent(entity,Player{PlayerTimeStatus::NONE} );}
 		
 		Vector2 initGravity = {0.0f,-2.0f};
 		
@@ -98,6 +114,7 @@ int main()
 			dt = GetFrameTime();
 			
 			physicsSystem->Update(dt);
+			worldSystem->Update();
 			
 			//run render for all entities in manager
 			
