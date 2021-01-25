@@ -67,11 +67,12 @@ struct RenderInfo
 	Color tint;
 };
 
-
-
-struct KeyboardTypingInputInfo
+enum class InputReactorType : std::uint8_t { NONE=0, PLAYER, CAR};
+struct InputReact
 {
-	int key;
+	InputReactorType actor_type;
 };
+
+
 
 #endif
