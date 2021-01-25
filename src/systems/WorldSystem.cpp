@@ -62,7 +62,11 @@ void WorldSystem::Update()
 		auto& player = gCoordinator.GetComponent<Player>(entity);
 		
 		//set player time status based on hour
-		
+		switch(player.time_status)
+		{
+			case PlayerTimeStatus::NONE:{break;}
+			default:{break;}
+		}
 		
 	}
 }

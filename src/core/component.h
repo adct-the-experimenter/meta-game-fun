@@ -48,6 +48,7 @@ struct Transform2D
 
 enum class PlayerTimeStatus : std::uint8_t { NONE=0, FREE, WORKING, SLEEPING};
 enum class LooksStatus : std::uint8_t { NORMAL=0, UGLY, BEAUTIFUL}; //distorted face for ugly, sparkles for beautiful
+enum class ActivityStatus : std::uint8_t { ROAMING_WORLD=0, PLAYING_GAME, PLAYING_SPORT };
 
 struct Player
 {
@@ -56,6 +57,7 @@ struct Player
 	std::uint8_t health;
 	std::string job_occupation;
 	LooksStatus look_status;
+	ActivityStatus activity_status;
 };
 
 struct RenderInfo
@@ -65,5 +67,11 @@ struct RenderInfo
 	Color tint;
 };
 
+
+
+struct KeyboardTypingInputInfo
+{
+	int key;
+};
 
 #endif

@@ -45,6 +45,7 @@ src/main.cpp
 src/systems/PhysicsSystem.cpp
 src/systems/WorldSystem.cpp
 src/systems/RenderSystem.cpp
+src/systems/ControllerInputHandler.cpp
 			 )
 
 #get_cmake_property(_variableNames VARIABLES)

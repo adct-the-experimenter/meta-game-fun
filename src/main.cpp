@@ -1,15 +1,17 @@
 #include "core/coordinator.h"
 #include "raylib.h"
 
-#include <chrono>
-#include <memory>
 
-#include <iostream>
 #include "systems/PhysicsSystem.h"
 #include "systems/WorldSystem.h"
 #include "systems/RenderSystem.h"
+#include "systems/ControllerInputHandler.h"
+#include "core/ControllerInput.h"
 
 #include <string>
+#include <chrono>
+#include <memory>
+#include <iostream>
 
 //main
 
@@ -19,6 +21,9 @@
 	
 Coordinator gCoordinator;
 
+ControllerInput gControllerInput;
+ControllerInputHandler gInputHandler;
+
 std::vector<Entity> entities(MAX_ENTITIES);
 
 //function to initialize main ECS
@@ -26,6 +31,7 @@ void InitMainECS();
 
 std::shared_ptr <WorldSystem> worldSystem;
 std::shared_ptr <RenderSystem> renderSystem;
+
 
 //function to initialize video game ECS
 void InitVideoGameECS();
@@ -78,6 +84,7 @@ int main()
 void GameLoop()
 {
 	//handle events through event manager
+	handle_events();
 	
 	//run logic for all entities through systems
 	logic();
@@ -89,7 +96,7 @@ void GameLoop()
 
 void handle_events()
 {
-	
+	gInputHandler.Update(&gControllerInput);
 }
 
 void logic()
@@ -108,12 +115,14 @@ void render()
 
 	ClearBackground(RAYWHITE);
 	
+	//render time info from world system at top
 	std::string time_info = "Day: " + worldSystem->GetDayString() + "  " \
 							"Hour: " + std::to_string(worldSystem->GetHours()) + "  " \
 							"Minute: " + std::to_string(worldSystem->GetMinutes());
 							
 	DrawText(time_info.c_str(), 190, 20, 20, LIGHTGRAY);
 	
+	//renders any entity that has render component
 	renderSystem->Update();
 	
 	EndDrawing();
@@ -161,11 +170,13 @@ void InitMainECS()
 	std::string job = "cashier";
 	LooksStatus look = LooksStatus::NORMAL;
 	PlayerTimeStatus time_stat = PlayerTimeStatus::NONE;
+	ActivityStatus activity_stat = ActivityStatus::ROAMING_WORLD;
 	gCoordinator.AddComponent(entities[0],Player{.time_status=time_stat,
 											.money = balance,
 											.health = hp,
 											.job_occupation = job,
-											.look_status = look} );
+											.look_status = look,
+											.activity_status = activity_stat} );
 	Vector2 initP = {2.0f,2.0f};
 	gCoordinator.AddComponent(
 				entities[0],
