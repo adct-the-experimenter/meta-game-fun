@@ -47,9 +47,22 @@ struct Transform2D
 };
 
 enum class PlayerTimeStatus : std::uint8_t { NONE=0, FREE, WORKING, SLEEPING};
+enum class LooksStatus : std::uint8_t { NORMAL=0, UGLY, BEAUTIFUL}; //distorted face for ugly, sparkles for beautiful
+
 struct Player
 {
 	PlayerTimeStatus time_status;
+	std::uint16_t money;
+	std::uint8_t health;
+	std::string job_occupation;
+	LooksStatus look_status;
+};
+
+struct RenderInfo
+{
+	Texture2D* texture_ptr;
+	Rectangle frame_rect;
+	Color tint;
 };
 
 

@@ -44,6 +44,7 @@ set(SOURCES
 src/main.cpp
 src/systems/PhysicsSystem.cpp
 src/systems/WorldSystem.cpp
+src/systems/RenderSystem.cpp
 			 )
 
 #get_cmake_property(_variableNames VARIABLES)

@@ -11,26 +11,81 @@ extern Coordinator gCoordinator;
 
 void WorldSystem::Init()
 {
-	current_day = Day::MONDAY;
-	current_season = Season::FALL;
+	m_current_day = std::uint8_t(Day::MONDAY);
+	m_current_season = std::uint8_t(Season::FALL);
+	
+	m_start_time = std::chrono::system_clock::now();
+	
+	m_minutes = 0;
+	m_hours = 0;
 }
 
 void WorldSystem::Update()
 {
 	for (auto const& entity : mEntities)
 	{
-		//auto& rigidBody = gCoordinator.GetComponent<RigidBody2D>(entity);
-		//auto& transform = gCoordinator.GetComponent<Transform2D>(entity);
-
-		// Forces
-		//auto const& gravity = gCoordinator.GetComponent<Gravity2D>(entity);
+		
+		//update time of day for free time period
+		auto current_time = std::chrono::system_clock::now();
+		
+		//if a real minute has passed since time started or reset
+		double seconds = std::chrono::duration_cast<std::chrono::seconds>(current_time - m_start_time).count();
+		
+		if( seconds >= 10) 
+		{
+			//update game minutes by 10
+			m_minutes += 1;
+			//reset start time
+			m_start_time = std::chrono::system_clock::now();
+		}
+				
+		//if 60 game minutes have passed, update hour, reset minutes
+		if( m_minutes >= 60)
+		{
+			m_hours++;
+			m_minutes = 0;
+		}
+				
+		//if 8 game hours have passed
+		if(m_hours >= 8)
+		{
+			//move on to next day
+			m_current_day++;
+			//reset to 1 if current day is 8
+			if(m_current_day == 8){m_current_day = 1;}
+			
+			//reset game hour
+			m_hours = 0;
+		}
 		
 		//get player component from entity
 		auto& player = gCoordinator.GetComponent<Player>(entity);
 		
-		//set player time status
+		//set player time status based on hour
 		
-		//std::cout << "Player time status is " << int(player.time_status) << std::endl;
 		
 	}
 }
+
+std::string WorldSystem::GetDayString()
+{
+	std::string day = "none";
+	
+	switch(m_current_day)
+	{
+		case 1:{ day = "Monday"; break;}
+		case 2:{ day = "Tuesday"; break;}
+		case 3:{ day = "Wednesday"; break;}
+		case 4:{ day = "Thursday"; break;}
+		case 5:{ day = "Friday"; break;}
+		case 6:{ day = "Saturday"; break;}
+		case 7:{ day = "Sunday"; break;}
+		default:{break;}
+	}
+	
+	return day;
+}
+	
+std::uint16_t WorldSystem::GetMinutes(){return m_minutes;}
+
+std::uint8_t WorldSystem::GetHours(){return m_hours;}

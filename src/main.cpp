@@ -7,6 +7,7 @@
 #include <iostream>
 #include "systems/PhysicsSystem.h"
 #include "systems/WorldSystem.h"
+#include <string>
 
 //main
 
@@ -18,6 +19,8 @@ Coordinator gCoordinator;
 
 //function to initialize main ECS
 void InitMainECS();
+std::shared_ptr <PhysicsSystem> physicsSystem;
+std::shared_ptr <WorldSystem> worldSystem;
 
 //function to init raylib system
 void InitRaylibSystem();
@@ -25,12 +28,89 @@ void InitRaylibSystem();
 //function to close raylib system
 void CloseRaylibSystem();
 
+//function to run the game loop of event handling, logic render, sound
+void GameLoop();
+
+//game loop functions
+void handle_events(); //receive input
+void logic(); //determine what happens in world based on input
+void render(); //draw visual representation of what happens in world to screen
+void sound(); //play sounds of audio representation of what happens in world 
 
 int main()
 {
 	InitRaylibSystem();
-	//load life world
 	
+	InitMainECS();
+	
+	bool quit = false;
+	
+	while (!quit)
+	{
+		// Detect window close button or ESC key
+		if(WindowShouldClose())
+		{
+			quit = true;
+		}    
+		
+		// Main game loop
+					
+		GameLoop();
+			
+	}
+		
+	CloseRaylibSystem();
+	
+	return 0;
+}
+
+void GameLoop()
+{
+	//handle events through event manager
+	
+	//run logic for all entities through systems
+	logic();
+	
+	//run render for all entities in manager
+	render();
+	
+}
+
+void handle_events()
+{
+	
+}
+
+void logic()
+{
+	float dt = GetFrameTime();
+	
+	physicsSystem->Update(dt);
+	worldSystem->Update();
+}
+
+void render()
+{
+	BeginDrawing();
+
+	ClearBackground(RAYWHITE);
+	
+	std::string time_info = "Day: " + worldSystem->GetDayString() + "  " \
+							"Hour: " + std::to_string(worldSystem->GetHours()) + "  " \
+							"Minute: " + std::to_string(worldSystem->GetMinutes());
+							
+	DrawText(time_info.c_str(), 190, 20, 20, LIGHTGRAY);
+	
+	EndDrawing();
+}
+
+void sound()
+{
+	
+}
+
+void InitMainECS()
+{
 	//initialize coordinator which initializes entity manager, component manager
 	gCoordinator.Init();
 	
@@ -40,7 +120,8 @@ int main()
 	gCoordinator.RegisterComponent<Transform2D>(); //id 00000000100
 	gCoordinator.RegisterComponent<Player>(); //id 00000001000
 	
-	auto physicsSystem = gCoordinator.RegisterSystem<PhysicsSystem>();
+	
+	physicsSystem = gCoordinator.RegisterSystem<PhysicsSystem>();
 	
 	//make physics system that only reacts to entitities 
 	//with signature that has these components
@@ -52,7 +133,7 @@ int main()
 	
 	//make world system that only reacts to entitties
 	//with signature that has player component
-	auto worldSystem = gCoordinator.RegisterSystem<WorldSystem>();
+	worldSystem = gCoordinator.RegisterSystem<WorldSystem>();
 	worldSystem->Init();
 	
 	Signature sig_world;
@@ -69,7 +150,20 @@ int main()
 	{
 		entity = gCoordinator.CreateEntity();
 		
-		if(it == 0){gCoordinator.AddComponent(entity,Player{PlayerTimeStatus::NONE} );}
+		//make first entity a player
+		if(it == 0)
+		{
+			std::uint16_t balance = 200;
+			std::uint8_t hp = 100;
+			std::string job = "cashier";
+			LooksStatus look = LooksStatus::NORMAL;
+			PlayerTimeStatus time_stat = PlayerTimeStatus::NONE;
+			gCoordinator.AddComponent(entity,Player{.time_status=time_stat,
+													.money = balance,
+													.health = hp,
+													.job_occupation = job,
+													.look_status = look} );
+		}
 		
 		Vector2 initGravity = {0.0f,-2.0f};
 		
@@ -97,50 +191,6 @@ int main()
 			}
 		);
 	}
-
-	float dt = 0.0f;
-	
-	bool quit = false;
-	
-	while (!quit)
-	{
-		
-		// Main game loop
-		while (!WindowShouldClose())    // Detect window close button or ESC key
-		{			
-			//handle events through event manager
-
-			//run logic for all entities through systems
-			dt = GetFrameTime();
-			
-			physicsSystem->Update(dt);
-			worldSystem->Update();
-			
-			//run render for all entities in manager
-			
-			BeginDrawing();
-
-			ClearBackground(RAYWHITE);
-
-			DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
-
-			EndDrawing();
-			
-		}
-		
-		quit = true;
-	}
-	
-	std::cout << "dt:" << dt << std::endl;
-	
-	CloseRaylibSystem();
-	
-	return 0;
-}
-
-void InitMainECS()
-{
-	
 }
 
 void InitRaylibSystem()
@@ -158,3 +208,5 @@ void CloseRaylibSystem()
 {
     CloseWindow();        // Close window and OpenGL context
 }
+
+
