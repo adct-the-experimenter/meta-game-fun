@@ -73,6 +73,10 @@ struct InputReact
 	InputReactorType actor_type;
 };
 
-
+enum class EnemyType : std::uint8_t {NONE=0, SKELETON};
+struct Enemy
+{
+	EnemyType type;
+};
 
 #endif

@@ -5,13 +5,14 @@
 #include "systems/PhysicsSystem.h"
 #include "systems/WorldSystem.h"
 #include "systems/RenderSystem.h"
-#include "systems/ControllerInputHandler.h"
+#include "core/ControllerInputHandler.h"
 #include "core/ControllerInput.h"
 
 #include <string>
 #include <chrono>
 #include <memory>
 #include <iostream>
+#include <array>
 
 //main
 
@@ -53,6 +54,12 @@ void render(); //draw visual representation of what happens in world to screen
 void sound(); //play sounds of audio representation of what happens in world 
 
 bool video_game_playing = false;
+
+//game state
+enum class GameState : std::uint8_t {TITLE_MENU=0, CHAR_CREATOR, GAME};
+
+//camera to follow players.
+std::array <Rectangle,4> player_cameras; 
 
 int main()
 {
@@ -104,6 +111,7 @@ void logic()
 	
 	float dt = GetFrameTime();
 	
+	//game
 	worldSystem->Update();
 	if(video_game_playing && physicsSystem){physicsSystem->Update(dt);}
 	

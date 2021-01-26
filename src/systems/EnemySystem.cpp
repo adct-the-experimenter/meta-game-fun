@@ -1,4 +1,4 @@
-#include "InputReactorSystem.h"
+#include "EnemySystem.h"
 
 #include "core/system.h"
 #include "core/coordinator.h"
@@ -7,26 +7,23 @@
 extern Coordinator gCoordinator;
 
 
-void InputReactorSystem::Update(ControllerInput& input)
+void EnemySystem::Update()
 {
 	for (auto const& entity : mEntities)
 	{
-		auto& inputReactor = gCoordinator.GetComponent<InputReact>(entity);
+		auto& enemy = gCoordinator.GetComponent<Enemy>(entity);
 		auto& rigidBody = gCoordinator.GetComponent<RigidBody2D>(entity);
 		auto& transform = gCoordinator.GetComponent<Transform2D>(entity);
 		
 		
-		switch(inputReactor.actor_type)
+		switch(enemy.type)
 		{
-			case InputReactorType::NONE:{break;}
-			case InputReactorType::PLAYER:
+			case EnemyType::NONE:{break;}
+			case EnemyType::SKELETON:
 			{
-				//do player specific event handling
-				//get other player specific component from entity.
 				
 				break;
 			}
-			case InputReactorType::CAR:{break;}
 			default:{break;}
 		}
 		
