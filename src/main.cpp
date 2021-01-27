@@ -9,6 +9,7 @@
 #include "core/ControllerInput.h"
 
 #include "misc/camera.h"
+#include "misc/MediaLoader.h"
 
 #include <string>
 #include <chrono>
@@ -46,6 +47,10 @@ void InitRaylibSystem();
 //function to close raylib system
 void CloseRaylibSystem();
 
+//function to load media for game
+bool loadMedia();
+MediaLoader gMediaLoader;
+
 //function to run the game loop of event handling, logic render, sound
 void GameLoop();
 
@@ -68,23 +73,34 @@ int main()
 {
 	InitRaylibSystem();
 	
-	InitMainECS();
 	
-	bool quit = false;
 	
-	while (!quit)
+	if(!loadMedia())
 	{
-		// Detect window close button or ESC key
-		if(WindowShouldClose())
-		{
-			quit = true;
-		}    
-		
-		// Main game loop
-					
-		GameLoop();
-			
+		std::cout << "Not loading game. Failed to load media!\n";
 	}
+	else
+	{
+		InitMainECS();
+		
+		bool quit = false;
+	
+		while (!quit)
+		{
+			// Detect window close button or ESC key
+			if(WindowShouldClose())
+			{
+				quit = true;
+			}    
+			
+			// Main game loop
+						
+			GameLoop();
+				
+		}
+	}
+	
+	
 		
 	CloseRaylibSystem();
 	
@@ -147,7 +163,8 @@ void render()
 	{
 		case GameState::TITLE_MENU:
 		{
-			DrawText("In title menu.", 190, 20, 20, LIGHTGRAY);
+			DrawTexture(title_menu_texture, 0, 0, WHITE);
+			//DrawText("In title menu.", 190, 20, 20, LIGHTGRAY);
 			
 			break;
 		}
@@ -171,7 +188,7 @@ void render()
 	}
 	
 	//renders any entity that has render component
-	renderSystem->Update();
+	//renderSystem->Update();
 	
 	EndDrawing();
 }
@@ -179,6 +196,18 @@ void render()
 void sound()
 {
 	
+}
+
+bool loadMedia()
+{
+	bool success = true;
+	
+	if( !gMediaLoader.loadMedia() )
+	{
+		success = false;
+	}
+	
+	return success;
 }
 
 void InitMainECS()
@@ -310,7 +339,7 @@ void InitRaylibSystem()
 {
 
     const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenHeight = 600;
 
     InitWindow(screenWidth, screenHeight, "Meta Game Fun");
 
