@@ -55,13 +55,14 @@ void logic(); //determine what happens in world based on input
 void render(); //draw visual representation of what happens in world to screen
 void sound(); //play sounds of audio representation of what happens in world 
 
-bool video_game_playing = false;
-
 //game state
 enum class GameState : std::uint8_t {TITLE_MENU=0, CHAR_CREATOR, GAME};
+GameState m_game_state = GameState::TITLE_MENU;
 
 //camera to follow players.
 std::array <CustomCamera,4> player_cameras; 
+
+bool video_game_playing = false;
 
 int main()
 {
@@ -114,9 +115,26 @@ void logic()
 	float dt = GetFrameTime();
 	
 	//game
-	worldSystem->Update();
-	if(video_game_playing && physicsSystem){physicsSystem->Update(dt);}
 	
+	switch(m_game_state)
+	{
+		case GameState::TITLE_MENU:
+		{
+			break;
+		}
+		case GameState::CHAR_CREATOR:
+		{
+			break;
+		}
+		case GameState::GAME:
+		{
+			worldSystem->Update();
+			
+			if(video_game_playing && physicsSystem){physicsSystem->Update(dt);}
+			
+			break;
+		}
+	}
 }
 
 void render()
@@ -125,12 +143,32 @@ void render()
 
 	ClearBackground(RAYWHITE);
 	
-	//render time info from world system at top
-	std::string time_info = "Day: " + worldSystem->GetDayString() + "  " \
-							"Hour: " + std::to_string(worldSystem->GetHours()) + "  " \
-							"Minute: " + std::to_string(worldSystem->GetMinutes());
-							
-	DrawText(time_info.c_str(), 190, 20, 20, LIGHTGRAY);
+	switch(m_game_state)
+	{
+		case GameState::TITLE_MENU:
+		{
+			DrawText("In title menu.", 190, 20, 20, LIGHTGRAY);
+			
+			break;
+		}
+		case GameState::CHAR_CREATOR:
+		{
+			DrawText("In character creator.", 190, 20, 20, LIGHTGRAY);
+			
+			break;
+		}
+		case GameState::GAME:
+		{
+			//render time info from world system at top
+			std::string time_info = "Day: " + worldSystem->GetDayString() + "  " \
+									"Hour: " + std::to_string(worldSystem->GetHours()) + "  " \
+									"Minute: " + std::to_string(worldSystem->GetMinutes());
+									
+			DrawText(time_info.c_str(), 190, 20, 20, LIGHTGRAY);
+									
+			break;
+		}
+	}
 	
 	//renders any entity that has render component
 	renderSystem->Update();
