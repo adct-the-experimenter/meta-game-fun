@@ -8,6 +8,8 @@
 #include "core/ControllerInputHandler.h"
 #include "core/ControllerInput.h"
 
+#include "misc/camera.h"
+
 #include <string>
 #include <chrono>
 #include <memory>
@@ -59,7 +61,7 @@ bool video_game_playing = false;
 enum class GameState : std::uint8_t {TITLE_MENU=0, CHAR_CREATOR, GAME};
 
 //camera to follow players.
-std::array <Rectangle,4> player_cameras; 
+std::array <CustomCamera,4> player_cameras; 
 
 int main()
 {
@@ -169,6 +171,8 @@ void InitMainECS()
 	Signature sig_render;
 	sig_render.set(gCoordinator.GetComponentType<RenderInfo>());
 	gCoordinator.SetSystemSignature<RenderSystem>(sig_render);
+	
+	renderSystem->Init(&player_cameras);
 	
 	//make entity for player
 	entities[0] = gCoordinator.CreateEntity();

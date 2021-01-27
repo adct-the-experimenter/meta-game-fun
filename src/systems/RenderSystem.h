@@ -4,15 +4,18 @@
 #include <cstdint>
 #include "core/system.h"
 
+#include <array>
+#include "misc/camera.h"
+
 class RenderSystem : public System
 {
 public:
-	void Init();
+	void Init(std::array <CustomCamera,4> *cameras);
 
 	void Update();
 	
 private:
-	
+	std::array <CustomCamera,4> *m_cameras_ptr;
 	
 };
 
