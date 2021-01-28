@@ -10,6 +10,7 @@
 
 #include "misc/camera.h"
 #include "misc/MediaLoader.h"
+#include "misc/globalvariables.h"
 
 #include <string>
 #include <chrono>
@@ -340,10 +341,22 @@ void InitRaylibSystem()
 
     const int screenWidth = 800;
     const int screenHeight = 600;
-
+	
+	SetConfigFlags(FLAG_MSAA_4X_HINT);  // Set MSAA 4X hint before windows creation
+	
     InitWindow(screenWidth, screenHeight, "Meta Game Fun");
+	
+	
+	// initialize SDL2 for gamepad handling
+	if( SDL_Init( SDL_INIT_JOYSTICK) < 0 )
+	{
+		printf( "SDL input could not initialize! SDL Error: %s\n", SDL_GetError() );
+	}
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    
+    //initialize game controller input
+    gInputHandler.Init();
 }
 
 void CloseRaylibSystem()

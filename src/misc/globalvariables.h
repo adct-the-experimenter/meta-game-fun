@@ -1,5 +1,5 @@
-#ifndef GLOBALVARIABLES
-#define GLOBALVARIABLES
+#ifndef GLOBALVARIABLES_H
+#define GLOBALVARIABLES_H
 
 #include <iostream>
 
@@ -36,6 +36,36 @@ extern std::string MENU_IMAGE_DIR_STR;
 extern std::int16_t globalTileWidth;
 extern std::int16_t globalTileHeight;
 
+//If platform is unix
+#if defined _unix_ || defined _unix || defined unix
+
+#include "SDL2/SDL.h"
+
+
+//If platform is linux
+#elif  defined _linux_ || defined _gnu_linux_
+
+#include "SDL2/SDL.h"
+
+
+//If platform is from Apple
+#elif __APPLE__ && __MACH__
+
+//Assuming apple with framework linking
+#include "SDL2/SDL.h"
+
+
+//if platform is Windows
+#elif  	_WIN32
+
+#include "SDL.h"
+
+
+#else
+//Assuming apple with framework linking
+#include "SDL2/SDL.h"
+
+#endif
 
 #endif // GLOBALVARIABLES
 

@@ -23,14 +23,15 @@ find_package(raylib 3.5 QUIET)
 find_path(pugixml_INCLUDE_DIRS pugixml.hpp)
 find_library(pugixml_LIBRARIES NAMES pugixml)
 
+PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
 
 #For the shared library:
 #set ( PROJECT_LINK_LIBS  ${openal_LIBRARIES} ${pugixml_LIBRARIES})
-set ( PROJECT_LINK_LIBS  raylib ${pugixml_LIBRARIES})
+set ( PROJECT_LINK_LIBS  raylib ${pugixml_LIBRARIES} ${SDL2_LIBRARIES})
 #where to find library files .so 
 link_directories( /usr/lib /usr/local/lib ) 
 
-set ( PROJECT_INCLUDE_DIR  ${pugixml_INCLUDE_DIRS})
+set ( PROJECT_INCLUDE_DIR  ${pugixml_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS})
 
 #for where to find header files for source and library
 include_directories(/usr/include /usr/local/include ./src ${PROJECT_INCLUDE_DIR})
