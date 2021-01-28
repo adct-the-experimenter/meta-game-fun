@@ -68,111 +68,103 @@ void ControllerInputHandler::Init()
 
 void ControllerInputHandler::Update(ControllerInput* input)
 {
-	ControllerInputHandler::SetGamepad1Info(*input);
+	ControllerInputHandler::SetGamepadInfo(*input);
 }
 
-void ControllerInputHandler::SetGamepad1Info(ControllerInput& input_info)
+void ControllerInputHandler::SetGamepadInfo(ControllerInput& input_info)
 {
-	/*
-	if(sdl_event_ptr->type == SDL_JOYBUTTONDOWN)
-	{
-		if(sdl_event_ptr->jbutton.which == 0)
+	while( SDL_PollEvent(&sdl_event) != 0)
+    {
+        if(sdl_event.type == SDL_JOYBUTTONDOWN)
 		{
-			player_num = 2;
-			
-			if( sdl_event_ptr->jbutton.state == SDL_PRESSED )
+			//gamepad 1
+			if(sdl_event.jbutton.which == 0)
 			{
-				thisEvent.event_id = Event_ID::JOYSTICK_BUTTON_DOWN_PRESSED; 
+							
+				if( sdl_event.jbutton.state == SDL_PRESSED )
+				{
+					 
+				}
+				else if(sdl_event.jbutton.state == SDL_RELEASED)
+				{
+					
+				}
+				
 			}
-			else if(sdl_event_ptr->jbutton.state == SDL_RELEASED)
+			//gamepad 2
+			else if(sdl_event.jbutton.which == 1)
 			{
-				thisEvent.event_id = Event_ID::JOYSTICK_BUTTON_DOWN_RELEASED;
+							
+				if( sdl_event.jbutton.state == SDL_PRESSED )
+				{
+				}
+				else if(sdl_event.jbutton.state == SDL_RELEASED)
+				{
+				}
+				
+			}
+			//gamepad 3
+			else if(sdl_event.jbutton.which == 2)
+			{
+				
+				if( sdl_event.jbutton.state == SDL_PRESSED )
+				{
+					
+				}
+				else if(sdl_event.jbutton.state == SDL_RELEASED)
+				{
+					
+				}
+				
 			}
 			
-			pushEventInstance(thisEvent,player_num);
+			
 		}
-		else if(sdl_event_ptr->jbutton.which == 1)
+		else if(sdl_event.type == SDL_JOYBUTTONUP)
 		{
-			player_num = 3;
-			
-			if( sdl_event_ptr->jbutton.state == SDL_PRESSED )
+			//gamepad 1
+			if(sdl_event.jbutton.which == 0)
 			{
-				thisEvent.event_id = Event_ID::JOYSTICK_BUTTON_DOWN_PRESSED; 
+				
+				if( sdl_event.jbutton.state == SDL_PRESSED )
+				{
+				}
+				else if(sdl_event.jbutton.state == SDL_RELEASED)
+				{
+				}
+				
 			}
-			else if(sdl_event_ptr->jbutton.state == SDL_RELEASED)
+			//gamepad 2
+			else if(sdl_event.jbutton.which == 1)
 			{
-				thisEvent.event_id = Event_ID::JOYSTICK_BUTTON_DOWN_RELEASED;
+				
+				if( sdl_event.jbutton.state == SDL_PRESSED )
+				{
+
+				}
+				else if(sdl_event.jbutton.state == SDL_RELEASED)
+				{
+
+				}
+				
+			}
+			//gamepad 3
+			else if(sdl_event.jbutton.which == 2)
+			{
+				
+				if( sdl_event.jbutton.state == SDL_PRESSED )
+				{
+
+				}
+				else if(sdl_event.jbutton.state == SDL_RELEASED)
+				{
+					
+				}
+				
 			}
 			
-			pushEventInstance(thisEvent,player_num);
 		}
-		else if(sdl_event_ptr->jbutton.which == 2)
-		{
-			player_num = 4;
-			
-			if( sdl_event_ptr->jbutton.state == SDL_PRESSED )
-			{
-				thisEvent.event_id = Event_ID::JOYSTICK_BUTTON_DOWN_PRESSED; 
-			}
-			else if(sdl_event_ptr->jbutton.state == SDL_RELEASED)
-			{
-				thisEvent.event_id = Event_ID::JOYSTICK_BUTTON_DOWN_RELEASED;
-			}
-			
-			pushEventInstance(thisEvent,player_num);
-		}
-		
-		
-	}
-	else if(sdl_event_ptr->type == SDL_JOYBUTTONUP)
-	{
-		if(sdl_event_ptr->jbutton.which == 0)
-		{
-			player_num = 2;
-			
-			if( sdl_event_ptr->jbutton.state == SDL_PRESSED )
-			{
-				thisEvent.event_id = Event_ID::JOYSTICK_BUTTON_UP_PRESSED; 
-			}
-			else if(sdl_event_ptr->jbutton.state == SDL_RELEASED)
-			{
-				thisEvent.event_id = Event_ID::JOYSTICK_BUTTON_UP_RELEASED;
-			}
-			
-			pushEventInstance(thisEvent,player_num);
-		}
-		else if(sdl_event_ptr->jbutton.which == 1)
-		{
-			player_num = 3;
-			
-			if( sdl_event_ptr->jbutton.state == SDL_PRESSED )
-			{
-				thisEvent.event_id = Event_ID::JOYSTICK_BUTTON_UP_PRESSED; 
-			}
-			else if(sdl_event_ptr->jbutton.state == SDL_RELEASED)
-			{
-				thisEvent.event_id = Event_ID::JOYSTICK_BUTTON_UP_RELEASED;
-			}
-			
-			pushEventInstance(thisEvent,player_num);
-		}
-		else if(sdl_event_ptr->jbutton.which == 2)
-		{
-			player_num = 4;
-			
-			if( sdl_event_ptr->jbutton.state == SDL_PRESSED )
-			{
-				thisEvent.event_id = Event_ID::JOYSTICK_BUTTON_UP_PRESSED; 
-			}
-			else if(sdl_event_ptr->jbutton.state == SDL_RELEASED)
-			{
-				thisEvent.event_id = Event_ID::JOYSTICK_BUTTON_UP_RELEASED;
-			}
-			
-			pushEventInstance(thisEvent,player_num);
-		}
-		
-	}
+    }
 	
-	*/
+	
 }

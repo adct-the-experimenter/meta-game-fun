@@ -14,7 +14,11 @@ public:
 	
 private:
 	
-	void SetGamepad1Info(ControllerInput& input_info);
+	SDL_Event sdl_event; //polls events
+	
+	void SetGamepadInfo(ControllerInput& input_info);
+	
+	//game pads
 	SDL_Joystick* gGameController;
 	SDL_Joystick* gGameController2;
 	SDL_Joystick* gGameController3;
