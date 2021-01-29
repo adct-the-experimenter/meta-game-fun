@@ -13,7 +13,19 @@
 
 void ControllerInputHandler::Init()
 {
-	int g_num_players = 2;
+	int g_num_players = 3;
+	
+	std::string mapping_file = DATADIR_STR + "/gamecontrollerdb.txt";
+	//SetGamepadMappings(mapping_file.c_str());
+	
+	if( SDL_GameControllerAddMappingsFromFile(mapping_file.c_str()) == -1)
+	{
+		std::cout << "Failed to add gamepad mappings using SDL2!\n";
+	}
+	else
+	{
+		std::cout << "Successfully added gamepad mappings using SDL2!\n";
+	}
 	
 	//Check for joysticks
 	if( SDL_NumJoysticks() < 1 )
@@ -22,24 +34,27 @@ void ControllerInputHandler::Init()
 	}
 	else
 	{
-		//Load joystick
+		//Load gamepad controllers
 		
-		//if there is a second player 
-		if(g_num_players > 1)
+		//first player 
+		if(g_num_players > 0)
 		{
-			gGameController = SDL_JoystickOpen( 0 );
+			gGameController = SDL_GameControllerOpen( 0 );
 			if( gGameController == NULL )
 			{
 				printf( "Warning: Unable to open game controller 1! SDL Error: %s\n", SDL_GetError() );
 			}
-			else{std::cout << "Initialized gamepad 1\n";}
+			else
+			{
+				std::cout << "Initialized gamepad 1\n";
+			}
 			
 		}
 		
-		//if there is a third player
-		if(g_num_players > 2)
+		//if there is a second player
+		if(g_num_players > 1)
 		{
-			gGameController2 = SDL_JoystickOpen( 1 );
+			gGameController2 = SDL_GameControllerOpen( 1 );
 			if( gGameController2 == NULL )
 			{
 				printf( "Warning: Unable to open game controller 2! SDL Error: %s\n", SDL_GetError() );
@@ -47,10 +62,10 @@ void ControllerInputHandler::Init()
 			else{std::cout << "Initialized gamepad 2\n";}
 		}
 		
-		//if there is a fourth player
-		if(g_num_players > 3)
+		//if there is a third player
+		if(g_num_players > 2)
 		{
-			gGameController3 = SDL_JoystickOpen( 2 );
+			gGameController3 = SDL_GameControllerOpen( 2 );
 			if( gGameController2 == NULL )
 			{
 				printf( "Warning: Unable to open game controller 3! SDL Error: %s\n", SDL_GetError() );
@@ -60,109 +75,94 @@ void ControllerInputHandler::Init()
 		
 	}
 	
-	std::string mapping_file = DATADIR_STR + "/gamecontrollerdb.txt";
-	//SetGamepadMappings(mapping_file.c_str());
 	
-	SDL_GameControllerAddMappingsFromFile(mapping_file.c_str());
 }
 
 void ControllerInputHandler::Update(ControllerInput* input)
 {
+	input->Reset();
 	ControllerInputHandler::SetGamepadInfo(*input);
 }
 
 void ControllerInputHandler::SetGamepadInfo(ControllerInput& input_info)
 {
+	/*
+	 * Raylib isn't working for some gamepads even when its defined in game controller mappings.
+	 * Need to wait for update or fix for this issue.
+	 * Using SDL2 as a workaround.
+	 
+	if (IsGamepadAvailable(GAMEPAD_PLAYER1))
+    {
+		 if (GetGamepadButtonPressed() != -1)
+		 { 
+			 std::cout << "DETECTED BUTTON: " << GetGamepadButtonPressed();
+		 }
+	}
+	*/
+	
+
 	while( SDL_PollEvent(&sdl_event) != 0)
     {
-        if(sdl_event.type == SDL_JOYBUTTONDOWN)
+        if(sdl_event.type == SDL_CONTROLLERBUTTONDOWN )
 		{
+			
 			//gamepad 1
 			if(sdl_event.jbutton.which == 0)
 			{
-							
-				if( sdl_event.jbutton.state == SDL_PRESSED )
-				{
-					 
-				}
-				else if(sdl_event.jbutton.state == SDL_RELEASED)
-				{
-					
-				}
-				
+				input_info.gamepad_p1.button = SDL_GameControllerButton(sdl_event.jbutton.button);
 			}
 			//gamepad 2
 			else if(sdl_event.jbutton.which == 1)
 			{
-							
-				if( sdl_event.jbutton.state == SDL_PRESSED )
-				{
-				}
-				else if(sdl_event.jbutton.state == SDL_RELEASED)
-				{
-				}
-				
+				input_info.gamepad_p2.button = SDL_GameControllerButton(sdl_event.jbutton.button);
 			}
 			//gamepad 3
 			else if(sdl_event.jbutton.which == 2)
 			{
-				
-				if( sdl_event.jbutton.state == SDL_PRESSED )
-				{
-					
-				}
-				else if(sdl_event.jbutton.state == SDL_RELEASED)
-				{
-					
-				}
-				
+				input_info.gamepad_p3.button = SDL_GameControllerButton(sdl_event.jbutton.button);	
 			}
-			
 			
 		}
-		else if(sdl_event.type == SDL_JOYBUTTONUP)
+		
+		if(sdl_event.type == SDL_CONTROLLERAXISMOTION)
 		{
+			
 			//gamepad 1
-			if(sdl_event.jbutton.which == 0)
+			if(sdl_event.jaxis.which == 0)
 			{
-				
-				if( sdl_event.jbutton.state == SDL_PRESSED )
+				if(sdl_event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
 				{
+					input_info.gamepad_p1.x_axis = sdl_event.jaxis.value;
 				}
-				else if(sdl_event.jbutton.state == SDL_RELEASED)
+				else if(sdl_event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
 				{
+					input_info.gamepad_p1.x_axis = sdl_event.jaxis.value;
 				}
-				
 			}
 			//gamepad 2
-			else if(sdl_event.jbutton.which == 1)
+			else if(sdl_event.jaxis.which == 1)
 			{
-				
-				if( sdl_event.jbutton.state == SDL_PRESSED )
+				if(sdl_event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
 				{
-
+					input_info.gamepad_p2.x_axis = sdl_event.jaxis.value;
 				}
-				else if(sdl_event.jbutton.state == SDL_RELEASED)
+				else if(sdl_event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
 				{
-
+					input_info.gamepad_p2.x_axis = sdl_event.jaxis.value;
 				}
-				
 			}
 			//gamepad 3
-			else if(sdl_event.jbutton.which == 2)
+			else if(sdl_event.jaxis.which == 2)
 			{
-				
-				if( sdl_event.jbutton.state == SDL_PRESSED )
+				if(sdl_event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
 				{
-
+					input_info.gamepad_p3.x_axis = sdl_event.jaxis.value;
 				}
-				else if(sdl_event.jbutton.state == SDL_RELEASED)
+				else if(sdl_event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
 				{
-					
+					input_info.gamepad_p3.x_axis = sdl_event.jaxis.value;
 				}
-				
 			}
-			
 		}
     }
 	

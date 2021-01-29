@@ -137,6 +137,12 @@ void logic()
 	{
 		case GameState::TITLE_MENU:
 		{
+			//if a is pressed by gamepad 1
+			if(gControllerInput.gamepad_p1.button == SDL_CONTROLLER_BUTTON_A)
+			{
+				//move to next state
+				m_game_state = GameState::CHAR_CREATOR;
+			}
 			break;
 		}
 		case GameState::CHAR_CREATOR:
@@ -165,7 +171,7 @@ void render()
 		case GameState::TITLE_MENU:
 		{
 			DrawTexture(title_menu_texture, 0, 0, WHITE);
-			//DrawText("In title menu.", 190, 20, 20, LIGHTGRAY);
+			DrawText("Press A on controller to start.", 190, 320, 20, LIGHTGRAY);
 			
 			break;
 		}
@@ -348,7 +354,7 @@ void InitRaylibSystem()
 	
 	
 	// initialize SDL2 for gamepad handling
-	if( SDL_Init( SDL_INIT_JOYSTICK) < 0 )
+	if( SDL_Init( SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0 )
 	{
 		printf( "SDL input could not initialize! SDL Error: %s\n", SDL_GetError() );
 	}
