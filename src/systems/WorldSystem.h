@@ -8,6 +8,8 @@
 
 #include <array>
 
+enum class Day : std::uint8_t {MONDAY=1,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY,SUNDAY };
+enum class Season : std::uint8_t {SUMMER=1,FALL,WINTER,SPRING};
 enum class StatusAffected : std::uint8_t {WEALTH=0, HEALTH, LOOKS};
 
 struct LifeEvent
@@ -15,6 +17,10 @@ struct LifeEvent
 	int8_t effect; //-1 loss, 0 nothing, +1 gain
 	StatusAffected status_affected;
 	std::uint8_t num_player_affected;
+	
+	std::uint8_t event_day;
+	std::uint8_t event_hours;
+	bool happened;
 };
 
 class WorldSystem : public System
@@ -24,8 +30,7 @@ public:
 
 	void Update();
 	
-	enum class Day : std::uint8_t {MONDAY=1,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY,SUNDAY };
-	enum class Season : std::uint8_t {SUMMER=1,FALL,WINTER,SPRING};
+	
 	
 	std::string GetDayString();
 	
@@ -43,7 +48,7 @@ private:
 	
 	//function to randomly generate life event at certain time of day
 	//that will affect a player
-	void RandomlyGenerateLifeEvent();
+	void RandomlyGenerateLifeEvents();
 	
 	//life events to potentialy happen over 1 week
 	std::array <LifeEvent,7> life_events_week;

@@ -18,6 +18,9 @@ void WorldSystem::Init()
 	
 	m_minutes = 0;
 	m_hours = 0;
+	
+	//randomly generate this life events for the week
+	WorldSystem::RandomlyGenerateLifeEvents();
 }
 
 void WorldSystem::Update()
@@ -38,6 +41,8 @@ void WorldSystem::Update()
 				case PlayerTimeStatus::NONE:{break;}
 				default:{break;}
 			}
+			
+			//if current time matches life event time and it has not occurred yet
 		}
 		
 	}
@@ -72,7 +77,13 @@ void WorldSystem::KeepTime()
 		//move on to next day
 		m_current_day++;
 		//reset to 1 if current day is 8
-		if(m_current_day == 8){m_current_day = 1;}
+		if(m_current_day == 8)
+		{
+			m_current_day = 1;
+			
+			//generate life events for the new week that is starting
+			WorldSystem::RandomlyGenerateLifeEvents();
+		}
 		
 		//reset game hour
 		m_hours = 0;
@@ -101,3 +112,8 @@ std::string WorldSystem::GetDayString()
 std::uint16_t WorldSystem::GetMinutes(){return m_minutes;}
 
 std::uint8_t WorldSystem::GetHours(){return m_hours;}
+
+void WorldSystem::RandomlyGenerateLifeEvents()
+{
+	//randomly generate life event for the week
+}
