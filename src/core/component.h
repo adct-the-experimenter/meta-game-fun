@@ -50,6 +50,7 @@ enum class PlayerTimeStatus : std::uint8_t { NONE=0, FREE, WORKING, SLEEPING};
 enum class LooksStatus : std::uint8_t { NORMAL=0, UGLY, BEAUTIFUL}; //distorted face for ugly, sparkles for beautiful
 enum class ActivityStatus : std::uint8_t { ROAMING_WORLD=0, PLAYING_GAME, PLAYING_SPORT };
 
+
 struct Player
 {
 	PlayerTimeStatus time_status;
@@ -60,11 +61,19 @@ struct Player
 	ActivityStatus activity_status;
 };
 
+
+//enum class for helping systems identify what render component is to manipulate it.
+enum class RenderPartDescription : std::uint8_t {LEG, ARM, EYE, HAIR, 
+												UPPER_BODY_CLOTHING, LOWER_BODY_CLOTHING,
+												WHOLE_BODY, OTHER};
 struct RenderInfo
 {
+	int x;
+	int y;
 	Texture2D* texture_ptr;
 	Rectangle frame_rect;
 	Color tint;
+	RenderPartDescription part_description;
 };
 
 enum class InputReactorType : std::uint8_t { NONE=0, PLAYER, CAR};

@@ -43,7 +43,7 @@ void RenderSystem::Update()
 			}
 			else
 			{
-				std::cout << "Invalid render texture!\n";
+				
 			}
 		}
 		
