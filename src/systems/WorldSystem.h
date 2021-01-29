@@ -47,6 +47,9 @@ private:
 	
 	//life events to potentialy happen over 1 week
 	std::array <LifeEvent,7> life_events_week;
+	
+	//function to keep time for hour, day, season
+	void KeepTime();
 };
 
 #endif
