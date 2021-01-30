@@ -79,7 +79,6 @@ int main()
 	InitRaylibSystem();
 	
 	
-	
 	if(!loadMedia())
 	{
 		std::cout << "Not loading game. Failed to load media!\n";
@@ -221,13 +220,14 @@ void render()
 									"Minute: " + std::to_string(worldSystem->GetMinutes());
 									
 			DrawText(time_info.c_str(), 190, 20, 20, LIGHTGRAY);
-									
+		    //renders any entity that has render component
+			renderSystem->Update();	
+			
 			break;
 		}
 	}
 	
-	//renders any entity that has render component
-	renderSystem->Update();
+	
 	
 	EndDrawing();
 }
@@ -259,6 +259,7 @@ void InitMainECS()
 	gCoordinator.RegisterComponent<Transform2D>(); //id 00000000001
 	gCoordinator.RegisterComponent<Player>(); //id 00000000010
 	gCoordinator.RegisterComponent<RenderInfo>(); //id 00000000010
+	gCoordinator.RegisterComponent<RenderBodyParts>();
 	
 	//make world system that only reacts to entitties
 	//with signature that has player component
@@ -272,12 +273,14 @@ void InitMainECS()
 	//make rendering system that only reacts to entities
 	//with render info component
 	renderSystem = gCoordinator.RegisterSystem<RenderSystem>();
+	renderSystem->Init(&player_cameras);
 	
 	Signature sig_render;
 	sig_render.set(gCoordinator.GetComponentType<RenderInfo>());
+	sig_render.set(gCoordinator.GetComponentType<RenderBodyParts>());
 	gCoordinator.SetSystemSignature<RenderSystem>(sig_render);
 	
-	renderSystem->Init(&player_cameras);
+	
 	
 	//make entity for player
 	entities[0] = gCoordinator.CreateEntity();
@@ -331,7 +334,7 @@ void InitVideoGameECS()
 	{
 		entity = gCoordinator.CreateEntity();
 		
-		//make first entity a player
+		
 		if(it > 0)
 		{
 			Vector2 initGravity = {0.0f,-2.0f};

@@ -95,15 +95,30 @@ void CharacterCreator::logic()
 				char_confirmations[i] = true;
 				
 				Texture2D* texture_player = &rpg_sprite_sheet_texture;
+				
+				std::array <RenderPartDescription,6> descript_array = {RenderPartDescription::HAIR,
+																		RenderPartDescription::HEAD,
+																		RenderPartDescription::EYE,
+																		RenderPartDescription::UPPER_BODY_CLOTHING,
+																		RenderPartDescription::LOWER_BODY_CLOTHING,
+																		RenderPartDescription::SHOES};
+				std::array <RenderInfo,6> temp_body_parts;
+				
+				for(size_t slot_it = 0; slot_it < 6; slot_it++)
+				{
+					temp_body_parts[slot_it].texture_ptr = texture_player;
+					temp_body_parts[slot_it].frame_rect = player_char_boxes[i].slots[slot_it].frame_clip;
+					temp_body_parts[slot_it].tint = colors[ player_char_boxes[i].slots[slot_it].color_choice ];
+					temp_body_parts[slot_it].part_description = descript_array[slot_it];
+					temp_body_parts[slot_it].position = {2.0f,2.0f};
+				}
+				
 				gCoordinator.AddComponent(
-							*player_entities_vec[i],
-							RenderInfo{
-								.texture_ptr = texture_player,
-								.frame_rect = player_char_boxes[i].slots[1].frame_clip,
-								.tint = colors[ player_char_boxes[i].slots[1].color_choice ],
-								.part_description = RenderPartDescription::HEAD
-							}
-						);
+								*player_entities_vec[i],
+								RenderBodyParts{
+									.body_parts = temp_body_parts
+								}
+							);
 				
 			}
 			

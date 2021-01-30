@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <bitset>
+#include <array>
 #include "raylib.h" //for vector2
 
 // A simple type alias
@@ -66,16 +67,21 @@ struct Player
 
 //enum class for helping systems identify what render component is to manipulate it.
 enum class RenderPartDescription : std::uint8_t {LEG, ARM, EYE, HAIR, HEAD,
-												UPPER_BODY_CLOTHING, LOWER_BODY_CLOTHING,
+												UPPER_BODY_CLOTHING, LOWER_BODY_CLOTHING, SHOES,
 												WHOLE_BODY, OTHER};
 struct RenderInfo
 {
-	int x;
-	int y;
+	Vector2 position;
 	Texture2D* texture_ptr;
 	Rectangle frame_rect;
 	Color tint;
 	RenderPartDescription part_description;
+};
+
+struct RenderBodyParts
+{
+	//
+	std::array <RenderInfo,6> body_parts;
 };
 
 enum class InputReactorType : std::uint8_t { NONE=0, PLAYER, CAR};
