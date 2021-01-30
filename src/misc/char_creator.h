@@ -23,15 +23,12 @@ struct CharacterBox
 	
 	//everyone has the same body and head dimensions for now
 	//only hair, eyes, and clothing are different.
-	Slot hair_slot;
-	Slot head_slot; //for skin color change
-	Slot eyes_slot;
-	Slot up_cloth_slot;
-	Slot low_cloth_slot;
-	Slot shoe_slot;
+	
+	//hair = 0, head=1,eyes=2,upper clothing = 3, lower clothing = 4, shoes=5
+	std::array <Slot,6> slots;
 	
 	std::uint8_t current_slot = 0;
-	std::uint8_t last_slot = 6;
+	std::uint8_t last_slot = 5;
 	bool confirm_selection = false;
 };
 
