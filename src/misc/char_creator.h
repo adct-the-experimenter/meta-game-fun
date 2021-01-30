@@ -28,6 +28,9 @@ struct CharacterBox
 	Slot up_cloth_slot;
 	Slot low_cloth_slot;
 	Slot shoe_slot;
+	
+	std::uint8_t current_slot = 0;
+	std::uint8_t last_slot = 5;
 };
 
 class CharacterCreator

@@ -130,6 +130,30 @@ void GameLoop()
 void handle_events()
 {
 	gInputHandler.Update(&gControllerInput);
+	
+	switch(m_game_state)
+	{
+		case GameState::TITLE_MENU:
+		{
+			//if a is pressed by gamepad 1
+			if(gControllerInput.gamepad_p1.button == SDL_CONTROLLER_BUTTON_A)
+			{
+				//move to next state
+				m_game_state = GameState::CHAR_CREATOR;
+			}
+			break;
+		}
+		case GameState::CHAR_CREATOR:
+		{
+			//run logic for character creator system here
+			gCharCreator.handle_input(gControllerInput);
+			break;
+		}
+		case GameState::GAME:
+		{	
+			break;
+		}
+	}
 }
 
 void logic()
@@ -143,12 +167,6 @@ void logic()
 	{
 		case GameState::TITLE_MENU:
 		{
-			//if a is pressed by gamepad 1
-			if(gControllerInput.gamepad_p1.button == SDL_CONTROLLER_BUTTON_A)
-			{
-				//move to next state
-				m_game_state = GameState::CHAR_CREATOR;
-			}
 			break;
 		}
 		case GameState::CHAR_CREATOR:
