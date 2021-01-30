@@ -45,6 +45,7 @@ set(SOURCES
 src/main.cpp
 src/misc/globalvariables.cpp
 src/misc/MediaLoader.cpp
+src/misc/char_creator.cpp
 src/systems/PhysicsSystem.cpp
 src/systems/WorldSystem.cpp
 src/systems/RenderSystem.cpp

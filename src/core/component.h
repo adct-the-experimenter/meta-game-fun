@@ -53,6 +53,8 @@ enum class ActivityStatus : std::uint8_t { ROAMING_WORLD=0, PLAYING_GAME, PLAYIN
 
 struct Player
 {
+	std::string name;
+	std::string romantic_partner_name;
 	PlayerTimeStatus time_status;
 	std::uint16_t money;
 	std::uint8_t health;

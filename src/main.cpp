@@ -12,6 +12,8 @@
 #include "misc/MediaLoader.h"
 #include "misc/globalvariables.h"
 
+#include "misc/char_creator.h" //for CharacterCreator class
+
 #include <string>
 #include <chrono>
 #include <memory>
@@ -70,6 +72,8 @@ std::array <CustomCamera,4> player_cameras;
 
 bool video_game_playing = false;
 
+CharacterCreator gCharCreator;
+
 int main()
 {
 	InitRaylibSystem();
@@ -83,6 +87,8 @@ int main()
 	else
 	{
 		InitMainECS();
+		
+		gCharCreator.Init(&entities,1);
 		
 		bool quit = false;
 	
@@ -147,6 +153,8 @@ void logic()
 		}
 		case GameState::CHAR_CREATOR:
 		{
+			//run logic for character creator system here
+			gCharCreator.logic();
 			break;
 		}
 		case GameState::GAME:
@@ -178,7 +186,7 @@ void render()
 		case GameState::CHAR_CREATOR:
 		{
 			DrawText("In character creator.", 190, 20, 20, LIGHTGRAY);
-			
+			gCharCreator.render();
 			break;
 		}
 		case GameState::GAME:
@@ -224,7 +232,6 @@ void InitMainECS()
 	
 	//Initialize components for entities
 	
-	
 	gCoordinator.RegisterComponent<Transform2D>(); //id 00000000001
 	gCoordinator.RegisterComponent<Player>(); //id 00000000010
 	gCoordinator.RegisterComponent<RenderInfo>(); //id 00000000010
@@ -251,13 +258,16 @@ void InitMainECS()
 	//make entity for player
 	entities[0] = gCoordinator.CreateEntity();
 	
+	std::string name = "Something";
+	std::string partner_name = "none";
 	std::uint16_t balance = 200;
 	std::uint8_t hp = 100;
 	std::string job = "cashier";
 	LooksStatus look = LooksStatus::NORMAL;
 	PlayerTimeStatus time_stat = PlayerTimeStatus::NONE;
 	ActivityStatus activity_stat = ActivityStatus::ROAMING_WORLD;
-	gCoordinator.AddComponent(entities[0],Player{.time_status=time_stat,
+	gCoordinator.AddComponent(entities[0],Player{.name = name, .romantic_partner_name = partner_name,
+											.time_status=time_stat,
 											.money = balance,
 											.health = hp,
 											.job_occupation = job,

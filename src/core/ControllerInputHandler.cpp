@@ -13,7 +13,7 @@
 
 void ControllerInputHandler::Init()
 {
-	int g_num_players = 3;
+	int g_num_players = 1;
 	
 	std::string mapping_file = DATADIR_STR + "/gamecontrollerdb.txt";
 	//SetGamepadMappings(mapping_file.c_str());
