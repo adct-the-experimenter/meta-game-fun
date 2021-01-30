@@ -9,7 +9,7 @@
 using Entity = std::uint32_t;
 
 // Used to define the size of arrays later on
-const Entity MAX_ENTITIES = 5;
+const Entity MAX_ENTITIES = 34;
 
 // A simple type alias.
 // Bitset used to identify which components an entity has

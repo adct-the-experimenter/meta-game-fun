@@ -5,13 +5,14 @@
 #include <cstdint>
 #include <bitset>
 #include <array>
+#include <vector>
 #include "raylib.h" //for vector2
 
 // A simple type alias
 using ComponentType = std::uint8_t;
 
 // Used to define the size of arrays later on
-const ComponentType MAX_COMPONENTS = 32;
+const ComponentType MAX_COMPONENTS = 34;
 
 struct Gravity3D
 {
@@ -68,7 +69,9 @@ struct Player
 //enum class for helping systems identify what render component is to manipulate it.
 enum class RenderPartDescription : std::uint8_t {LEG, ARM, EYE, HAIR, HEAD,
 												UPPER_BODY_CLOTHING, LOWER_BODY_CLOTHING, SHOES,
-												WHOLE_BODY, OTHER};
+											WHOLE_BODY, OTHER};
+
+//not an actualy component, just contains org. info for component
 struct RenderInfo
 {
 	Vector2 position;
@@ -78,10 +81,16 @@ struct RenderInfo
 	RenderPartDescription part_description;
 };
 
-struct RenderBodyParts
+struct SingleRenderComponent
+{
+	RenderInfo render_part;
+};
+
+struct MultipleRenderComponent
 {
 	//
-	std::array <RenderInfo,6> body_parts;
+	std::uint8_t num_render_parts;
+	std::vector <RenderInfo> render_parts_vec;
 };
 
 enum class InputReactorType : std::uint8_t { NONE=0, PLAYER, CAR};

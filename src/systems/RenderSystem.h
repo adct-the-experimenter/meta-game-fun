@@ -14,7 +14,7 @@ public:
 
 	void Update();
 	
-private:
+protected:
 	std::array <CustomCamera,4> *m_cameras_ptr;
 	
 };

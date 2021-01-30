@@ -1,6 +1,6 @@
 #include "char_creator.h"
 
-
+#include "core/system.h"
 #include "core/coordinator.h"
 
 #include "misc/media.h" //for texture
@@ -102,7 +102,8 @@ void CharacterCreator::logic()
 																		RenderPartDescription::UPPER_BODY_CLOTHING,
 																		RenderPartDescription::LOWER_BODY_CLOTHING,
 																		RenderPartDescription::SHOES};
-				std::array <RenderInfo,6> temp_body_parts;
+				std::vector <RenderInfo> temp_body_parts;
+				temp_body_parts.resize(6);
 				
 				for(size_t slot_it = 0; slot_it < 6; slot_it++)
 				{
@@ -115,8 +116,8 @@ void CharacterCreator::logic()
 				
 				gCoordinator.AddComponent(
 								*player_entities_vec[i],
-								RenderBodyParts{
-									.body_parts = temp_body_parts
+								MultipleRenderComponent{
+									.render_parts_vec = temp_body_parts
 								}
 							);
 				

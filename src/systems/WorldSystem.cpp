@@ -29,6 +29,7 @@ void WorldSystem::Update()
 	
 	for (auto const& entity : mEntities)
 	{
+		//std::cout << "entity works in world system!\n";
 		
 		//get player component from entity
 		auto& player = gCoordinator.GetComponent<Player>(entity);

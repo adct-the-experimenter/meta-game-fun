@@ -4,7 +4,8 @@
 
 #include "systems/PhysicsSystem.h"
 #include "systems/WorldSystem.h"
-#include "systems/RenderSystem.h"
+#include "systems/SingleRenderComponentSystem.h"
+#include "systems/MultipleRenderComponentSystem.h"
 #include "core/ControllerInputHandler.h"
 #include "core/ControllerInput.h"
 
@@ -31,13 +32,14 @@ Coordinator gCoordinator;
 ControllerInput gControllerInput;
 ControllerInputHandler gInputHandler;
 
-std::vector<Entity> entities(MAX_ENTITIES);
+std::vector <Entity> entities(MAX_ENTITIES);
 
 //function to initialize main ECS
 void InitMainECS();
 
 std::shared_ptr <WorldSystem> worldSystem;
-std::shared_ptr <RenderSystem> renderSystem;
+std::shared_ptr <SingleRenderComponentSystem> single_comp_renderSystem;
+std::shared_ptr <MultipleRenderComponentSystem> multi_comp_renderSystem;
 
 
 //function to initialize video game ECS
@@ -221,7 +223,8 @@ void render()
 									
 			DrawText(time_info.c_str(), 190, 20, 20, LIGHTGRAY);
 		    //renders any entity that has render component
-			renderSystem->Update();	
+			single_comp_renderSystem->Update();	
+			multi_comp_renderSystem->Update();	
 			
 			break;
 		}
@@ -259,7 +262,8 @@ void InitMainECS()
 	gCoordinator.RegisterComponent<Transform2D>(); //id 00000000001
 	gCoordinator.RegisterComponent<Player>(); //id 00000000010
 	gCoordinator.RegisterComponent<RenderInfo>(); //id 00000000010
-	gCoordinator.RegisterComponent<RenderBodyParts>();
+	gCoordinator.RegisterComponent<SingleRenderComponent>();
+	gCoordinator.RegisterComponent<MultipleRenderComponent>();
 	
 	//make world system that only reacts to entitties
 	//with signature that has player component
@@ -272,14 +276,19 @@ void InitMainECS()
 	
 	//make rendering system that only reacts to entities
 	//with render info component
-	renderSystem = gCoordinator.RegisterSystem<RenderSystem>();
-	renderSystem->Init(&player_cameras);
+	single_comp_renderSystem = gCoordinator.RegisterSystem<SingleRenderComponentSystem>();
+	single_comp_renderSystem->Init(&player_cameras);
 	
-	Signature sig_render;
-	sig_render.set(gCoordinator.GetComponentType<RenderInfo>());
-	sig_render.set(gCoordinator.GetComponentType<RenderBodyParts>());
-	gCoordinator.SetSystemSignature<RenderSystem>(sig_render);
+	Signature sig_render_single;
+	sig_render_single.set(gCoordinator.GetComponentType<SingleRenderComponent>());
+	gCoordinator.SetSystemSignature<SingleRenderComponentSystem>(sig_render_single);
 	
+	multi_comp_renderSystem = gCoordinator.RegisterSystem<MultipleRenderComponentSystem>();
+	multi_comp_renderSystem->Init(&player_cameras);
+	
+	Signature sig_render_multi;
+	sig_render_multi.set(gCoordinator.GetComponentType<MultipleRenderComponent>());
+	gCoordinator.SetSystemSignature<MultipleRenderComponentSystem>(sig_render_multi);
 	
 	
 	//make entity for player
