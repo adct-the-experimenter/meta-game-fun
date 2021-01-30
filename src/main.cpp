@@ -107,8 +107,8 @@ int main()
 		}
 	}
 	
+	gMediaLoader.freeMedia();
 	
-		
 	CloseRaylibSystem();
 	
 	return 0;

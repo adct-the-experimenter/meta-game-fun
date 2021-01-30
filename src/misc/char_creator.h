@@ -12,7 +12,6 @@
 
 struct Slot
 {
-	Texture2D sprite_sheet;
 	Rectangle frame_clip = {0,0,30,30};
 	
 	size_t style_choice = 0;
@@ -59,6 +58,7 @@ private:
 	
 	//array to hold color choices
 	std::array <Color,8> colors;
+	
 };
 
 #endif
