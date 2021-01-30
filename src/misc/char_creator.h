@@ -20,7 +20,8 @@ struct Slot
 
 struct CharacterBox
 {
-	//everyone has the smae body and head dimensions for now
+	
+	//everyone has the same body and head dimensions for now
 	//only hair, eyes, and clothing are different.
 	Slot hair_slot;
 	Slot head_slot; //for skin color change
@@ -30,7 +31,8 @@ struct CharacterBox
 	Slot shoe_slot;
 	
 	std::uint8_t current_slot = 0;
-	std::uint8_t last_slot = 5;
+	std::uint8_t last_slot = 6;
+	bool confirm_selection = false;
 };
 
 class CharacterCreator
@@ -51,6 +53,8 @@ public:
 	
 	void sound();
 	
+	bool MoveToNextStateBool();
+	
 private:
 
 	//vector to hold pointers to player entities
@@ -60,8 +64,12 @@ private:
 	std::vector <CharacterBox> player_char_boxes;
 	
 	//array to hold color choices
-	std::array <Color,9> colors;
+	std::array <Color,8> colors;
 	
+	//vector to hold bools for character creation confirmation for players
+	std::vector <bool> char_confirmations;
+	
+	bool move_next_state;
 };
 
 #endif

@@ -9,9 +9,10 @@ extern Coordinator gCoordinator;
 
 CharacterCreator::CharacterCreator()
 {
-	std::array <Color,9> t_colors = {WHITE,BLUE,BEIGE,BLACK,DARKBROWN,BROWN,RED,GOLD,LIGHTGRAY};
+	std::array <Color,8> t_colors = {WHITE,BLUE,BEIGE,BLACK,BROWN,RED,GOLD,LIGHTGRAY};
 	colors = t_colors;
 	
+	move_next_state = false;
 }
 
 CharacterCreator::~CharacterCreator()
@@ -33,7 +34,7 @@ void CharacterCreator::Init(std::vector <Entity> *entities_vec_ptr, std::uint8_t
 	
 	player_char_boxes.resize(num_players);
 	
-	
+	char_confirmations.resize(num_players);
 }
 
 void CharacterCreator::handle_input(ControllerInput& input)
@@ -80,20 +81,23 @@ void CharacterCreator::handle_input(ControllerInput& input)
 			case 5:{ slot_ptr = &player_char_boxes[0].shoe_slot; break;}
 		}
 		
-		if(slot_ptr->color_choice < 8){slot_ptr->color_choice++;}
+		if(slot_ptr->color_choice < 7){slot_ptr->color_choice++;}
 	}
 	
 	//if a button pressed, turn confirm bool on
-	
+	if(input.gamepad_p1.button == SDL_CONTROLLER_BUTTON_A)
+	{
+		player_char_boxes[0].confirm_selection = true;
+	}
 }
 	
 void CharacterCreator::logic()
 {
 	int width = 30;
 	
-	//set frame clip based on style choice slot
 	for(size_t i = 0; i < player_char_boxes.size(); i++)
 	{
+		//set frame clip based on style choice slot
 		player_char_boxes[i].hair_slot.frame_clip = {30*player_char_boxes[i].hair_slot.style_choice,0,width,width};
 		player_char_boxes[i].head_slot.frame_clip = {30*player_char_boxes[i].head_slot.style_choice,30,width,width};
 		player_char_boxes[i].eyes_slot.frame_clip = {30*player_char_boxes[i].eyes_slot.style_choice,60,width,width};
@@ -101,9 +105,44 @@ void CharacterCreator::logic()
 		player_char_boxes[i].low_cloth_slot.frame_clip = {30*player_char_boxes[i].low_cloth_slot.style_choice,120,width,width};
 		player_char_boxes[i].shoe_slot.frame_clip = {30*player_char_boxes[i].shoe_slot.style_choice,150,width,width};
 		
+		//if selection confirmed
+		if(player_char_boxes[i].confirm_selection)
+		{
+			//create new render components for player entity, and set player info based on choices.
+			//if not already created
+			if(!char_confirmations[i])
+			{
+				char_confirmations[i] = true;
+				
+				Texture2D* texture_player = &rpg_sprite_sheet_texture;
+				gCoordinator.AddComponent(
+							*player_entities_vec[i],
+							RenderInfo{
+								.texture_ptr = texture_player,
+								.frame_rect = player_char_boxes[i].head_slot.frame_clip,
+								.tint = colors[ player_char_boxes[i].head_slot.color_choice ],
+								.part_description = RenderPartDescription::HEAD
+							}
+						);
+				
+			}
+			
+		}
+		
 	}
-	//if on slot ok and confirm bool is on, 
-	//create new render components for player, and set player info based on choices.
+	
+	//check if all players confirmed character creations
+	bool all_confirmed = true;
+	for(size_t i = 0; i < char_confirmations.size(); i++)
+	{
+		all_confirmed = char_confirmations[i];
+		if(!all_confirmed){break;}
+	}
+	
+	if(all_confirmed)
+	{
+		move_next_state = true;
+	}
 	
 }
 
@@ -158,3 +197,5 @@ void CharacterCreator::sound()
 {
 	//play some character select music
 }
+
+bool CharacterCreator::MoveToNextStateBool(){return move_next_state;}

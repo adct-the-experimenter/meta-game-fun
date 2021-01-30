@@ -65,7 +65,7 @@ struct Player
 
 
 //enum class for helping systems identify what render component is to manipulate it.
-enum class RenderPartDescription : std::uint8_t {LEG, ARM, EYE, HAIR, 
+enum class RenderPartDescription : std::uint8_t {LEG, ARM, EYE, HAIR, HEAD,
 												UPPER_BODY_CLOTHING, LOWER_BODY_CLOTHING,
 												WHOLE_BODY, OTHER};
 struct RenderInfo

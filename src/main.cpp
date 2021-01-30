@@ -173,6 +173,12 @@ void logic()
 		{
 			//run logic for character creator system here
 			gCharCreator.logic();
+			
+			if(gCharCreator.MoveToNextStateBool())
+			{
+				m_game_state = GameState::GAME;
+			}
+			
 			break;
 		}
 		case GameState::GAME:
@@ -203,7 +209,7 @@ void render()
 		}
 		case GameState::CHAR_CREATOR:
 		{
-			DrawText("In character creator.", 190, 20, 20, LIGHTGRAY);
+			DrawText("In character creator.Press A to finish character creation.", 190, 20, 20, LIGHTGRAY);
 			gCharCreator.render();
 			break;
 		}
@@ -221,7 +227,7 @@ void render()
 	}
 	
 	//renders any entity that has render component
-	//renderSystem->Update();
+	renderSystem->Update();
 	
 	EndDrawing();
 }
@@ -296,16 +302,6 @@ void InitMainECS()
 				entities[0],
 				Transform2D{
 					.position = initP
-				}
-			);
-	
-	Texture2D* texture_player = nullptr;
-	Rectangle default_rect = {0,0,40,40};
-	gCoordinator.AddComponent(
-				entities[0],
-				RenderInfo{
-					.texture_ptr = texture_player,
-					.frame_rect = default_rect
 				}
 			);
 	
