@@ -60,7 +60,7 @@ private:
 	std::vector <CharacterBox> player_char_boxes;
 	
 	//array to hold color choices
-	std::array <Color,8> colors;
+	std::array <Color,9> colors;
 	
 };
 

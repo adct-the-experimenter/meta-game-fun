@@ -9,7 +9,7 @@ extern Coordinator gCoordinator;
 
 CharacterCreator::CharacterCreator()
 {
-	std::array <Color,8> t_colors = {WHITE,BEIGE,BLACK,DARKBROWN,BROWN,RED,GOLD,LIGHTGRAY};
+	std::array <Color,9> t_colors = {WHITE,BLUE,BEIGE,BLACK,DARKBROWN,BROWN,RED,GOLD,LIGHTGRAY};
 	colors = t_colors;
 	
 }
@@ -40,18 +40,18 @@ void CharacterCreator::handle_input(ControllerInput& input)
 {
 	
 	//if joystick moved up, go up a slot
-	if(input.gamepad_p1.y_axis > 0)
+	if(input.gamepad_p1.y_axis < -32600)
 	{
 		if(player_char_boxes[0].current_slot > 0){player_char_boxes[0].current_slot--;}
 	}
 	//else if joystick moved down, go down a slot
-	else if(input.gamepad_p1.y_axis < 0)
+	else if(input.gamepad_p1.y_axis > 32600)
 	{
 		if(player_char_boxes[0].current_slot < player_char_boxes[0].last_slot){player_char_boxes[0].current_slot++;}
 	}
 		
 	//if joystick moved left, go left on color choice
-	if(input.gamepad_p1.x_axis > 0)
+	if(input.gamepad_p1.x_axis < -32600)
 	{
 		Slot* slot_ptr;
 		switch(player_char_boxes[0].current_slot)
@@ -67,7 +67,7 @@ void CharacterCreator::handle_input(ControllerInput& input)
 		if(slot_ptr->color_choice > 0){slot_ptr->color_choice--;}
 	}
 	//if joystick moved right, go right on color choice
-	else if(input.gamepad_p1.x_axis < 0)
+	else if(input.gamepad_p1.x_axis > 32600)
 	{
 		Slot* slot_ptr;
 		switch(player_char_boxes[0].current_slot)
@@ -80,7 +80,7 @@ void CharacterCreator::handle_input(ControllerInput& input)
 			case 5:{ slot_ptr = &player_char_boxes[0].shoe_slot; break;}
 		}
 		
-		if(slot_ptr->color_choice < 7){slot_ptr->color_choice++;}
+		if(slot_ptr->color_choice < 8){slot_ptr->color_choice++;}
 	}
 	
 	//if a button pressed, turn confirm bool on
