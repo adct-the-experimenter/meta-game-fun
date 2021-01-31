@@ -8,9 +8,22 @@
 
 #include "raylib.h"
 #include "core/ControllerInput.h"
+#include "core/KeyboardInput.h"
 #include "core/entity.h"
 
-struct Slot
+
+
+	
+struct TypingSlot
+{
+	//text slot with a limit of 15 characters
+	char text[15];
+	
+	Rectangle textBox;
+	size_t letterCount = 0;
+};
+
+struct RenderSlot
 {
 	Rectangle frame_clip = {0,0,30,30};
 	
@@ -21,14 +34,16 @@ struct Slot
 struct CharacterBox
 {
 	
+	std::array <TypingSlot,2> typing_slots;
+	
 	//everyone has the same body and head dimensions for now
 	//only hair, eyes, and clothing are different.
 	
 	//hair = 0, head=1,eyes=2,upper clothing = 3, lower clothing = 4, shoes=5
-	std::array <Slot,6> slots;
+	std::array <RenderSlot,6> render_slots;
 	
 	std::uint8_t current_slot = 0;
-	std::uint8_t last_slot = 5;
+	
 	bool confirm_selection = false;
 };
 
@@ -42,7 +57,7 @@ public:
 	
 	//game loop functions
 	
-	void handle_input(ControllerInput& input);
+	void handle_input(ControllerInput& controller_input, KeyboardInput& key_input);
 	
 	void logic();
 	
@@ -51,6 +66,11 @@ public:
 	void sound();
 	
 	bool MoveToNextStateBool();
+	
+	std::uint8_t name_slot = 0;
+	std::uint8_t job_slot = 1;
+	std::uint8_t render_slot = 2; //index for first render slot
+	std::uint8_t last_slot = 7; //index for the last slot
 	
 private:
 
@@ -66,7 +86,12 @@ private:
 	//vector to hold bools for character creation confirmation for players
 	std::vector <bool> char_confirmations;
 	
+	//bool to indicate whether to move to the next state
 	bool move_next_state;
+	
+	//input specific handler functions
+	void handle_controller_input(ControllerInput& input);
+	void handle_keyboard_input(KeyboardInput& input);
 };
 
 #endif

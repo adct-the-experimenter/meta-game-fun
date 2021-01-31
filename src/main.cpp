@@ -6,8 +6,12 @@
 #include "systems/WorldSystem.h"
 #include "systems/SingleRenderComponentSystem.h"
 #include "systems/MultipleRenderComponentSystem.h"
+
 #include "core/ControllerInputHandler.h"
 #include "core/ControllerInput.h"
+
+#include "core/KeyboardTypingInputHandler.h"
+#include "core/KeyboardInput.h"
 
 #include "misc/camera.h"
 #include "misc/MediaLoader.h"
@@ -30,7 +34,10 @@
 Coordinator gCoordinator;
 
 ControllerInput gControllerInput;
-ControllerInputHandler gInputHandler;
+ControllerInputHandler gControllerInputHandler;
+
+KeyboardInput gKeyboardInput;
+KeyboardTypingInputHandler gKeyboardTypingInputHandler;
 
 std::vector <Entity> entities(MAX_ENTITIES);
 
@@ -130,7 +137,9 @@ void GameLoop()
 
 void handle_events()
 {
-	gInputHandler.Update(&gControllerInput);
+	gControllerInputHandler.Update(&gControllerInput);
+	
+	gKeyboardTypingInputHandler.Update(&gKeyboardInput);
 	
 	switch(m_game_state)
 	{
@@ -147,7 +156,7 @@ void handle_events()
 		case GameState::CHAR_CREATOR:
 		{
 			//run logic for character creator system here
-			gCharCreator.handle_input(gControllerInput);
+			gCharCreator.handle_input(gControllerInput,gKeyboardInput);
 			break;
 		}
 		case GameState::GAME:
@@ -210,7 +219,7 @@ void render()
 		}
 		case GameState::CHAR_CREATOR:
 		{
-			DrawText("In character creator.Press A to finish character creation.", 190, 20, 20, LIGHTGRAY);
+			DrawText("In character creator.Press A to finish character creation.", 80, 20, 20, BLACK);
 			gCharCreator.render();
 			break;
 		}
@@ -398,7 +407,7 @@ void InitRaylibSystem()
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     
     //initialize game controller input
-    gInputHandler.Init();
+    gControllerInputHandler.Init();
 }
 
 void CloseRaylibSystem()

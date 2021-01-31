@@ -51,7 +51,7 @@ src/systems/WorldSystem.cpp
 src/systems/MultipleRenderComponentSystem.cpp src/systems/SingleRenderComponentSystem.cpp src/systems/RenderSystem.cpp
 src/systems/InputReactorSystem.cpp
 src/systems/EnemySystem.cpp
-src/core/ControllerInputHandler.cpp
+src/core/ControllerInputHandler.cpp src/core/KeyboardTypingInputHandler.cpp
 			 )
 
 #get_cmake_property(_variableNames VARIABLES)

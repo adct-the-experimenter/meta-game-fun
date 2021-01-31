@@ -20,7 +20,9 @@ struct LifeEvent
 	
 	std::uint8_t event_day;
 	std::uint8_t event_hours;
-	bool happened;
+	bool happened = false;
+	
+	std::string description;
 };
 
 class WorldSystem : public System
@@ -55,6 +57,12 @@ private:
 	
 	//function to keep time for hour, day, season
 	void KeepTime();
+	
+	//function to check life events
+	void CheckLifeEvents();
+	
+	//function to get player to enter description a few hours before it happen
+	void GetSpecificDescriptionForEvent(LifeEvent& event);
 };
 
 #endif

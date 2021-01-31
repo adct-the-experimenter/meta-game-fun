@@ -43,7 +43,8 @@ void WorldSystem::Update()
 				default:{break;}
 			}
 			
-			//if current time matches life event time and it has not occurred yet
+			
+			WorldSystem::CheckLifeEvents();
 		}
 		
 	}
@@ -117,4 +118,41 @@ std::uint8_t WorldSystem::GetHours(){return m_hours;}
 void WorldSystem::RandomlyGenerateLifeEvents()
 {
 	//randomly generate life event for the week
+	for(size_t i = 0; i < life_events_week.size(); i++)
+	{
+		life_events_week[i].event_day = GetRandomValue(1,7);
+		life_events_week[i].event_hours = GetRandomValue(2,6);
+		life_events_week[i].happened = false;
+	}
+	
+}
+
+void WorldSystem::CheckLifeEvents()
+{
+	//if current time matches life event time and it has not occurred yet
+	for (size_t i = 0; i < life_events_week.size(); i++)
+	{
+		if(m_current_day == life_events_week[i].event_day 
+			&& m_hours == life_events_week[i].event_hours
+			&& !life_events_week[i].happened)
+		{
+			//show player message about what has happened
+			//to him or her 
+			
+			//decrease value.
+		}
+		else
+		{
+			if(m_current_day == life_events_week[i].event_day &&
+			   m_hours == life_events_week[i].event_hours - 2)
+			{
+				WorldSystem::GetSpecificDescriptionForEvent(life_events_week[i]);
+			}
+		}
+	}
+}
+
+void WorldSystem::GetSpecificDescriptionForEvent(LifeEvent& event)
+{
+	
 }
