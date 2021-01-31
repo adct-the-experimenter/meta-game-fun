@@ -43,4 +43,13 @@ void KeyboardTypingInputHandler::SetKeyboardTypingInfo(KeyboardInput& input_info
 		input_info.backspace_pressed = false;
 	}
 	
+	if( IsKeyPressed(KEY_ENTER) )
+	{
+		input_info.enter_pressed = true;
+	}
+	else
+	{
+		input_info.enter_pressed = false;
+	}
+	
 }

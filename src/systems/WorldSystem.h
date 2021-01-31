@@ -8,9 +8,20 @@
 
 #include <array>
 
+#include "core/KeyboardInput.h"
+
 enum class Day : std::uint8_t {MONDAY=1,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY,SUNDAY };
 enum class Season : std::uint8_t {SUMMER=1,FALL,WINTER,SPRING};
 enum class StatusAffected : std::uint8_t {WEALTH=0, HEALTH, LOOKS};
+
+struct TypingBox
+{
+	//text slot with a limit of 15 characters
+	char text[100];
+	
+	Rectangle textBox;
+	size_t letterCount = 0;
+};
 
 struct LifeEvent
 {
@@ -32,7 +43,8 @@ public:
 
 	void Update();
 	
-	
+	void handle_events(KeyboardInput& input);
+	void render();
 	
 	std::string GetDayString();
 	
@@ -62,7 +74,9 @@ private:
 	void CheckLifeEvents();
 	
 	//function to get player to enter description a few hours before it happen
-	void GetSpecificDescriptionForEvent(LifeEvent& event);
+	bool get_event_description;
+	int iterator_event_description;
+	TypingBox event_typing_box;
 };
 
 #endif

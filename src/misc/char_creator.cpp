@@ -109,6 +109,10 @@ void CharacterCreator::handle_keyboard_input(KeyboardInput& input)
 				 
                 player_char_boxes[i].typing_slots[0].text[player_char_boxes[i].typing_slots[0].letterCount] = '\0';
 			}
+			else if(input.enter_pressed)
+			{
+				//do nothing
+			}
 			else
 			{
 				if(input.valid_key)
@@ -134,11 +138,17 @@ void CharacterCreator::handle_keyboard_input(KeyboardInput& input)
 				 
                 player_char_boxes[i].typing_slots[1].text[player_char_boxes[i].typing_slots[1].letterCount] = '\0';
 			}
+			else if(input.enter_pressed)
+			{
+				//do nothing
+			}
 			else
 			{
-				std::cout << "key input in char creator: " << input.key << std::endl;
-                player_char_boxes[i].typing_slots[1].text[player_char_boxes[i].typing_slots[1].letterCount] = input.key;
-                player_char_boxes[i].typing_slots[1].letterCount++;
+				if(input.valid_key)
+				{
+					player_char_boxes[i].typing_slots[1].text[player_char_boxes[i].typing_slots[1].letterCount] = input.key;
+					player_char_boxes[i].typing_slots[1].letterCount++;
+				}
 			}
 		}
 	}
@@ -170,6 +180,8 @@ void CharacterCreator::logic()
 			{
 				char_confirmations[i] = true;
 				
+				//add multiple render component 
+				
 				Texture2D* texture_player = &rpg_sprite_sheet_texture;
 				
 				std::array <RenderPartDescription,6> descript_array = {RenderPartDescription::HAIR,
@@ -196,6 +208,24 @@ void CharacterCreator::logic()
 									.render_parts_vec = temp_body_parts
 								}
 							);
+				
+				//add player info component
+				
+				std::string name = std::string(player_char_boxes[i].typing_slots[0].text);
+				std::string partner_name = "none";
+				std::uint16_t balance = 200;
+				std::uint8_t hp = 100;
+				std::string job = std::string(player_char_boxes[i].typing_slots[1].text);
+				LooksStatus look = LooksStatus::NORMAL;
+				PlayerTimeStatus time_stat = PlayerTimeStatus::NONE;
+				ActivityStatus activity_stat = ActivityStatus::ROAMING_WORLD;
+				gCoordinator.AddComponent(*player_entities_vec.at(i), Player{.name = name, .romantic_partner_name = partner_name,
+														.time_status=time_stat,
+														.money = balance,
+														.health = hp,
+														.job_occupation = job,
+														.look_status = look,
+														.activity_status = activity_stat} );
 				
 			}
 			

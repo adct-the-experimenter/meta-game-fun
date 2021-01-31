@@ -303,21 +303,6 @@ void InitMainECS()
 	//make entity for player
 	entities[0] = gCoordinator.CreateEntity();
 	
-	std::string name = "Something";
-	std::string partner_name = "none";
-	std::uint16_t balance = 200;
-	std::uint8_t hp = 100;
-	std::string job = "cashier";
-	LooksStatus look = LooksStatus::NORMAL;
-	PlayerTimeStatus time_stat = PlayerTimeStatus::NONE;
-	ActivityStatus activity_stat = ActivityStatus::ROAMING_WORLD;
-	gCoordinator.AddComponent(entities[0],Player{.name = name, .romantic_partner_name = partner_name,
-											.time_status=time_stat,
-											.money = balance,
-											.health = hp,
-											.job_occupation = job,
-											.look_status = look,
-											.activity_status = activity_stat} );
 	Vector2 initP = {2.0f,2.0f};
 	gCoordinator.AddComponent(
 				entities[0],

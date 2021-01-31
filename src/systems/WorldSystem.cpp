@@ -19,6 +19,9 @@ void WorldSystem::Init()
 	m_minutes = 0;
 	m_hours = 0;
 	
+	get_event_description = false;
+	iterator_event_description = -1;
+	
 	//randomly generate this life events for the week
 	WorldSystem::RandomlyGenerateLifeEvents();
 }
@@ -146,13 +149,60 @@ void WorldSystem::CheckLifeEvents()
 			if(m_current_day == life_events_week[i].event_day &&
 			   m_hours == life_events_week[i].event_hours - 2)
 			{
-				WorldSystem::GetSpecificDescriptionForEvent(life_events_week[i]);
+				get_event_description = true;
+				iterator_event_description = i;
 			}
 		}
 	}
 }
 
-void WorldSystem::GetSpecificDescriptionForEvent(LifeEvent& event)
+void WorldSystem::handle_events(KeyboardInput& input)
 {
-	
+	//if need to get an event description
+	if(get_event_description)
+	{
+		//set text description based on input from keyboard
+		
+		if(input.backspace_pressed)
+		{
+			//delete char from descrition
+			if (event_typing_box.letterCount > 0)
+			{
+				event_typing_box.letterCount--;
+			}
+			 
+			event_typing_box.text[event_typing_box.letterCount] = '\0';
+		}
+		else if(input.enter_pressed)
+		{
+			//save event typing box text to life event description
+			life_events_week[iterator_event_description].description = event_typing_box.text;
+			
+			//reset conditions for getting life event description
+			get_event_description = false;
+			iterator_event_description = -1;
+			
+		}
+		else
+		{
+			//add char to description
+			if(input.valid_key)
+			{
+				event_typing_box.text[event_typing_box.letterCount] = input.key;
+				event_typing_box.letterCount++;
+			}
+			
+			
+			//std::cout << "name: " <<  player_char_boxes[i].typing_slots[0].text << std::endl;
+		}
+		
+	}
+}
+
+void WorldSystem::render()
+{
+	if(get_event_description)
+	{
+		
+	}
 }
