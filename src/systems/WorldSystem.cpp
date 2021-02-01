@@ -22,6 +22,8 @@ void WorldSystem::Init()
 	get_event_description = false;
 	iterator_event_description = -1;
 	
+	show_event = false;
+	
 	//randomly generate this life events for the week
 	WorldSystem::RandomlyGenerateLifeEvents();
 }
@@ -61,7 +63,7 @@ void WorldSystem::KeepTime()
 	//if a real minute has passed since time started or reset
 	double seconds = std::chrono::duration_cast<std::chrono::seconds>(current_time - m_start_time).count();
 	
-	if( seconds >= 10) 
+	if( seconds >= 0.5) 
 	{
 		//update game minutes by 10
 		m_minutes += 1;
@@ -123,11 +125,24 @@ void WorldSystem::RandomlyGenerateLifeEvents()
 	//randomly generate life event for the week
 	for(size_t i = 0; i < life_events_week.size(); i++)
 	{
+		//set time
 		life_events_week[i].event_day = GetRandomValue(1,7);
 		life_events_week[i].event_hours = GetRandomValue(2,6);
 		life_events_week[i].happened = false;
+		
+		//set status
+		life_events_week[i].effect = GetRandomValue(-1,1); //-1 loss, 0 nothing, +1 gain
+		life_events_week[i].status_affected = StatusAffected(GetRandomValue(0,2));
+		life_events_week[i].num_player_affected = 1 /*GetRandomValue(1,4)*/;
+		
+		life_events_week[i].description_entered = false;
+		 
 	}
-	
+	/*
+	 *test event quickly
+	life_events_week[0].event_day = 1;
+	life_events_week[0].event_hours = 1;
+	*/
 }
 
 void WorldSystem::CheckLifeEvents()
@@ -141,17 +156,27 @@ void WorldSystem::CheckLifeEvents()
 		{
 			//show player message about what has happened
 			//to him or her 
+			show_event = true;
+			iterator_event_description = i;
 			
-			//decrease value.
+			life_events_week[i].happened = true;
+			
+			//assuming first entities in array are players
+			auto& player = gCoordinator.GetComponent <Player>(life_events_week[i].num_player_affected - 1);
+			
 		}
 		else
 		{
-			if(m_current_day == life_events_week[i].event_day &&
-			   m_hours == life_events_week[i].event_hours - 2)
+			if(!life_events_week[i].description_entered && !life_events_week[i].happened)
 			{
-				get_event_description = true;
-				iterator_event_description = i;
+				if(m_current_day == life_events_week[i].event_day &&
+					m_hours == life_events_week[i].event_hours - 1)
+				{
+					WorldSystem::SetGetEventDescriptionBool(true);
+					iterator_event_description = i;
+				}
 			}
+			
 		}
 	}
 }
@@ -159,7 +184,7 @@ void WorldSystem::CheckLifeEvents()
 void WorldSystem::handle_events(KeyboardInput& input)
 {
 	//if need to get an event description
-	if(get_event_description)
+	if(WorldSystem::GetGetEventDescriptionBool())
 	{
 		//set text description based on input from keyboard
 		
@@ -173,14 +198,21 @@ void WorldSystem::handle_events(KeyboardInput& input)
 			 
 			event_typing_box.text[event_typing_box.letterCount] = '\0';
 		}
-		else if(input.enter_pressed)
+		
+		if(input.enter_pressed)
 		{
 			//save event typing box text to life event description
 			life_events_week[iterator_event_description].description = event_typing_box.text;
+			life_events_week[iterator_event_description].description_entered = true;
 			
 			//reset conditions for getting life event description
-			get_event_description = false;
+			WorldSystem::SetGetEventDescriptionBool(false);
 			iterator_event_description = -1;
+			
+			//clear textbox text
+			char *begin = event_typing_box.text;
+			char *end = begin + sizeof(event_typing_box.text);
+			std::fill(begin, end, 0);
 			
 		}
 		else
@@ -192,17 +224,87 @@ void WorldSystem::handle_events(KeyboardInput& input)
 				event_typing_box.letterCount++;
 			}
 			
-			
-			//std::cout << "name: " <<  player_char_boxes[i].typing_slots[0].text << std::endl;
 		}
 		
+	}
+	
+	if(show_event)
+	{
+		if(input.enter_pressed)
+		{
+			show_event = false;
+			iterator_event_description = -1;
+		}
 	}
 }
 
 void WorldSystem::render()
 {
-	if(get_event_description)
+	//render time info from world system at top
+	std::string time_info = "Day: " + WorldSystem::GetDayString() + "  " \
+							"Hour: " + std::to_string(WorldSystem::GetHours()) + "  " \
+							"Minute: " + std::to_string(WorldSystem::GetMinutes());
+							
+	DrawText(time_info.c_str(), 190, 20, 20, LIGHTGRAY);
+	
+	if(WorldSystem::GetGetEventDescriptionBool() || show_event)
 	{
+		Rectangle rec = {200, 200, 200, 300};
 		
+		//draw rectangle background
+		DrawRectangleRec(rec, LIGHTGRAY);
+		
+		std::string stat;
+		std::string effect;
+		if(iterator_event_description != -1)
+		{
+			switch(life_events_week[iterator_event_description].status_affected)
+			{
+				case StatusAffected::WEALTH:{stat = "wealth"; break;}
+				case StatusAffected::HEALTH:{stat = "health"; break;}
+				case StatusAffected::LOOKS:{stat = "looks"; break;}
+			}
+			
+			if(life_events_week[iterator_event_description].effect <= -1)
+			{
+				effect = "-" + std::to_string(-1 * life_events_week[iterator_event_description].effect);
+			}
+			else if(life_events_week[iterator_event_description].effect == 0)
+			{
+				effect = "0" ;
+			}
+			else if(life_events_week[iterator_event_description].effect >= 1)
+			{
+				effect = "+" + std::to_string(life_events_week[iterator_event_description].effect);
+			}
+		}
+		
+		
+		std::string status_str = "Status Affected: " + stat;
+		
+		std::string effect_str = "Effect: " + effect;
+		
+		std::string full_text;
+		if(WorldSystem::GetGetEventDescriptionBool())
+		{
+			full_text = status_str + "\n" + effect_str + "\n" + "Enter what happened below: 100 character limit\n\n"
+								+ std::string(event_typing_box.text) + "\n";
+		}
+		else if(show_event)
+		{
+			std::string affected = " Affected Player: " + std::to_string(life_events_week[iterator_event_description].num_player_affected);
+			
+			full_text = affected + "\n" + status_str + "\n" + effect_str + "\n" + "Description:\n\n"
+						+ life_events_week[iterator_event_description].description + "\n";
+		}
+		
+		Font font = GetFontDefault();
+		
+		DrawTextRec(font,full_text.c_str(),rec,12,2.0f, true, RAYWHITE); //word wrap is true
 	}
+
 }
+
+void WorldSystem::SetGetEventDescriptionBool(bool state){get_event_description = state;}
+
+bool WorldSystem::GetGetEventDescriptionBool(){return get_event_description;}

@@ -34,6 +34,7 @@ struct LifeEvent
 	bool happened = false;
 	
 	std::string description;
+	bool description_entered = false;
 };
 
 class WorldSystem : public System
@@ -75,6 +76,11 @@ private:
 	
 	//function to get player to enter description a few hours before it happen
 	bool get_event_description;
+	
+	void SetGetEventDescriptionBool(bool state);
+	bool GetGetEventDescriptionBool();
+	
+	bool show_event;
 	int iterator_event_description;
 	TypingBox event_typing_box;
 };

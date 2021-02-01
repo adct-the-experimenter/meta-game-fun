@@ -160,7 +160,8 @@ void handle_events()
 			break;
 		}
 		case GameState::GAME:
-		{	
+		{
+			worldSystem->handle_events(gKeyboardInput);	
 			break;
 		}
 	}
@@ -225,12 +226,7 @@ void render()
 		}
 		case GameState::GAME:
 		{
-			//render time info from world system at top
-			std::string time_info = "Day: " + worldSystem->GetDayString() + "  " \
-									"Hour: " + std::to_string(worldSystem->GetHours()) + "  " \
-									"Minute: " + std::to_string(worldSystem->GetMinutes());
-									
-			DrawText(time_info.c_str(), 190, 20, 20, LIGHTGRAY);
+			worldSystem->render();
 		    //renders any entity that has render component
 			single_comp_renderSystem->Update();	
 			multi_comp_renderSystem->Update();	

@@ -49,7 +49,7 @@ struct Transform2D
 };
 
 enum class PlayerTimeStatus : std::uint8_t { NONE=0, FREE, WORKING, SLEEPING};
-enum class LooksStatus : std::uint8_t { NORMAL=0, UGLY, BEAUTIFUL}; //distorted face for ugly, sparkles for beautiful
+enum class LooksStatus : std::uint8_t { SUPER_UGLY=0,UGLY=1, NORMAL=0, GOOD_LOOKING, BEAUTIFUL}; //distorted face for ugly, sparkles for beautiful
 enum class ActivityStatus : std::uint8_t { ROAMING_WORLD=0, PLAYING_GAME, PLAYING_SPORT };
 
 
