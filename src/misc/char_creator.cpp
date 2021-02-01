@@ -225,7 +225,8 @@ void CharacterCreator::logic()
 														.health = hp,
 														.job_occupation = job,
 														.look_status = look,
-														.activity_status = activity_stat} );
+														.activity_status = activity_stat,
+														.num_player = i + 1} );
 				
 			}
 			

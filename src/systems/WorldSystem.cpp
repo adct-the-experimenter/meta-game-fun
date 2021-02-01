@@ -49,7 +49,7 @@ void WorldSystem::Update()
 			}
 			
 			
-			WorldSystem::CheckLifeEvents();
+			WorldSystem::CheckLifeEvents(player);
 		}
 		
 	}
@@ -138,46 +138,97 @@ void WorldSystem::RandomlyGenerateLifeEvents()
 		life_events_week[i].description_entered = false;
 		 
 	}
-	/*
-	 *test event quickly
+	// /*test event quickly
 	life_events_week[0].event_day = 1;
 	life_events_week[0].event_hours = 1;
-	*/
+	// */
 }
 
-void WorldSystem::CheckLifeEvents()
+void WorldSystem::CheckLifeEvents(Player& player)
 {
 	//if current time matches life event time and it has not occurred yet
 	for (size_t i = 0; i < life_events_week.size(); i++)
 	{
-		if(m_current_day == life_events_week[i].event_day 
+		//if player being operated on is the one that the event happens to
+		if(player.num_player == life_events_week[i].num_player_affected)
+		{
+			if(m_current_day == life_events_week[i].event_day 
 			&& m_hours == life_events_week[i].event_hours
 			&& !life_events_week[i].happened)
-		{
-			//show player message about what has happened
-			//to him or her 
-			show_event = true;
-			iterator_event_description = i;
-			
-			life_events_week[i].happened = true;
-			
-			//assuming first entities in array are players
-			auto& player = gCoordinator.GetComponent <Player>(life_events_week[i].num_player_affected - 1);
-			
-		}
-		else
-		{
-			if(!life_events_week[i].description_entered && !life_events_week[i].happened)
 			{
-				if(m_current_day == life_events_week[i].event_day &&
-					m_hours == life_events_week[i].event_hours - 1)
+				//show player message about what has happened
+				//to him or her 
+				show_event = true;
+				iterator_event_description = i;
+				
+				life_events_week[i].happened = true;
+				
+				life_events_week[i].name_of_affected = player.name;
+				
+				//assuming first entities in array are players
+				
+				//apply effect from life event to player
+				switch(life_events_week[i].status_affected)
 				{
-					WorldSystem::SetGetEventDescriptionBool(true);
-					iterator_event_description = i;
+					case StatusAffected::WEALTH:
+					{
+						if(life_events_week[i].effect < -1 && player.money <= 0)
+						{
+							player.money = 0;
+						}
+						else
+						{
+							player.money += (life_events_week[i].effect * 20);
+						}
+						break;
+					}
+					case StatusAffected::HEALTH:
+					{
+						if(life_events_week[i].effect < -1 && player.health <= 0)
+						{
+							player.health = 0;
+						}
+						else
+						{
+							player.health += (life_events_week[i].effect * 20);
+						}
+						
+						break;
+					}
+					case StatusAffected::LOOKS:
+					{
+						
+						if(player.look_status != LooksStatus::SUPER_UGLY && 
+							life_events_week[i].effect < -1)
+						{
+							
+						}
+						else
+						{
+							int value = int(player.look_status) + life_events_week[i].effect;
+							if(!value){value = 0;}
+							player.look_status = LooksStatus(value);
+						}
+						
+						break;
+					}
 				}
 			}
-			
+			else
+			{
+				if(!life_events_week[i].description_entered && !life_events_week[i].happened)
+				{
+					if(m_current_day == life_events_week[i].event_day &&
+						m_hours == life_events_week[i].event_hours - 1)
+					{
+						WorldSystem::SetGetEventDescriptionBool(true);
+						iterator_event_description = i;
+					}
+				}
+				
+			}
 		}
+		
 	}
 }
 
@@ -280,21 +331,21 @@ void WorldSystem::render()
 		}
 		
 		
-		std::string status_str = "Status Affected: " + stat;
+		std::string status_str = " Status Affected: " + stat;
 		
-		std::string effect_str = "Effect: " + effect;
+		std::string effect_str = " Effect: " + effect;
 		
 		std::string full_text;
 		if(WorldSystem::GetGetEventDescriptionBool())
 		{
-			full_text = status_str + "\n" + effect_str + "\n" + "Enter what happened below: 100 character limit\n\n"
+			full_text = status_str + "\n" + effect_str + "\n" + " Enter what happened below: 100 character limit\n\n "
 								+ std::string(event_typing_box.text) + "\n";
 		}
 		else if(show_event)
 		{
-			std::string affected = " Affected Player: " + std::to_string(life_events_week[iterator_event_description].num_player_affected);
+			std::string affected = " Affected Player: " + life_events_week[iterator_event_description].name_of_affected;
 			
-			full_text = affected + "\n" + status_str + "\n" + effect_str + "\n" + "Description:\n\n"
+			full_text = affected + "\n" + status_str + "\n" + effect_str + "\n" + " Description:\n\n "
 						+ life_events_week[iterator_event_description].description + "\n";
 		}
 		

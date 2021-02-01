@@ -227,6 +227,7 @@ void render()
 		case GameState::GAME:
 		{
 			worldSystem->render();
+			
 		    //renders any entity that has render component
 			single_comp_renderSystem->Update();	
 			multi_comp_renderSystem->Update();	

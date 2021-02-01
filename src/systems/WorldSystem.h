@@ -28,6 +28,7 @@ struct LifeEvent
 	int8_t effect; //-1 loss, 0 nothing, +1 gain
 	StatusAffected status_affected;
 	std::uint8_t num_player_affected;
+	std::string name_of_affected;
 	
 	std::uint8_t event_day;
 	std::uint8_t event_hours;
@@ -72,7 +73,7 @@ private:
 	void KeepTime();
 	
 	//function to check life events
-	void CheckLifeEvents();
+	void CheckLifeEvents(Player& player);
 	
 	//function to get player to enter description a few hours before it happen
 	bool get_event_description;
