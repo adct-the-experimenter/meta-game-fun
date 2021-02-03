@@ -63,9 +63,9 @@ void WorldSystem::KeepTime()
 	//if a real minute has passed since time started or reset
 	double seconds = std::chrono::duration_cast<std::chrono::seconds>(current_time - m_start_time).count();
 	
-	if( seconds >= 0.5) 
+	if( seconds >= 10) 
 	{
-		//update game minutes by 10
+		//update game minutes by 1
 		m_minutes += 1;
 		//reset start time
 		m_start_time = std::chrono::system_clock::now();
@@ -138,10 +138,10 @@ void WorldSystem::RandomlyGenerateLifeEvents()
 		life_events_week[i].description_entered = false;
 		 
 	}
-	// /*test event quickly
+	 /*test event quickly
 	life_events_week[0].event_day = 1;
 	life_events_week[0].event_hours = 1;
-	// */
+	 */
 }
 
 void WorldSystem::CheckLifeEvents(Player& player)

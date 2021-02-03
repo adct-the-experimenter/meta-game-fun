@@ -13,8 +13,6 @@ void InputReactorSystem::Update(ControllerInput& input)
 	{
 		auto& inputReactor = gCoordinator.GetComponent<InputReact>(entity);
 		auto& rigidBody = gCoordinator.GetComponent<RigidBody2D>(entity);
-		auto& transform = gCoordinator.GetComponent<Transform2D>(entity);
-		
 		
 		switch(inputReactor.actor_type)
 		{
@@ -24,21 +22,42 @@ void InputReactorSystem::Update(ControllerInput& input)
 				//do player specific event handling
 				//get other player specific component from entity.
 				
+				if(inputReactor.player_num == 1)
+				{
+					if(input.gamepad_p1.x_axis > 16300)
+					{
+						rigidBody.velocity.x = 100.0f;
+					}
+					else if(input.gamepad_p1.x_axis < -16300)
+					{
+						rigidBody.velocity.x = -100.0f;
+					}
+					else 
+					{
+						rigidBody.velocity.x = 0.0f;
+					}
+					
+					if(input.gamepad_p1.y_axis < -16300)
+					{
+						rigidBody.velocity.y = -100.0f;
+					}
+					else if(input.gamepad_p1.y_axis > 16300)
+					{
+						rigidBody.velocity.y = 100.0f;
+					}
+					else 
+					{
+						rigidBody.velocity.y = 0.0f;
+					}
+				}
+				
+				
 				break;
 			}
 			case InputReactorType::CAR:{break;}
 			default:{break;}
 		}
 		
-		// Forces
-		//auto const& gravity = gCoordinator.GetComponent<Gravity2D>(entity);
 		
-		//move transform component by velocity of rigid body multiplied by time
-		//transform.position.x += rigidBody.velocity.x * dt;
-		//transform.position.y += rigidBody.velocity.y * dt;
-		
-		//account for acceleration due to gravity to rigid body velocity
-		//rigidBody.velocity.x += gravity.force.x * dt;
-		//rigidBody.velocity.y += gravity.force.y * dt;
 	}
 }

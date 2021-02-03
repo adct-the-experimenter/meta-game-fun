@@ -202,12 +202,43 @@ void CharacterCreator::logic()
 					temp_body_parts[slot_it].position = {2.0f,2.0f};
 				}
 				
+				temp_body_parts[0].position = {5.0f,10.0f};
+				temp_body_parts[1].position = {5.0f,22.0f};
+				temp_body_parts[2].position = {5.0f,22.0f};
+				temp_body_parts[3].position = {5.0f,40.0f};
+				temp_body_parts[4].position = {5.0f,65.0f};
+				temp_body_parts[5].position = {5.0f,75.0f};
+				
+				//based on difference between current component and previous component.
+				std::vector <Vector2> render_diff_vec(6);
+				
+				render_diff_vec[0] = {0.0f,0.0f};
+				render_diff_vec[1] = {0.0f,12.0f};
+				render_diff_vec[2] = {0.0f,0.0f};
+				render_diff_vec[3] = {0.0f,18.0f};
+				render_diff_vec[4] = {0.0f,25.0f};
+				render_diff_vec[5] = {0.0f,10.0f};
+				
+				
+				
 				gCoordinator.AddComponent(
 								*player_entities_vec[i],
 								MultipleRenderComponent{
-									.render_parts_vec = temp_body_parts
+									.render_parts_vec = temp_body_parts,
+									.render_comp_diff = render_diff_vec,
 								}
 							);
+				
+				Vector2 char_position = {40,40};
+				
+				//add render position
+				gCoordinator.AddComponent(
+								*player_entities_vec[i],
+								RenderPosition{
+									.overall_position = char_position
+								}
+							);
+				
 				
 				//add player info component
 				
@@ -227,6 +258,54 @@ void CharacterCreator::logic()
 														.look_status = look,
 														.activity_status = activity_stat,
 														.num_player = i + 1} );
+														
+				//add input react component
+				InputReact react;
+				react.actor_type = InputReactorType::PLAYER;
+				react.reactToInput = true;
+				react.player_num = i + 1;
+								 
+				gCoordinator.AddComponent(
+								*player_entities_vec[i],
+								react
+								);
+				
+				//add transform
+				Vector2 initP = {2.0f,2.0f};
+				gCoordinator.AddComponent(
+							*player_entities_vec.at(i),
+							Transform2D{
+								.position = initP
+							}
+						);
+				
+				//add rigid body
+				Vector2 initV = {0.0f,0.0f};
+				gCoordinator.AddComponent(
+							*player_entities_vec.at(i),
+							RigidBody2D{
+								.velocity = initV
+							}
+						);
+						
+				//add gravity component for later use
+				Vector2 grav = {0.0f,0.0f};
+				gCoordinator.AddComponent(
+							*player_entities_vec.at(i),
+							Gravity2D{
+								.force = grav 
+							}
+						);
+						
+				//add physics type
+				PhysicsType pType = PhysicsType::LIFE_RPG;
+				gCoordinator.AddComponent(
+							*player_entities_vec.at(i),
+							PhysicsTypeComponent{
+								.phy_type = pType 
+							}
+						);
+						
 				
 			}
 			

@@ -48,6 +48,7 @@ src/misc/MediaLoader.cpp
 src/misc/char_creator.cpp
 src/systems/PhysicsSystem.cpp
 src/systems/WorldSystem.cpp
+src/systems/CameraSystem.cpp
 src/systems/MultipleRenderComponentSystem.cpp src/systems/SingleRenderComponentSystem.cpp src/systems/RenderSystem.cpp
 src/systems/InputReactorSystem.cpp
 src/systems/EnemySystem.cpp

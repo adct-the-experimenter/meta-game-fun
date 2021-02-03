@@ -1,11 +1,15 @@
 #include "core/coordinator.h"
 #include "raylib.h"
 
+#include "systems/InputReactorSystem.h"
 
 #include "systems/PhysicsSystem.h"
 #include "systems/WorldSystem.h"
+
+#include "systems/CameraSystem.h"
 #include "systems/SingleRenderComponentSystem.h"
 #include "systems/MultipleRenderComponentSystem.h"
+
 
 #include "core/ControllerInputHandler.h"
 #include "core/ControllerInput.h"
@@ -48,6 +52,8 @@ std::shared_ptr <WorldSystem> worldSystem;
 std::shared_ptr <SingleRenderComponentSystem> single_comp_renderSystem;
 std::shared_ptr <MultipleRenderComponentSystem> multi_comp_renderSystem;
 
+std::shared_ptr <InputReactorSystem> input_ReactSystem;
+
 
 //function to initialize video game ECS
 void InitVideoGameECS();
@@ -77,11 +83,15 @@ enum class GameState : std::uint8_t {TITLE_MENU=0, CHAR_CREATOR, GAME};
 GameState m_game_state = GameState::TITLE_MENU;
 
 //camera to follow players.
+std::shared_ptr <CameraSystem> cameraSystem;
 std::array <CustomCamera,4> player_cameras; 
 
 bool video_game_playing = false;
 
 CharacterCreator gCharCreator;
+
+const std::int16_t screenWidth = 800;
+const std::int16_t screenHeight = 600;
 
 int main()
 {
@@ -161,7 +171,10 @@ void handle_events()
 		}
 		case GameState::GAME:
 		{
-			worldSystem->handle_events(gKeyboardInput);	
+			worldSystem->handle_events(gKeyboardInput);
+			
+			input_ReactSystem->Update(gControllerInput);
+				
 			break;
 		}
 	}
@@ -196,7 +209,7 @@ void logic()
 		{
 			worldSystem->Update();
 			
-			if(video_game_playing && physicsSystem){physicsSystem->Update(dt);}
+			physicsSystem->Update(dt);
 			
 			break;
 		}
@@ -226,7 +239,10 @@ void render()
 		}
 		case GameState::GAME:
 		{
+			
 			worldSystem->render();
+			
+			cameraSystem->Update();
 			
 		    //renders any entity that has render component
 			single_comp_renderSystem->Update();	
@@ -265,11 +281,15 @@ void InitMainECS()
 	
 	//Initialize components for entities
 	
-	gCoordinator.RegisterComponent<Transform2D>(); //id 00000000001
-	gCoordinator.RegisterComponent<Player>(); //id 00000000010
-	gCoordinator.RegisterComponent<RenderInfo>(); //id 00000000010
+	gCoordinator.RegisterComponent<Transform2D>(); //id 1
+	gCoordinator.RegisterComponent<RigidBody2D>();
+	gCoordinator.RegisterComponent<Player>();
+	gCoordinator.RegisterComponent<RenderInfo>();
 	gCoordinator.RegisterComponent<SingleRenderComponent>();
 	gCoordinator.RegisterComponent<MultipleRenderComponent>();
+	gCoordinator.RegisterComponent<RenderPosition>();
+	gCoordinator.RegisterComponent<InputReact>();
+	gCoordinator.RegisterComponent<PhysicsTypeComponent>();
 	
 	//make world system that only reacts to entitties
 	//with signature that has player component
@@ -287,6 +307,7 @@ void InitMainECS()
 	
 	Signature sig_render_single;
 	sig_render_single.set(gCoordinator.GetComponentType<SingleRenderComponent>());
+	sig_render_single.set(gCoordinator.GetComponentType<RenderPosition>());
 	gCoordinator.SetSystemSignature<SingleRenderComponentSystem>(sig_render_single);
 	
 	multi_comp_renderSystem = gCoordinator.RegisterSystem<MultipleRenderComponentSystem>();
@@ -294,86 +315,58 @@ void InitMainECS()
 	
 	Signature sig_render_multi;
 	sig_render_multi.set(gCoordinator.GetComponentType<MultipleRenderComponent>());
+	sig_render_multi.set(gCoordinator.GetComponentType<RenderPosition>());
 	gCoordinator.SetSystemSignature<MultipleRenderComponentSystem>(sig_render_multi);
+	
+	//make input reactor system that only reacts to components input react and transform
+	input_ReactSystem = gCoordinator.RegisterSystem<InputReactorSystem>();
+	
+	Signature sig_input_react;
+	sig_input_react.set(gCoordinator.GetComponentType<InputReact>());
+	sig_input_react.set(gCoordinator.GetComponentType<RigidBody2D>());
+	gCoordinator.SetSystemSignature<InputReactorSystem>(sig_input_react);
+	
+	//make physics system that only reacts to entitities 
+	//with signature that has these components
+	
+	gCoordinator.RegisterComponent<Gravity2D>(); 
+	
+	physicsSystem = gCoordinator.RegisterSystem<PhysicsSystem>();
+	
+	
+	Signature phys_sys_signature;
+	phys_sys_signature.set(gCoordinator.GetComponentType<Gravity2D>());
+	phys_sys_signature.set(gCoordinator.GetComponentType<RigidBody2D>());
+	phys_sys_signature.set(gCoordinator.GetComponentType<Transform2D>());
+	phys_sys_signature.set(gCoordinator.GetComponentType<PhysicsTypeComponent>());
+	gCoordinator.SetSystemSignature<PhysicsSystem>(phys_sys_signature);
+	
+	//make camera system that only reacts to entities
+	//with signature that has these components
+	
+	cameraSystem = gCoordinator.RegisterSystem<CameraSystem>();
+	cameraSystem->Init(&player_cameras,1,800,600);
+	
+	Signature camera_sig;
+	camera_sig.set(gCoordinator.GetComponentType<Transform2D>());
+	camera_sig.set(gCoordinator.GetComponentType<RenderPosition>());
+	gCoordinator.SetSystemSignature<CameraSystem>(camera_sig);
 	
 	
 	//make entity for player
 	entities[0] = gCoordinator.CreateEntity();
-	
-	Vector2 initP = {2.0f,2.0f};
-	gCoordinator.AddComponent(
-				entities[0],
-				Transform2D{
-					.position = initP
-				}
-			);
 	
 }
 
 void InitVideoGameECS()
 {
 	
-	gCoordinator.RegisterComponent<Gravity2D>(); 
-	gCoordinator.RegisterComponent<RigidBody2D>();
+
 	
-	physicsSystem = gCoordinator.RegisterSystem<PhysicsSystem>();
-	
-	//make physics system that only reacts to entitities 
-	//with signature that has these components
-	Signature phys_sys_signature;
-	phys_sys_signature.set(gCoordinator.GetComponentType<Gravity2D>());
-	phys_sys_signature.set(gCoordinator.GetComponentType<RigidBody2D>());
-	phys_sys_signature.set(gCoordinator.GetComponentType<Transform2D>());
-	phys_sys_signature.set(gCoordinator.GetComponentType<Player>());
-	gCoordinator.SetSystemSignature<PhysicsSystem>(phys_sys_signature);
-	
-	int it = 0;
-	
-	//initialize entities with components 
-	for (auto& entity : entities)
-	{
-		entity = gCoordinator.CreateEntity();
-		
-		
-		if(it > 0)
-		{
-			Vector2 initGravity = {0.0f,-2.0f};
-		
-			gCoordinator.AddComponent(
-				entity,
-				Gravity2D{initGravity}
-				);
-			
-			Vector2 initVel = {0.0f,0.0f};
-			Vector2 initAccel = {0.0f,0.0f};
-			
-			gCoordinator.AddComponent(
-				entity,
-				RigidBody2D{
-					.velocity = initVel,
-					.acceleration = initAccel}
-					);
-			
-			Vector2 initP = {2.0f,2.0f};
-			
-			gCoordinator.AddComponent(
-				entity,
-				Transform2D{
-					.position = initP
-				}
-			);
-		}
-		
-		it++;
-		
-	}
 }
 
 void InitRaylibSystem()
 {
-
-    const int screenWidth = 800;
-    const int screenHeight = 600;
 	
 	SetConfigFlags(FLAG_MSAA_4X_HINT);  // Set MSAA 4X hint before windows creation
 	

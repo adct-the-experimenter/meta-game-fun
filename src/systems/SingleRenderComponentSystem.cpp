@@ -26,6 +26,7 @@ void SingleRenderComponentSystem::Update()
 			
 			//get render info component from entity
 			auto& render_info = gCoordinator.GetComponent<SingleRenderComponent>(entity);
+			
 					
 			
 			if(render_info.render_part.texture_ptr)

@@ -80,24 +80,43 @@ struct RenderInfo
 	Rectangle frame_rect;
 	Color tint;
 	RenderPartDescription part_description;
+	
+};
+
+struct RenderPosition
+{
+	//position of entire render structure
+	Vector2 overall_position;
 };
 
 struct SingleRenderComponent
 {
 	RenderInfo render_part;
+	
 };
 
 struct MultipleRenderComponent
 {
-	//
 	std::uint8_t num_render_parts;
 	std::vector <RenderInfo> render_parts_vec;
+	
+	//vector container holding differences between render component positions
+	std::vector <Vector2> render_comp_diff;
 };
+
 
 enum class InputReactorType : std::uint8_t { NONE=0, PLAYER, CAR};
 struct InputReact
 {
 	InputReactorType actor_type;
+	bool reactToInput = false;
+	std::uint8_t player_num = 0;
+};
+
+enum class PhysicsType : std::uint8_t {LIFE_RPG=0, PLATFORMER, FIGHTING_GAME};
+struct PhysicsTypeComponent
+{
+	PhysicsType phy_type;
 };
 
 enum class EnemyType : std::uint8_t {NONE=0, SKELETON};

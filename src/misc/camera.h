@@ -6,7 +6,7 @@
 
 struct CustomCamera
 {
-	std::uint8_t num_player;
+	std::uint8_t num_player = 0;
 	Rectangle camera;
 };
 
