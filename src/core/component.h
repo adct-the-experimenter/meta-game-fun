@@ -99,9 +99,6 @@ struct MultipleRenderComponent
 {
 	std::uint8_t num_render_parts;
 	std::vector <RenderInfo> render_parts_vec;
-	
-	//vector container holding differences between render component positions
-	std::vector <Vector2> render_comp_diff;
 };
 
 

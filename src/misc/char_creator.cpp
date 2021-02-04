@@ -9,7 +9,7 @@ extern Coordinator gCoordinator;
 
 CharacterCreator::CharacterCreator()
 {
-	std::array <Color,8> t_colors = {WHITE,BLUE,BEIGE,BLACK,BROWN,RED,GOLD,LIGHTGRAY};
+	std::array <Color,8> t_colors = {WHITE,BLUE,BEIGE,GRAY,BROWN,RED,GOLD,LIGHTGRAY};
 	colors = t_colors;
 	
 	move_next_state = false;
@@ -203,29 +203,18 @@ void CharacterCreator::logic()
 				}
 				
 				temp_body_parts[0].position = {5.0f,10.0f};
-				temp_body_parts[1].position = {5.0f,22.0f};
-				temp_body_parts[2].position = {5.0f,22.0f};
+				temp_body_parts[1].position = {5.0f,15.0f};
+				temp_body_parts[2].position = {5.0f,17.0f};
 				temp_body_parts[3].position = {5.0f,40.0f};
 				temp_body_parts[4].position = {5.0f,65.0f};
 				temp_body_parts[5].position = {5.0f,75.0f};
-				
-				//based on difference between current component and previous component.
-				std::vector <Vector2> render_diff_vec(6);
-				
-				render_diff_vec[0] = {0.0f,0.0f};
-				render_diff_vec[1] = {0.0f,12.0f};
-				render_diff_vec[2] = {0.0f,0.0f};
-				render_diff_vec[3] = {0.0f,18.0f};
-				render_diff_vec[4] = {0.0f,25.0f};
-				render_diff_vec[5] = {0.0f,10.0f};
 				
 				
 				
 				gCoordinator.AddComponent(
 								*player_entities_vec[i],
 								MultipleRenderComponent{
-									.render_parts_vec = temp_body_parts,
-									.render_comp_diff = render_diff_vec,
+									.render_parts_vec = temp_body_parts
 								}
 							);
 				

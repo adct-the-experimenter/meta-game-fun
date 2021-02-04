@@ -15,7 +15,7 @@ bool MediaLoader::loadMedia()
 	std::string filepath = DATADIR_STR + "/title_menu.png";
 	title_menu_texture = LoadTexture(filepath.c_str());
 	
-	filepath = DATADIR_STR + "/rpg-sprite-sheet.png";
+	filepath = DATADIR_STR + "/rpg-sprite-sheet-vector-import.png";
 	rpg_sprite_sheet_texture =  LoadTexture(filepath.c_str());
 	
 	return true;
