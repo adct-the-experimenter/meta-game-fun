@@ -50,21 +50,23 @@ void CharacterCreator::handle_input(ControllerInput& controller_input, KeyboardI
 	CharacterCreator::handle_keyboard_input(key_input);
 }
 
+const int16_t joystick_border = 32600;
+
 void CharacterCreator::handle_controller_input(ControllerInput& input)
 {
 	//if joystick moved up, go up a slot
-	if(input.gamepad_p1.y_axis < -32600)
+	if(input.gamepad_p1.y_dir_axis < -joystick_border)
 	{
 		if(player_char_boxes[0].current_slot > 0){player_char_boxes[0].current_slot--;}
 	}
 	//else if joystick moved down, go down a slot
-	else if(input.gamepad_p1.y_axis > 32600)
+	else if(input.gamepad_p1.y_dir_axis > joystick_border)
 	{
 		if(player_char_boxes[0].current_slot < last_slot){player_char_boxes[0].current_slot++;}
 	}
 		
 	//if joystick moved left, go left on color choice
-	if(input.gamepad_p1.x_axis < -32600)
+	if(input.gamepad_p1.x_dir_axis < -joystick_border)
 	{
 		if(player_char_boxes[0].current_slot >= render_slot)
 		{
@@ -75,7 +77,7 @@ void CharacterCreator::handle_controller_input(ControllerInput& input)
 		
 	}
 	//if joystick moved right, go right on color choice
-	else if(input.gamepad_p1.x_axis > 32600)
+	else if(input.gamepad_p1.x_dir_axis > joystick_border)
 	{
 		if(player_char_boxes[0].current_slot >= render_slot)
 		{

@@ -133,10 +133,12 @@ void ControllerInputHandler::SetGamepadInfo(ControllerInput& input_info)
 				if(sdl_event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
 				{
 					input_info.gamepad_p1.x_axis = sdl_event.jaxis.value;
+					input_info.gamepad_p1.x_dir_axis = sdl_event.jaxis.value;
 				}
 				else if(sdl_event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
 				{
 					input_info.gamepad_p1.y_axis = sdl_event.jaxis.value;
+					input_info.gamepad_p1.y_dir_axis = sdl_event.jaxis.value;
 				}
 			}
 			//gamepad 2

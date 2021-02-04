@@ -37,6 +37,11 @@ public:
 		//left joystick 
 		int16_t x_axis;
 		int16_t y_axis;
+		
+		//joystick direction, gets reset for non-continous movement
+		int16_t x_dir_axis;
+		int16_t y_dir_axis;
+		
 		//includes buttons and dpad
 		SDL_GameControllerButton button;
 	};
@@ -48,8 +53,10 @@ public:
 	
 	void Reset()
 	{
-		gamepad_p1.x_axis = 0;
-		gamepad_p1.y_axis = 0;
+		//gamepad_p1.x_axis = 0;
+		//gamepad_p1.y_axis = 0;
+		gamepad_p1.x_dir_axis = 0;
+		gamepad_p1.y_dir_axis = 0;
 		gamepad_p1.button =  SDL_CONTROLLER_BUTTON_INVALID ;
 		
 		gamepad_p2.x_axis = 0;
