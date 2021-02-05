@@ -298,7 +298,18 @@ void CharacterCreator::logic()
 							}
 						);
 						
-				
+				//add animation component
+				AnimationInfo aInfo;
+				aInfo.anim_actor_type = AnimatedActorType::PLAYER;
+				aInfo.horiz_frame_offset = 0;
+				aInfo.frame_size = 30;
+				aInfo.frame_count = 0;
+				gCoordinator.AddComponent(
+							*player_entities_vec.at(i),
+							Animation{
+								.info = aInfo
+							}
+						);
 			}
 			
 		}

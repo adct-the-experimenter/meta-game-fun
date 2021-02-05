@@ -8,7 +8,7 @@
 
 #include "systems/CameraSystem.h"
 #include "systems/RenderSystem.h"
-
+#include "systems/AnimationSystem.h"
 
 #include "core/ControllerInputHandler.h"
 #include "core/ControllerInput.h"
@@ -49,6 +49,7 @@ void InitMainECS();
 
 std::shared_ptr <WorldSystem> worldSystem;
 std::shared_ptr <RenderSystem> renderSystem;
+std::shared_ptr <AnimationSystem> animationSystem;
 
 std::shared_ptr <InputReactorSystem> input_ReactSystem;
 
@@ -209,6 +210,9 @@ void logic()
 			
 			physicsSystem->Update(dt);
 			
+			//set up frame for render
+			animationSystem->Update(dt);
+			
 			break;
 		}
 	}
@@ -242,7 +246,7 @@ void render()
 			
 			cameraSystem->Update();
 			
-		    //renders any entity that has render component
+		    //render any entity that has render component
 			renderSystem->Update();	
 			
 			break;
@@ -286,6 +290,7 @@ void InitMainECS()
 	gCoordinator.RegisterComponent<RenderPosition>();
 	gCoordinator.RegisterComponent<InputReact>();
 	gCoordinator.RegisterComponent<PhysicsTypeComponent>();
+	gCoordinator.RegisterComponent<Animation>();
 	
 	//make world system that only reacts to entitties
 	//with signature that has player component
@@ -340,6 +345,18 @@ void InitMainECS()
 	camera_sig.set(gCoordinator.GetComponentType<RenderPosition>());
 	gCoordinator.SetSystemSignature<CameraSystem>(camera_sig);
 	
+	
+	//make animation system that only reacts to entities
+	//with signature that has these components
+	
+	animationSystem = gCoordinator.RegisterSystem<AnimationSystem>();
+	animationSystem->Init();
+	
+	Signature animation_sig;
+	animation_sig.set(gCoordinator.GetComponentType<Transform2D>());
+	animation_sig.set(gCoordinator.GetComponentType<Animation>());
+	animation_sig.set(gCoordinator.GetComponentType<RenderComponent>());
+	gCoordinator.SetSystemSignature<AnimationSystem>(animation_sig);
 	
 	//make entity for player
 	entities[0] = gCoordinator.CreateEntity();

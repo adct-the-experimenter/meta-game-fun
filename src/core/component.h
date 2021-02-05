@@ -87,12 +87,12 @@ struct RenderPosition
 enum class FaceDirection : std::uint8_t {SOUTH=0,SOUTHWEST,WEST,NORTHWEST,NORTH,NORTHEAST,EAST,SOUTHEAST};
 enum class AnimatedActorType : std::int8_t {NONE=0,PLAYER,ENEMY};
 
-struct Animation
+
+struct AnimationInfo
 {
 	AnimatedActorType anim_actor_type; 
 	
 	//position of frame and frame direction
-	FaceDirection face_direction;
 	
 	std::uint16_t horiz_frame_offset = 0;
 	std::uint16_t frame_size = 30;
@@ -100,7 +100,10 @@ struct Animation
 	
 	//for movement based animation
 	Vector2 last_position;
-	
+};
+struct Animation
+{
+	AnimationInfo info;
 };
 
 //not an actualy component, just contains org. info for component
