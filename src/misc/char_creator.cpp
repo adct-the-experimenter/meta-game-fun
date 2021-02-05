@@ -215,8 +215,9 @@ void CharacterCreator::logic()
 				
 				gCoordinator.AddComponent(
 								*player_entities_vec[i],
-								MultipleRenderComponent{
-									.render_parts_vec = temp_body_parts
+								RenderComponent{
+									.multi_render_parts_vec = temp_body_parts,
+									.multi_part = true
 								}
 							);
 				

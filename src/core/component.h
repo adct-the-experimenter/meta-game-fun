@@ -49,7 +49,7 @@ struct Transform2D
 };
 
 enum class PlayerTimeStatus : std::uint8_t { NONE=0, FREE, WORKING, SLEEPING};
-enum class LooksStatus : std::uint8_t { SUPER_UGLY=0,UGLY=1, NORMAL, GOOD_LOOKING, BEAUTIFUL}; //distorted face for ugly, sparkles for beautiful
+enum class LooksStatus : std::uint8_t { SUPER_UGLY=0,UGLY, NORMAL, GOOD_LOOKING, BEAUTIFUL}; //distorted face for ugly, sparkles for beautiful
 enum class ActivityStatus : std::uint8_t { ROAMING_WORLD=0, PLAYING_GAME, PLAYING_SPORT };
 
 
@@ -68,9 +68,40 @@ struct Player
 
 
 //enum class for helping systems identify what render component is to manipulate it.
-enum class RenderPartDescription : std::uint8_t {LEG, ARM, EYE, HAIR, HEAD,
+enum class RenderPartDescription : std::uint8_t {LEG=0, ARM, EYE, HAIR, HEAD,
 												UPPER_BODY_CLOTHING, LOWER_BODY_CLOTHING, SHOES,
 											WHOLE_BODY, OTHER};
+
+
+
+
+
+
+struct RenderPosition
+{
+	//position of entire render structure
+	Vector2 overall_position;
+};
+
+//only 8 directions
+enum class FaceDirection : std::uint8_t {SOUTH=0,SOUTHWEST,WEST,NORTHWEST,NORTH,NORTHEAST,EAST,SOUTHEAST};
+enum class AnimatedActorType : std::int8_t {NONE=0,PLAYER,ENEMY};
+
+struct Animation
+{
+	AnimatedActorType anim_actor_type; 
+	
+	//position of frame and frame direction
+	FaceDirection face_direction;
+	
+	std::uint16_t horiz_frame_offset = 0;
+	std::uint16_t frame_size = 30;
+	std::uint8_t frame_count = 0;
+	
+	//for movement based animation
+	Vector2 last_position;
+	
+};
 
 //not an actualy component, just contains org. info for component
 struct RenderInfo
@@ -80,25 +111,14 @@ struct RenderInfo
 	Rectangle frame_rect;
 	Color tint;
 	RenderPartDescription part_description;
+};
+
+struct RenderComponent
+{
 	
-};
-
-struct RenderPosition
-{
-	//position of entire render structure
-	Vector2 overall_position;
-};
-
-struct SingleRenderComponent
-{
-	RenderInfo render_part;
-	
-};
-
-struct MultipleRenderComponent
-{
-	std::uint8_t num_render_parts;
-	std::vector <RenderInfo> render_parts_vec;
+	RenderInfo single_render_part;
+	std::vector <RenderInfo> multi_render_parts_vec;
+	bool multi_part;
 };
 
 

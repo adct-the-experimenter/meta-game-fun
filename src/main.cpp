@@ -7,8 +7,7 @@
 #include "systems/WorldSystem.h"
 
 #include "systems/CameraSystem.h"
-#include "systems/SingleRenderComponentSystem.h"
-#include "systems/MultipleRenderComponentSystem.h"
+#include "systems/RenderSystem.h"
 
 
 #include "core/ControllerInputHandler.h"
@@ -49,8 +48,7 @@ std::vector <Entity> entities(MAX_ENTITIES);
 void InitMainECS();
 
 std::shared_ptr <WorldSystem> worldSystem;
-std::shared_ptr <SingleRenderComponentSystem> single_comp_renderSystem;
-std::shared_ptr <MultipleRenderComponentSystem> multi_comp_renderSystem;
+std::shared_ptr <RenderSystem> renderSystem;
 
 std::shared_ptr <InputReactorSystem> input_ReactSystem;
 
@@ -245,8 +243,7 @@ void render()
 			cameraSystem->Update();
 			
 		    //renders any entity that has render component
-			single_comp_renderSystem->Update();	
-			multi_comp_renderSystem->Update();	
+			renderSystem->Update();	
 			
 			break;
 		}
@@ -285,8 +282,7 @@ void InitMainECS()
 	gCoordinator.RegisterComponent<RigidBody2D>();
 	gCoordinator.RegisterComponent<Player>();
 	gCoordinator.RegisterComponent<RenderInfo>();
-	gCoordinator.RegisterComponent<SingleRenderComponent>();
-	gCoordinator.RegisterComponent<MultipleRenderComponent>();
+	gCoordinator.RegisterComponent<RenderComponent>();
 	gCoordinator.RegisterComponent<RenderPosition>();
 	gCoordinator.RegisterComponent<InputReact>();
 	gCoordinator.RegisterComponent<PhysicsTypeComponent>();
@@ -302,21 +298,13 @@ void InitMainECS()
 	
 	//make rendering system that only reacts to entities
 	//with render info component
-	single_comp_renderSystem = gCoordinator.RegisterSystem<SingleRenderComponentSystem>();
-	single_comp_renderSystem->Init(&player_cameras);
+	renderSystem = gCoordinator.RegisterSystem<RenderSystem>();
+	renderSystem->Init(&player_cameras);
 	
-	Signature sig_render_single;
-	sig_render_single.set(gCoordinator.GetComponentType<SingleRenderComponent>());
-	sig_render_single.set(gCoordinator.GetComponentType<RenderPosition>());
-	gCoordinator.SetSystemSignature<SingleRenderComponentSystem>(sig_render_single);
-	
-	multi_comp_renderSystem = gCoordinator.RegisterSystem<MultipleRenderComponentSystem>();
-	multi_comp_renderSystem->Init(&player_cameras);
-	
-	Signature sig_render_multi;
-	sig_render_multi.set(gCoordinator.GetComponentType<MultipleRenderComponent>());
-	sig_render_multi.set(gCoordinator.GetComponentType<RenderPosition>());
-	gCoordinator.SetSystemSignature<MultipleRenderComponentSystem>(sig_render_multi);
+	Signature sig_render;
+	sig_render.set(gCoordinator.GetComponentType<RenderComponent>());
+	sig_render.set(gCoordinator.GetComponentType<RenderPosition>());
+	gCoordinator.SetSystemSignature<RenderSystem>(sig_render);
 	
 	//make input reactor system that only reacts to components input react and transform
 	input_ReactSystem = gCoordinator.RegisterSystem<InputReactorSystem>();
