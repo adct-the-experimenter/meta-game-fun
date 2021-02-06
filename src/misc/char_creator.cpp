@@ -54,45 +54,52 @@ const int16_t joystick_border = 32600;
 
 void CharacterCreator::handle_controller_input(ControllerInput& input)
 {
-	//if joystick moved up, go up a slot
-	if(input.gamepad_p1.y_dir_axis < -joystick_border)
+	//number of character boxes and number of players should be the same
+	
+	//for each controller
+	for(size_t i = 0; i < input.gamepads_vec.size();i++)
 	{
-		if(player_char_boxes[0].current_slot > 0){player_char_boxes[0].current_slot--;}
-	}
-	//else if joystick moved down, go down a slot
-	else if(input.gamepad_p1.y_dir_axis > joystick_border)
-	{
-		if(player_char_boxes[0].current_slot < last_slot){player_char_boxes[0].current_slot++;}
-	}
-		
-	//if joystick moved left, go left on color choice
-	if(input.gamepad_p1.x_dir_axis < -joystick_border)
-	{
-		if(player_char_boxes[0].current_slot >= render_slot)
+		//if joystick moved up, go up a slot
+		if(input.gamepads_vec[i].y_dir_axis < -joystick_border)
 		{
-			RenderSlot* slot_ptr = &player_char_boxes[0].render_slots[player_char_boxes[0].current_slot - 2];
-		
-			if(slot_ptr->color_choice > 0){slot_ptr->color_choice--;}
+			if(player_char_boxes[i].current_slot > 0){player_char_boxes[i].current_slot--;}
+		}
+		//else if joystick moved down, go down a slot
+		else if(input.gamepads_vec[i].y_dir_axis > joystick_border)
+		{
+			if(player_char_boxes[i].current_slot < last_slot){player_char_boxes[i].current_slot++;}
+		}
+			
+		//if joystick moved left, go left on color choice
+		if(input.gamepads_vec[i].x_dir_axis < -joystick_border)
+		{
+			if(player_char_boxes[i].current_slot >= render_slot)
+			{
+				RenderSlot* slot_ptr = &player_char_boxes[i].render_slots[player_char_boxes[i].current_slot - 2];
+			
+				if(slot_ptr->color_choice > 0){slot_ptr->color_choice--;}
+			}
+			
+		}
+		//if joystick moved right, go right on color choice
+		else if(input.gamepads_vec[i].x_dir_axis > joystick_border)
+		{
+			if(player_char_boxes[i].current_slot >= render_slot)
+			{
+				RenderSlot* slot_ptr = &player_char_boxes[i].render_slots[player_char_boxes[i].current_slot - 2];
+			
+				if(slot_ptr->color_choice < 7){slot_ptr->color_choice++;}
+			}
+			
 		}
 		
-	}
-	//if joystick moved right, go right on color choice
-	else if(input.gamepad_p1.x_dir_axis > joystick_border)
-	{
-		if(player_char_boxes[0].current_slot >= render_slot)
+		//if a button pressed, turn confirm bool on
+		if(input.gamepads_vec[i].button == SDL_CONTROLLER_BUTTON_A)
 		{
-			RenderSlot* slot_ptr = &player_char_boxes[0].render_slots[player_char_boxes[0].current_slot - 2];
-		
-			if(slot_ptr->color_choice < 7){slot_ptr->color_choice++;}
+			player_char_boxes[i].confirm_selection = true;
 		}
-		
 	}
 	
-	//if a button pressed, turn confirm bool on
-	if(input.gamepad_p1.button == SDL_CONTROLLER_BUTTON_A)
-	{
-		player_char_boxes[0].confirm_selection = true;
-	}
 }
 
 void CharacterCreator::handle_keyboard_input(KeyboardInput& input)
@@ -340,50 +347,54 @@ void CharacterCreator::render()
 	{
 		Vector2 position = {100*(i+1),0};
 		
-		//draw textures of each slot
-		
-		for(size_t slot_it = 0; slot_it < player_char_boxes[i].render_slots.size(); slot_it++)
+		//if selection is not confirmed
+		if(!player_char_boxes[i].confirm_selection)
 		{
-			position.y = (slot_it + render_slot + 1)*50;
-			
-			DrawText(str_attr_array[slot_it].c_str(),position.x - 70, 
-					position.y + 8, 
-					12, BLACK);
-					
-			DrawTextureRec(rpg_sprite_sheet_texture,
-						player_char_boxes[i].render_slots[slot_it].frame_clip,
-						position,
-						colors[player_char_boxes[i].render_slots[slot_it].color_choice]
-						);
-		}
-		
-		//render text box for typing slot
-		for(size_t it = 0; it < player_char_boxes[i].typing_slots.size(); it++)
-		{
-			//set textbox rectangle position
-			player_char_boxes[it].typing_slots[0].textBox = {100*(it+1),50,100,20};
-			player_char_boxes[it].typing_slots[1].textBox = {100*(it+1),100,100,20};
-			
-			DrawRectangleRec(player_char_boxes[i].typing_slots[it].textBox, LIGHTGRAY);
-			
-			if(it == 0)
+			//draw textures of each slot
+			for(size_t slot_it = 0; slot_it < player_char_boxes[i].render_slots.size(); slot_it++)
 			{
-				DrawText("Name:",player_char_boxes[i].typing_slots[it].textBox.x - 30, 
-					player_char_boxes[i].typing_slots[it].textBox.y + 8, 
-					12, BLACK);
-			}
-			else if(it == 1)
-			{
-				DrawText("Job:",player_char_boxes[i].typing_slots[it].textBox.x - 30, 
-					player_char_boxes[i].typing_slots[it].textBox.y + 8, 
-					12, BLACK);
+				position.y = (slot_it + render_slot + 1)*50;
+				
+				DrawText(str_attr_array[slot_it].c_str(),position.x - 70, 
+						position.y + 8, 
+						12, BLACK);
+						
+				DrawTextureRec(rpg_sprite_sheet_texture,
+							player_char_boxes[i].render_slots[slot_it].frame_clip,
+							position,
+							colors[player_char_boxes[i].render_slots[slot_it].color_choice]
+							);
 			}
 			
-			DrawText(player_char_boxes[i].typing_slots[it].text, 
-					player_char_boxes[i].typing_slots[it].textBox.x + 5, 
-					player_char_boxes[i].typing_slots[it].textBox.y + 8, 
-					12, MAROON);
+			//render text box for typing slot
+			for(size_t it = 0; it < player_char_boxes[i].typing_slots.size(); it++)
+			{
+				//set textbox rectangle position
+				player_char_boxes[it].typing_slots[0].textBox = {100*(it+1),50,100,20};
+				player_char_boxes[it].typing_slots[1].textBox = {100*(it+1),100,100,20};
+				
+				DrawRectangleRec(player_char_boxes[i].typing_slots[it].textBox, LIGHTGRAY);
+				
+				if(it == 0)
+				{
+					DrawText("Name:",player_char_boxes[i].typing_slots[it].textBox.x - 30, 
+						player_char_boxes[i].typing_slots[it].textBox.y + 8, 
+						12, BLACK);
+				}
+				else if(it == 1)
+				{
+					DrawText("Job:",player_char_boxes[i].typing_slots[it].textBox.x - 30, 
+						player_char_boxes[i].typing_slots[it].textBox.y + 8, 
+						12, BLACK);
+				}
+				
+				DrawText(player_char_boxes[i].typing_slots[it].text, 
+						player_char_boxes[i].typing_slots[it].textBox.x + 5, 
+						player_char_boxes[i].typing_slots[it].textBox.y + 8, 
+						12, MAROON);
+			}
 		}
+		
 	}
 	
 }

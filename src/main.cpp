@@ -20,6 +20,7 @@
 #include "misc/MediaLoader.h"
 #include "misc/globalvariables.h"
 
+#include "misc/num_player_setter.h" //for NumPlayerSetter class
 #include "misc/char_creator.h" //for CharacterCreator class
 
 #include <string>
@@ -88,6 +89,8 @@ std::array <CustomCamera,4> player_cameras;
 bool video_game_playing = false;
 
 CharacterCreator gCharCreator;
+NumPlayerSetter gNumPlayerSetter;
+std::int8_t gNumPlayers = 0;
 
 const std::int16_t screenWidth = 800;
 const std::int16_t screenHeight = 600;
@@ -103,9 +106,11 @@ int main()
 	}
 	else
 	{
+		gControllerInput.Init(1);
+		gNumPlayerSetter.Init();
+		
 		InitMainECS();
 		
-		gCharCreator.Init(&entities,1);
 		
 		bool quit = false;
 	
@@ -126,6 +131,10 @@ int main()
 	
 	gMediaLoader.freeMedia();
 	
+	
+    //Quit SDL subsystems
+    SDL_Quit();
+    
 	CloseRaylibSystem();
 	
 	return 0;
@@ -154,12 +163,7 @@ void handle_events()
 	{
 		case GameState::TITLE_MENU:
 		{
-			//if a is pressed by gamepad 1
-			if(gControllerInput.gamepad_p1.button == SDL_CONTROLLER_BUTTON_A)
-			{
-				//move to next state
-				m_game_state = GameState::CHAR_CREATOR;
-			}
+			gNumPlayerSetter.handle_input(gControllerInput,gKeyboardInput);
 			break;
 		}
 		case GameState::CHAR_CREATOR:
@@ -190,6 +194,25 @@ void logic()
 	{
 		case GameState::TITLE_MENU:
 		{
+			gNumPlayerSetter.logic();
+			
+			//if need to move to next state
+			if(gNumPlayerSetter.MoveToNextStateBool())
+			{
+				//create entities for player
+				gNumPlayerSetter.CreatePlayerEntities(&entities);
+				
+				gNumPlayers = gNumPlayerSetter.GetNumberOfPlayers();
+				
+				//reset to new number of players
+				gControllerInput.Init(gNumPlayers);
+				
+				//initialze char creator
+				gCharCreator.Init(&entities,gNumPlayers);
+				
+				//move to next state
+				m_game_state = GameState::CHAR_CREATOR;
+			}
 			break;
 		}
 		case GameState::CHAR_CREATOR:
@@ -229,7 +252,8 @@ void render()
 		case GameState::TITLE_MENU:
 		{
 			DrawTexture(title_menu_texture, 0, 0, WHITE);
-			DrawText("Press A on controller to start.", 190, 320, 20, LIGHTGRAY);
+			
+			gNumPlayerSetter.render();
 			
 			break;
 		}

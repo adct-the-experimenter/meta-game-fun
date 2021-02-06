@@ -3,6 +3,7 @@
 
 #include "misc/globalvariables.h"
 #include <cstdint>
+#include <vector>
 
 /*
 
@@ -46,30 +47,21 @@ public:
 		SDL_GameControllerButton button;
 	};
 	
-	GamepadInfo gamepad_p1;
-	GamepadInfo gamepad_p2;
-	GamepadInfo gamepad_p3;
-	GamepadInfo gamepad_p4;
+	std::vector <GamepadInfo> gamepads_vec;
+	
+	void Init(std::uint8_t num_players)
+	{
+		gamepads_vec.resize(num_players);
+	};
 	
 	void Reset()
 	{
-		//gamepad_p1.x_axis = 0;
-		//gamepad_p1.y_axis = 0;
-		gamepad_p1.x_dir_axis = 0;
-		gamepad_p1.y_dir_axis = 0;
-		gamepad_p1.button =  SDL_CONTROLLER_BUTTON_INVALID ;
-		
-		gamepad_p2.x_axis = 0;
-		gamepad_p2.y_axis = 0;
-		gamepad_p2.button =  SDL_CONTROLLER_BUTTON_INVALID ;
-		
-		gamepad_p3.x_axis = 0;
-		gamepad_p3.y_axis = 0;
-		gamepad_p3.button =  SDL_CONTROLLER_BUTTON_INVALID ;
-		
-		gamepad_p4.x_axis = 0;
-		gamepad_p4.y_axis = 0;
-		gamepad_p4.button =  SDL_CONTROLLER_BUTTON_INVALID ;
+		for(size_t i = 0; i < gamepads_vec.size(); i++)
+		{
+			gamepads_vec[i].x_dir_axis = 0;
+			gamepads_vec[i].y_dir_axis = 0;
+			gamepads_vec[i].button =  SDL_CONTROLLER_BUTTON_INVALID;
+		}
 	};
 };
 

@@ -22,13 +22,13 @@ void InputReactorSystem::Update(ControllerInput& input)
 				//do player specific event handling
 				//get other player specific component from entity.
 				
-				if(inputReactor.player_num == 1)
+				for(size_t i = 0; i < input.gamepads_vec.size(); i++)
 				{
-					if(input.gamepad_p1.x_axis > 16300)
+					if(input.gamepads_vec[i].x_axis > 16300)
 					{
 						rigidBody.velocity.x = 100.0f;
 					}
-					else if(input.gamepad_p1.x_axis < -16300)
+					else if(input.gamepads_vec[i].x_axis < -16300)
 					{
 						rigidBody.velocity.x = -100.0f;
 					}
@@ -37,11 +37,11 @@ void InputReactorSystem::Update(ControllerInput& input)
 						rigidBody.velocity.x = 0.0f;
 					}
 					
-					if(input.gamepad_p1.y_axis < -16300)
+					if(input.gamepads_vec[i].y_axis < -16300)
 					{
 						rigidBody.velocity.y = -100.0f;
 					}
-					else if(input.gamepad_p1.y_axis > 16300)
+					else if(input.gamepads_vec[i].y_axis > 16300)
 					{
 						rigidBody.velocity.y = 100.0f;
 					}

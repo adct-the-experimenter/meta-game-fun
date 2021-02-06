@@ -109,17 +109,17 @@ void ControllerInputHandler::SetGamepadInfo(ControllerInput& input_info)
 			//gamepad 1
 			if(sdl_event.jbutton.which == 0)
 			{
-				input_info.gamepad_p1.button = SDL_GameControllerButton(sdl_event.jbutton.button);
+				input_info.gamepads_vec[0].button = SDL_GameControllerButton(sdl_event.jbutton.button);
 			}
 			//gamepad 2
 			else if(sdl_event.jbutton.which == 1)
 			{
-				input_info.gamepad_p2.button = SDL_GameControllerButton(sdl_event.jbutton.button);
+				input_info.gamepads_vec[1].button = SDL_GameControllerButton(sdl_event.jbutton.button);
 			}
 			//gamepad 3
 			else if(sdl_event.jbutton.which == 2)
 			{
-				input_info.gamepad_p3.button = SDL_GameControllerButton(sdl_event.jbutton.button);	
+				input_info.gamepads_vec[2].button = SDL_GameControllerButton(sdl_event.jbutton.button);	
 			}
 			
 		}
@@ -132,13 +132,13 @@ void ControllerInputHandler::SetGamepadInfo(ControllerInput& input_info)
 			{
 				if(sdl_event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
 				{
-					input_info.gamepad_p1.x_axis = sdl_event.jaxis.value;
-					input_info.gamepad_p1.x_dir_axis = sdl_event.jaxis.value;
+					input_info.gamepads_vec[0].x_axis = sdl_event.jaxis.value;
+					input_info.gamepads_vec[0].x_dir_axis = sdl_event.jaxis.value;
 				}
 				else if(sdl_event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
 				{
-					input_info.gamepad_p1.y_axis = sdl_event.jaxis.value;
-					input_info.gamepad_p1.y_dir_axis = sdl_event.jaxis.value;
+					input_info.gamepads_vec[0].y_axis = sdl_event.jaxis.value;
+					input_info.gamepads_vec[0].y_dir_axis = sdl_event.jaxis.value;
 				}
 			}
 			//gamepad 2
@@ -146,11 +146,13 @@ void ControllerInputHandler::SetGamepadInfo(ControllerInput& input_info)
 			{
 				if(sdl_event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
 				{
-					input_info.gamepad_p2.x_axis = sdl_event.jaxis.value;
+					input_info.gamepads_vec[1].x_axis = sdl_event.jaxis.value;
+					input_info.gamepads_vec[1].x_dir_axis = sdl_event.jaxis.value;
 				}
 				else if(sdl_event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
 				{
-					input_info.gamepad_p2.y_axis = sdl_event.jaxis.value;
+					input_info.gamepads_vec[1].y_axis = sdl_event.jaxis.value;
+					input_info.gamepads_vec[1].y_dir_axis = sdl_event.jaxis.value;
 				}
 			}
 			//gamepad 3
@@ -158,11 +160,11 @@ void ControllerInputHandler::SetGamepadInfo(ControllerInput& input_info)
 			{
 				if(sdl_event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
 				{
-					input_info.gamepad_p3.x_axis = sdl_event.jaxis.value;
+					input_info.gamepads_vec[2].x_axis = sdl_event.jaxis.value;
 				}
 				else if(sdl_event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
 				{
-					input_info.gamepad_p3.y_axis = sdl_event.jaxis.value;
+					input_info.gamepads_vec[2].y_axis = sdl_event.jaxis.value;
 				}
 			}
 		}
