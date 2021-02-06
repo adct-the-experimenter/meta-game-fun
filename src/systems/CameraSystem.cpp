@@ -21,8 +21,8 @@ void CameraSystem::Init(std::array <CustomCamera,4> *cameras, std::uint8_t num_p
 	{
 		m_cameras_ptr->at(i).num_player = i + 1;
 		
-		m_cameras_ptr->at(i).camera.width = (screenWidth / 2);
-		m_cameras_ptr->at(i).camera.height = (screenHeight / 2);
+		m_cameras_ptr->at(i).camera_rect.width = (screenWidth / num_players);
+		m_cameras_ptr->at(i).camera_rect.height = (screenHeight / num_players);
 	}
 	
 	//initialize position based on number of players
@@ -30,17 +30,17 @@ void CameraSystem::Init(std::array <CustomCamera,4> *cameras, std::uint8_t num_p
 	{
 		case 1:
 		{
-			m_cameras_ptr->at(0).camera.x = 0;
-			m_cameras_ptr->at(0).camera.y = 0;
+			m_cameras_ptr->at(0).camera_rect.x = 0;
+			m_cameras_ptr->at(0).camera_rect.y = 0;
 			break;
 		}
 		case 2:
 		{
-			m_cameras_ptr->at(0).camera.x = 0;
-			m_cameras_ptr->at(0).camera.y = 0;
+			m_cameras_ptr->at(0).camera_rect.x = 0;
+			m_cameras_ptr->at(0).camera_rect.y = 0;
 			
-			m_cameras_ptr->at(1).camera.x = screenWidth / 2;
-			m_cameras_ptr->at(1).camera.y = 0;
+			m_cameras_ptr->at(1).camera_rect.x = screenWidth / 2;
+			m_cameras_ptr->at(1).camera_rect.y = 0;
 		}
 		default:{break;}
 	}
@@ -53,24 +53,24 @@ void CameraSystem::Update()
 	for (auto const& entity : mEntities)
 	{
 		
-		
 		auto& transform = gCoordinator.GetComponent<Transform2D>(entity);
-		auto& render_position = gCoordinator.GetComponent<RenderPosition>(entity);
+		auto& player = gCoordinator.GetComponent<Player>(entity);
+		
 		
 		//center camera position with player
-		//assuming entities set up so that first set of entities are players
-		if(entity < m_num_players)
+		
+		m_cameras_ptr->at(player.num_player - 1).camera_rect.x = transform.position.x - (m_cameras_ptr->at(entity).camera_rect.width / 2);
+		m_cameras_ptr->at(player.num_player - 1).camera_rect.y = transform.position.y - (m_cameras_ptr->at(entity).camera_rect.height / 2);
+		
+		//bounds check
+		if(m_cameras_ptr->at(player.num_player - 1).camera_rect.x < 0)
 		{
-			m_cameras_ptr->at(entity).camera.x = transform.position.x - (m_cameras_ptr->at(entity).camera.width / 2);
-			m_cameras_ptr->at(entity).camera.y = transform.position.y - (m_cameras_ptr->at(entity).camera.height / 2);
-			
+			m_cameras_ptr->at(player.num_player - 1).camera_rect.x = 0;
 		}
 		
-		//chage render position relative to camera
-		for(size_t i = 0; i < m_num_players; i++)
+		if(m_cameras_ptr->at(player.num_player - 1).camera_rect.y < 0)
 		{
-			render_position.overall_position.x = transform.position.x - m_cameras_ptr->at(i).camera.x;
-			render_position.overall_position.y = transform.position.y - m_cameras_ptr->at(i).camera.y;
+			m_cameras_ptr->at(player.num_player - 1).camera_rect.y = 0;
 		}
 		
 		

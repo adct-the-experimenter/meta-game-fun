@@ -308,6 +308,7 @@ void InitMainECS()
 	
 	Signature sig_render;
 	sig_render.set(gCoordinator.GetComponentType<RenderComponent>());
+	sig_render.set(gCoordinator.GetComponentType<Transform2D>());
 	sig_render.set(gCoordinator.GetComponentType<RenderPosition>());
 	gCoordinator.SetSystemSignature<RenderSystem>(sig_render);
 	
@@ -343,6 +344,7 @@ void InitMainECS()
 	Signature camera_sig;
 	camera_sig.set(gCoordinator.GetComponentType<Transform2D>());
 	camera_sig.set(gCoordinator.GetComponentType<RenderPosition>());
+	camera_sig.set(gCoordinator.GetComponentType<Player>());
 	gCoordinator.SetSystemSignature<CameraSystem>(camera_sig);
 	
 	
