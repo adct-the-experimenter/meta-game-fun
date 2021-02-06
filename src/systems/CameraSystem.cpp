@@ -48,16 +48,31 @@ void CameraSystem::Init(std::array <CustomCamera,4> *cameras, std::uint8_t num_p
 
 void CameraSystem::Update()
 {
+	std::uint8_t current_player = 0;
+	
 	for (auto const& entity : mEntities)
 	{
+		
+		
 		auto& transform = gCoordinator.GetComponent<Transform2D>(entity);
 		auto& render_position = gCoordinator.GetComponent<RenderPosition>(entity);
 		
+		//center camera position with player
+		//assuming entities set up so that first set of entities are players
+		if(entity < m_num_players)
+		{
+			m_cameras_ptr->at(entity).camera.x = transform.position.x - (m_cameras_ptr->at(entity).camera.width / 2);
+			m_cameras_ptr->at(entity).camera.y = transform.position.y - (m_cameras_ptr->at(entity).camera.height / 2);
+			
+		}
+		
+		//chage render position relative to camera
 		for(size_t i = 0; i < m_num_players; i++)
 		{
 			render_position.overall_position.x = transform.position.x - m_cameras_ptr->at(i).camera.x;
 			render_position.overall_position.y = transform.position.y - m_cameras_ptr->at(i).camera.y;
 		}
+		
 		
 	}
 	
