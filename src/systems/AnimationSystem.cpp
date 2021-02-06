@@ -36,12 +36,12 @@ void AnimationSystem::Update(float& dt)
 				bool east = false; bool west = false;
 				bool no_move = false;
 				
-				if(xdiff < 0){west = true;}
-				else if(xdiff > 0){east = true;}
+				if(xdiff > 0){west = true;}
+				else if(xdiff < 0){east = true;}
 				
 				float ydiff = anim_comp.info.last_position.y - transform.position.y;
-				if(ydiff < 0){north = true;}
-				else if(ydiff > 0){south = true;}
+				if(ydiff > 0){north = true;}
+				else if(ydiff < 0){south = true;}
 				
 				if(xdiff == 0 && ydiff == 0){no_move = true;}
 				
@@ -52,9 +52,21 @@ void AnimationSystem::Update(float& dt)
 				//the first frame in sprite sheet.
 				if(south)
 				{
-					//frame size is 30
-					anim_comp.info.horiz_frame_offset = 0;
+					if(west)
+					{
+						anim_comp.info.horiz_frame_offset = 3;
+					}
+					else if(east)
+					{
+						
+					}
+					else
+					{
+						anim_comp.info.horiz_frame_offset = 0;
+					}
+					
 				}
+				
 				
 				//increment frame count
 				m_time_counter += dt;
@@ -75,7 +87,10 @@ void AnimationSystem::Update(float& dt)
 				//for now only render the shirt
 				for(size_t i = 0; i < render_comp.multi_render_parts_vec.size(); i++)
 				{
-					if( render_comp.multi_render_parts_vec[i].part_description == RenderPartDescription::UPPER_BODY_CLOTHING)
+					RenderPartDescription& descr = render_comp.multi_render_parts_vec[i].part_description;
+					
+					if( descr == RenderPartDescription::UPPER_BODY_CLOTHING ||
+						descr == RenderPartDescription::LOWER_BODY_CLOTHING)
 					{
 						//change x position of frame selector
 						render_comp.multi_render_parts_vec[i].frame_rect.x = (anim_comp.info.frame_count + anim_comp.info.horiz_frame_offset)*anim_comp.info.frame_size;
