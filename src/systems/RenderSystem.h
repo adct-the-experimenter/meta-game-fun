@@ -20,9 +20,7 @@ public:
 	
 private:
 	std::vector <CustomCamera> *m_cameras_ptr;
-	
-	RenderTexture2D m_target_texture;
-	
+		
 	std::uint8_t m_num_players;
 	
 	std::vector <RenderTexture2D> viewport_textures;

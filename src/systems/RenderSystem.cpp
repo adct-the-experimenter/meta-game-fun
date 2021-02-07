@@ -17,10 +17,6 @@ extern Coordinator gCoordinator;
 void RenderSystem::Init(std::vector <CustomCamera> *cameras,std::uint8_t num_players)
 {
 	m_cameras_ptr = cameras;
-	
-	// Render texture initialization, used to hold the rendering result so we can easily resize it
-    m_target_texture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
-    SetTextureFilter(m_target_texture.texture, FILTER_BILINEAR);  // Texture scale filter to use
     
     RenderSystem::InitViewportsForThisNumberOfPlayers(num_players);
     
@@ -140,7 +136,11 @@ void RenderSystem::Update()
 
 void RenderSystem::UnloadTexture()
 {
-	UnloadRenderTexture(m_target_texture);
+	for(size_t i = 0; i < viewport_textures.size(); i++)
+	{
+		UnloadRenderTexture(viewport_textures[i]);
+	}
+	
 }
 
 void RenderSystem::InitViewportsForThisNumberOfPlayers(std::uint8_t num_players)
@@ -155,7 +155,7 @@ void RenderSystem::InitViewportsForThisNumberOfPlayers(std::uint8_t num_players)
 	for(size_t i = 0; i < viewport_textures.size(); i++)
 	{
 		viewport_textures[i] = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
-		SetTextureFilter(m_target_texture.texture, FILTER_BILINEAR);  // Texture scale filter to use
+		SetTextureFilter(viewport_textures[i].texture, FILTER_BILINEAR);  // Texture scale filter to use
 	}
 	
 	switch(num_players)
