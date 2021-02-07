@@ -345,7 +345,7 @@ void CharacterCreator::render()
 	//render body part slots
 	for(size_t i = 0; i < player_char_boxes.size(); i++)
 	{
-		Vector2 position = {100*(i+1),0};
+		Vector2 position = {100*(i+1) + i*50,0};
 		
 		//if selection is not confirmed
 		if(!player_char_boxes[i].confirm_selection)
@@ -370,8 +370,8 @@ void CharacterCreator::render()
 			for(size_t it = 0; it < player_char_boxes[i].typing_slots.size(); it++)
 			{
 				//set textbox rectangle position
-				player_char_boxes[it].typing_slots[0].textBox = {100*(it+1),50,100,20};
-				player_char_boxes[it].typing_slots[1].textBox = {100*(it+1),100,100,20};
+				player_char_boxes[it].typing_slots[0].textBox = {100*(it+1) + 50*it,50,100,20};
+				player_char_boxes[it].typing_slots[1].textBox = {100*(it+1) + 50*it,100,100,20};
 				
 				DrawRectangleRec(player_char_boxes[i].typing_slots[it].textBox, LIGHTGRAY);
 				
