@@ -9,7 +9,7 @@
 extern Coordinator gCoordinator;
 
 
-void CameraSystem::Init(std::array <CustomCamera,4> *cameras, std::uint8_t num_players,
+void CameraSystem::Init(std::vector <CustomCamera> *cameras, std::uint8_t num_players,
 				std::uint16_t screenWidth, std::uint16_t screenHeight)
 {
 	m_cameras_ptr = cameras;
@@ -25,25 +25,7 @@ void CameraSystem::Init(std::array <CustomCamera,4> *cameras, std::uint8_t num_p
 		m_cameras_ptr->at(i).camera_rect.height = (screenHeight / num_players);
 	}
 	
-	//initialize position based on number of players
-	switch(num_players)
-	{
-		case 1:
-		{
-			m_cameras_ptr->at(0).camera_rect.x = 0;
-			m_cameras_ptr->at(0).camera_rect.y = 0;
-			break;
-		}
-		case 2:
-		{
-			m_cameras_ptr->at(0).camera_rect.x = 0;
-			m_cameras_ptr->at(0).camera_rect.y = 0;
-			
-			m_cameras_ptr->at(1).camera_rect.x = screenWidth / 2;
-			m_cameras_ptr->at(1).camera_rect.y = 0;
-		}
-		default:{break;}
-	}
+	
 }
 
 void CameraSystem::Update()

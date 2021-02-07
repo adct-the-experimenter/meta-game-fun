@@ -84,7 +84,7 @@ GameState m_game_state = GameState::TITLE_MENU;
 
 //camera to follow players.
 std::shared_ptr <CameraSystem> cameraSystem;
-std::array <CustomCamera,4> player_cameras; 
+std::vector <CustomCamera> player_cameras; 
 
 bool video_game_playing = false;
 
@@ -129,6 +129,7 @@ int main()
 		}
 	}
 	
+	renderSystem->UnloadTexture();
 	gMediaLoader.freeMedia();
 	
 	
@@ -212,7 +213,11 @@ void logic()
 				gCharCreator.Init(&entities,gNumPlayers);
 				
 				//initialize camera system
+				player_cameras.resize(gNumPlayers);
 				cameraSystem->Init(&player_cameras,gNumPlayers,screenWidth,screenHeight);
+				
+				//initialize render system
+				renderSystem->Init(&player_cameras,gNumPlayers);
 				
 				//move to next state
 				m_game_state = GameState::CHAR_CREATOR;
@@ -270,12 +275,12 @@ void render()
 		case GameState::GAME:
 		{
 			
-			worldSystem->render();
-			
 			cameraSystem->Update();
 			
 		    //render any entity that has render component
-			renderSystem->Update();	
+			renderSystem->Update();
+			
+			worldSystem->render();
 			
 			break;
 		}
@@ -332,7 +337,7 @@ void InitMainECS()
 	//make rendering system that only reacts to entities
 	//with render info component
 	renderSystem = gCoordinator.RegisterSystem<RenderSystem>();
-	renderSystem->Init(&player_cameras);
+	
 	
 	Signature sig_render;
 	sig_render.set(gCoordinator.GetComponentType<RenderComponent>());
