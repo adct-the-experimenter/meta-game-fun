@@ -84,7 +84,7 @@ void AnimationSystem::Update(float& dt)
 				
 				//set render frame based on animation info
 				
-				//for now only render the shirt
+				//for now only change frames for pants and shirt
 				for(size_t i = 0; i < render_comp.multi_render_parts_vec.size(); i++)
 				{
 					RenderPartDescription& descr = render_comp.multi_render_parts_vec[i].part_description;

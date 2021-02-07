@@ -8,6 +8,11 @@
 #include <vector>
 #include "misc/camera.h"
 
+struct RenderViewport
+{
+	Rectangle rect;
+	RenderTexture2D target_texture;
+};
 
 class RenderSystem : public System
 {
@@ -23,8 +28,7 @@ private:
 		
 	std::uint8_t m_num_players;
 	
-	std::vector <RenderTexture2D> viewport_textures;
-	std::vector <Rectangle> m_viewports;
+	std::vector <RenderViewport> m_viewports;
 	void InitViewportsForThisNumberOfPlayers(std::uint8_t num_players);
 };
 

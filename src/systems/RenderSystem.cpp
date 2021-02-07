@@ -60,7 +60,7 @@ void RenderSystem::Update()
 		{
 			//if renderable object is within camera bounds.
 			
-				BeginTextureMode(viewport_textures[i]);
+				BeginTextureMode(m_viewports[i].target_texture);
 				
 				//render texture background color
 				ClearBackground(RAYWHITE);
@@ -125,20 +125,23 @@ void RenderSystem::Update()
 		
 	
 	
-	for(size_t it = 0; it < viewport_textures.size(); it++)
+	for(size_t it = 0; it < m_viewports.size(); it++)
 	{
-		Rectangle source = {0.0f, 0.0f, (float)viewport_textures[it].texture.width, (float)-viewport_textures[it].texture.height};
-					Rectangle dest = {(float)m_viewports.at(it).x, m_viewports.at(it).y,
-						   (float)m_cameras_ptr->at(it).camera_rect.width, (float)m_cameras_ptr->at(it).camera_rect.height };
-		DrawTexturePro(viewport_textures[it].texture, source, dest, (Vector2){ 0, 0 }, 0.0f, WHITE);
+		Rectangle source = {m_cameras_ptr->at(it).camera_rect.x, m_cameras_ptr->at(it).camera_rect.y, 
+							(float)m_viewports.at(it).target_texture.texture.width, 
+							(float)-m_viewports.at(it).target_texture.texture.height};
+		
+			   
+		Vector2 position = {m_viewports.at(it).rect.x,m_viewports.at(it).rect.y};
+		DrawTextureRec(m_viewports.at(it).target_texture.texture, source, position, WHITE);
 	}
 }
 
 void RenderSystem::UnloadTexture()
 {
-	for(size_t i = 0; i < viewport_textures.size(); i++)
+	for(size_t i = 0; i < m_viewports.size(); i++)
 	{
-		UnloadRenderTexture(viewport_textures[i]);
+		UnloadRenderTexture(m_viewports[i].target_texture);
 	}
 	
 }
@@ -150,56 +153,54 @@ void RenderSystem::InitViewportsForThisNumberOfPlayers(std::uint8_t num_players)
 	std::int32_t screenWidth = GetScreenWidth();
 	std::int32_t screenHeight = GetScreenHeight();
 	
-	viewport_textures.resize(num_players);
-	
-	for(size_t i = 0; i < viewport_textures.size(); i++)
+	for(size_t i = 0; i < m_viewports.size(); i++)
 	{
-		viewport_textures[i] = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
-		SetTextureFilter(viewport_textures[i].texture, FILTER_BILINEAR);  // Texture scale filter to use
+		m_viewports[i].target_texture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+		SetTextureFilter(m_viewports[i].target_texture.texture, FILTER_BILINEAR);  // Texture scale filter to use
 	}
 	
 	switch(num_players)
 	{
 		case 1:
 		{
-			m_viewports[0].x = 0; m_viewports[0].y = 0;
-			m_viewports[0].width = screenWidth; m_viewports[0].height = screenHeight;
+			m_viewports[0].rect.x = 0; m_viewports[0].rect.y = 0;
+			m_viewports[0].rect.width = screenWidth; m_viewports[0].rect.height = screenHeight;
 			break;
 		}
 		case 2:
 		{
-			m_viewports[0].x = 0; m_viewports[0].y = 0;
-			m_viewports[0].width = screenWidth; m_viewports[0].height = screenHeight / 2;
+			m_viewports[0].rect.x = 0; m_viewports[0].rect.y = 0;
+			m_viewports[0].rect.width = screenWidth; m_viewports[0].rect.height = screenHeight / 2;
 			
-			m_viewports[1].x = 0; m_viewports[1].y = screenHeight / 2;
-			m_viewports[1].width = screenWidth / 2; m_viewports[1].height = screenHeight / 2;
+			m_viewports[1].rect.x = 0; m_viewports[1].rect.y = screenHeight / 2;
+			m_viewports[1].rect.width = screenWidth / 2; m_viewports[1].rect.height = screenHeight / 2;
 			break;
 		}
 		case 3:
 		{
-			m_viewports[0].x = 0; m_viewports[0].y = 0;
-			m_viewports[0].width = screenWidth; m_viewports[0].height = screenHeight;
+			m_viewports[0].rect.x = 0; m_viewports[0].rect.y = 0;
+			m_viewports[0].rect.width = screenWidth; m_viewports[0].rect.height = screenHeight;
 			
-			m_viewports[1].x = screenWidth / 2; m_viewports[1].y = 0;
-			m_viewports[1].width = screenWidth / 2; m_viewports[1].height = screenHeight / 2;
+			m_viewports[1].rect.x = screenWidth / 2; m_viewports[1].rect.y = 0;
+			m_viewports[1].rect.width = screenWidth / 2; m_viewports[1].rect.height = screenHeight / 2;
 			
-			m_viewports[2].x = screenWidth / 4; m_viewports[2].y = screenHeight / 2;
-			m_viewports[2].width = screenWidth / 2; m_viewports[2].height = screenHeight / 2;
+			m_viewports[2].rect.x = screenWidth / 4; m_viewports[2].rect.y = screenHeight / 2;
+			m_viewports[2].rect.width = screenWidth / 2; m_viewports[2].rect.height = screenHeight / 2;
 			break;
 		}
 		case 4:
 		{
-			m_viewports[0].x = 0; m_viewports[0].y = 0;
-			m_viewports[0].width = screenWidth; m_viewports[0].height = screenHeight;
+			m_viewports[0].rect.x = 0; m_viewports[0].rect.y = 0;
+			m_viewports[0].rect.width = screenWidth; m_viewports[0].rect.height = screenHeight;
 			
-			m_viewports[1].x = screenWidth / 2; m_viewports[1].y = 0;
-			m_viewports[1].width = screenWidth / 2; m_viewports[1].height = screenHeight / 2;
+			m_viewports[1].rect.x = screenWidth / 2; m_viewports[1].rect.y = 0;
+			m_viewports[1].rect.width = screenWidth / 2; m_viewports[1].rect.height = screenHeight / 2;
 			
-			m_viewports[2].x = 0; m_viewports[2].y = screenHeight / 2;
-			m_viewports[2].width = screenWidth / 2; m_viewports[2].height = screenHeight / 2;
+			m_viewports[2].rect.x = 0; m_viewports[2].rect.y = screenHeight / 2;
+			m_viewports[2].rect.width = screenWidth / 2; m_viewports[2].rect.height = screenHeight / 2;
 			
-			m_viewports[3].x = screenWidth / 2; m_viewports[3].y = screenHeight / 2;
-			m_viewports[3].width = screenWidth / 2; m_viewports[3].height = screenHeight / 2;
+			m_viewports[3].rect.x = screenWidth / 2; m_viewports[3].rect.y = screenHeight / 2;
+			m_viewports[3].rect.width = screenWidth / 2; m_viewports[3].rect.height = screenHeight / 2;
 			break;
 		}
 		default:{std::cout << "Unsupported number of players in viewports init!\n";}
