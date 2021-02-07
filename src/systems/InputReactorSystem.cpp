@@ -24,31 +24,36 @@ void InputReactorSystem::Update(ControllerInput& input)
 				
 				for(size_t i = 0; i < input.gamepads_vec.size(); i++)
 				{
-					if(input.gamepads_vec[i].x_axis > 16300)
+					//if player number matches game pad
+					if(inputReactor.player_num == i + 1)
 					{
-						rigidBody.velocity.x = 100.0f;
-					}
-					else if(input.gamepads_vec[i].x_axis < -16300)
-					{
-						rigidBody.velocity.x = -100.0f;
-					}
-					else 
-					{
-						rigidBody.velocity.x = 0.0f;
+						if(input.gamepads_vec[i].x_axis > 16300)
+						{
+							rigidBody.velocity.x = 100.0f;
+						}
+						else if(input.gamepads_vec[i].x_axis < -16300)
+						{
+							rigidBody.velocity.x = -100.0f;
+						}
+						else 
+						{
+							rigidBody.velocity.x = 0.0f;
+						}
+						
+						if(input.gamepads_vec[i].y_axis < -16300)
+						{
+							rigidBody.velocity.y = -100.0f;
+						}
+						else if(input.gamepads_vec[i].y_axis > 16300)
+						{
+							rigidBody.velocity.y = 100.0f;
+						}
+						else 
+						{
+							rigidBody.velocity.y = 0.0f;
+						}
 					}
 					
-					if(input.gamepads_vec[i].y_axis < -16300)
-					{
-						rigidBody.velocity.y = -100.0f;
-					}
-					else if(input.gamepads_vec[i].y_axis > 16300)
-					{
-						rigidBody.velocity.y = 100.0f;
-					}
-					else 
-					{
-						rigidBody.velocity.y = 0.0f;
-					}
 				}
 				
 				

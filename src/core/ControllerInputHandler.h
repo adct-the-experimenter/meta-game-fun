@@ -8,7 +8,7 @@ class ControllerInputHandler
 {
 public:
 	
-	void Init();
+	void Init(std::uint8_t num_players);
 	
 	void Update(ControllerInput* input);
 	
@@ -17,6 +17,8 @@ private:
 	SDL_Event sdl_event; //polls events
 	
 	void SetGamepadInfo(ControllerInput& input_info);
+	
+	std::uint8_t m_num_players;
 	
 	//game pads
 	SDL_GameController* gGameController;

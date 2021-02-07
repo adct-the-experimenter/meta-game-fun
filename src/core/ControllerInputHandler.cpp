@@ -11,9 +11,10 @@
     #define PS3_NAME_ID         "PLAYSTATION(R)3 Controller"
 #endif
 
-void ControllerInputHandler::Init()
+void ControllerInputHandler::Init(std::uint8_t num_players)
 {
-	int g_num_players = 1;
+	
+	m_num_players = num_players;
 	
 	std::string mapping_file = DATADIR_STR + "/gamecontrollerdb.txt";
 	//SetGamepadMappings(mapping_file.c_str());
@@ -37,7 +38,7 @@ void ControllerInputHandler::Init()
 		//Load gamepad controllers
 		
 		//first player 
-		if(g_num_players > 0)
+		if(m_num_players > 0)
 		{
 			gGameController = SDL_GameControllerOpen( 0 );
 			if( gGameController == NULL )
@@ -52,7 +53,7 @@ void ControllerInputHandler::Init()
 		}
 		
 		//if there is a second player
-		if(g_num_players > 1)
+		if(m_num_players > 1)
 		{
 			gGameController2 = SDL_GameControllerOpen( 1 );
 			if( gGameController2 == NULL )
@@ -63,7 +64,7 @@ void ControllerInputHandler::Init()
 		}
 		
 		//if there is a third player
-		if(g_num_players > 2)
+		if(m_num_players > 2)
 		{
 			gGameController3 = SDL_GameControllerOpen( 2 );
 			if( gGameController2 == NULL )

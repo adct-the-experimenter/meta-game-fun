@@ -204,8 +204,9 @@ void logic()
 				
 				gNumPlayers = gNumPlayerSetter.GetNumberOfPlayers();
 				
-				//reset to new number of players
+				//reset to new number of players for input handling
 				gControllerInput.Init(gNumPlayers);
+				gControllerInputHandler.Init(gNumPlayers);
 				
 				//initialze char creator
 				gCharCreator.Init(&entities,gNumPlayers);
@@ -412,7 +413,7 @@ void InitRaylibSystem()
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     
     //initialize game controller input
-    gControllerInputHandler.Init();
+    gControllerInputHandler.Init(1);
 }
 
 void CloseRaylibSystem()
