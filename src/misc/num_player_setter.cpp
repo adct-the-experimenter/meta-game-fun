@@ -27,8 +27,18 @@ void NumPlayerSetter::Init()
 	//initialize render slot locations
 	for(size_t it = 0; it < num_players_boxes.size(); it++)
 	{
-		num_players_boxes[it].render_rect = {400 - 25,30*(it+1) + 400,50,20};
+		num_players_boxes[it].render_rect = {400 - 25,30*(it+1) + 400,100,20};
+		if(it == 0)
+		{
+			num_players_boxes[it].text = " " + std::to_string( it + 1) + " Player";
+		}
+		else
+		{
+			num_players_boxes[it].text = " " + std::to_string( it + 1) + " Players";
+		}
 	}
+	
+	m_font = GetFontDefault();
 }
 
 void NumPlayerSetter::handle_input(ControllerInput& controller_input, KeyboardInput& key_input)
@@ -102,11 +112,13 @@ void NumPlayerSetter::render()
 		//draw each slot
 		if(i != m_current_slot)
 		{
-			DrawRectangleRec(num_players_boxes[i].render_rect, WHITE);
+			DrawRectangleRec(num_players_boxes[i].render_rect,WHITE);
+			DrawTextRec(m_font,num_players_boxes[i].text.c_str(),num_players_boxes[i].render_rect,12,2.0f, true, BLACK);
 		}
 		else
 		{
-			DrawRectangleRec(num_players_boxes[i].render_rect, YELLOW);
+			DrawRectangleRec(num_players_boxes[i].render_rect,YELLOW);
+			DrawTextRec(m_font,num_players_boxes[i].text.c_str(),num_players_boxes[i].render_rect,12,2.0f, true, BLACK);
 		}
 		
 	}

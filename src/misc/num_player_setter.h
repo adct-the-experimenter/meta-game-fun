@@ -12,12 +12,13 @@
 #include "core/entity.h"
 
 #include <vector>
+#include <string>
 
 struct NumbersBox
 {	
 	
 	Rectangle render_rect;
-		
+	std::string text;
 	
 };
 
@@ -61,6 +62,8 @@ private:
 	void handle_keyboard_input(KeyboardInput& input);
 	
 	std::int8_t m_num_players;
+	
+	Font m_font;
 };
 
 #endif
