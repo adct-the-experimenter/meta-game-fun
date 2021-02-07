@@ -40,9 +40,10 @@ void CameraSystem::Update()
 		
 		
 		//center camera position with player
+		//15 is half of the width of the player character
 		
-		m_cameras_ptr->at(player.num_player - 1).camera_rect.x = transform.position.x - (m_cameras_ptr->at(entity).camera_rect.width / 2);
-		m_cameras_ptr->at(player.num_player - 1).camera_rect.y = transform.position.y - (m_cameras_ptr->at(entity).camera_rect.height / 2);
+		m_cameras_ptr->at(player.num_player - 1).camera_rect.x = (transform.position.x + 15) - (m_cameras_ptr->at(player.num_player - 1).camera_rect.width / 2);
+		m_cameras_ptr->at(player.num_player - 1).camera_rect.y = (transform.position.y + 15) - (m_cameras_ptr->at(player.num_player - 1).camera_rect.height / 2);
 		
 		//bounds check
 		if(m_cameras_ptr->at(player.num_player - 1).camera_rect.x < 0)
