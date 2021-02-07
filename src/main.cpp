@@ -210,6 +210,9 @@ void logic()
 				//initialze char creator
 				gCharCreator.Init(&entities,gNumPlayers);
 				
+				//initialize camera system
+				cameraSystem->Init(&player_cameras,gNumPlayers,screenWidth,screenHeight);
+				
 				//move to next state
 				m_game_state = GameState::CHAR_CREATOR;
 			}
@@ -363,7 +366,6 @@ void InitMainECS()
 	//with signature that has these components
 	
 	cameraSystem = gCoordinator.RegisterSystem<CameraSystem>();
-	cameraSystem->Init(&player_cameras,1,800,600);
 	
 	Signature camera_sig;
 	camera_sig.set(gCoordinator.GetComponentType<Transform2D>());
@@ -383,9 +385,6 @@ void InitMainECS()
 	animation_sig.set(gCoordinator.GetComponentType<Animation>());
 	animation_sig.set(gCoordinator.GetComponentType<RenderComponent>());
 	gCoordinator.SetSystemSignature<AnimationSystem>(animation_sig);
-	
-	//make entity for player
-	entities[0] = gCoordinator.CreateEntity();
 	
 }
 

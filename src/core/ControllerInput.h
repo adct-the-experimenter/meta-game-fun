@@ -51,6 +51,7 @@ public:
 	
 	void Init(std::uint8_t num_players)
 	{
+		gamepads_vec.clear();
 		gamepads_vec.resize(num_players);
 	};
 	
