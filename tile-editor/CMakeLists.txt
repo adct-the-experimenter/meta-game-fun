@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1.1)
 
 set (CMAKE_CXX_STANDARD 11)
 
-set(PROJECT_NAME meta-game-fun)
+set(PROJECT_NAME tile-editor)
 project (${PROJECT_NAME} LANGUAGES C CXX)
 
 option(DATAPATH "Path to data Directory" ON)
@@ -34,7 +34,7 @@ link_directories( /usr/lib /usr/local/lib )
 set ( PROJECT_INCLUDE_DIR  ${pugixml_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS})
 
 #for where to find header files for source and library
-include_directories(/usr/include /usr/local/include ./src ${PROJECT_INCLUDE_DIR})
+include_directories(/usr/include /usr/local/include ./src ../src/ ${PROJECT_INCLUDE_DIR})
 
 if (MINGW)
     # need to link with mingw32 before SDL2
@@ -46,6 +46,7 @@ src/main.cpp
 ../src/misc/num_player_setter.cpp
 src/MediaLoader.cpp
 src/tile_editor.cpp
+../src/misc/globalvariables.cpp
 ../src/systems/PhysicsSystem.cpp
 ../src/systems/WorldSystem.cpp
 ../src/systems/CameraSystem.cpp

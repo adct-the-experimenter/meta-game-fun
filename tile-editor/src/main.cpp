@@ -28,6 +28,8 @@
 #include <iostream>
 #include <array>
 
+#include "tile_editor.h"
+
 //main
 
 //initialize manager for levels
@@ -86,12 +88,13 @@ std::vector <CustomCamera> player_cameras;
 
 bool video_game_playing = false;
 
-CharacterCreator gCharCreator;
 NumPlayerSetter gNumPlayerSetter;
 std::int8_t gNumPlayers = 0;
 
 const std::int16_t screenWidth = 800;
 const std::int16_t screenHeight = 600;
+
+TileEditor gTileEditor;
 
 int main()
 {
@@ -170,12 +173,6 @@ void handle_events()
 			gNumPlayerSetter.handle_input(gControllerInput,gKeyboardInput);
 			break;
 		}
-		case GameState::CHAR_CREATOR:
-		{
-			//run logic for character creator system here
-			gCharCreator.handle_input(gControllerInput,gKeyboardInput);
-			break;
-		}
 		case GameState::GAME:
 		{			
 			input_ReactSystem->Update(gControllerInput);
@@ -227,6 +224,137 @@ void logic()
 		case GameState::CHAR_CREATOR:
 		{
 			//Intialize players here
+			for(size_t i = 0; i < gNumPlayers; i++)
+			{
+				entities[i] = gCoordinator.CreateEntity();
+				
+				Texture2D* texture_player = &rpg_sprite_sheet_texture;
+				
+				std::array <RenderPartDescription,6> descript_array = {RenderPartDescription::HAIR,
+																		RenderPartDescription::HEAD,
+																		RenderPartDescription::EYE,
+																		RenderPartDescription::UPPER_BODY_CLOTHING,
+																		RenderPartDescription::LOWER_BODY_CLOTHING,
+																		RenderPartDescription::SHOES};
+				std::vector <RenderInfo> temp_body_parts;
+				temp_body_parts.resize(6);
+				
+				for(size_t slot_it = 0; slot_it < 6; slot_it++)
+				{
+					temp_body_parts[slot_it].texture_ptr = texture_player;
+					temp_body_parts[slot_it].frame_rect = {0,slot_it*30,30,30};
+					temp_body_parts[slot_it].tint = WHITE;
+					temp_body_parts[slot_it].part_description = descript_array[slot_it];
+					temp_body_parts[slot_it].position = {2.0f,2.0f};
+				}
+				
+				temp_body_parts[0].position = {5.0f,10.0f};
+				temp_body_parts[1].position = {5.0f,15.0f};
+				temp_body_parts[2].position = {5.0f,17.0f};
+				temp_body_parts[3].position = {5.0f,40.0f};
+				temp_body_parts[4].position = {5.0f,65.0f};
+				temp_body_parts[5].position = {5.0f,75.0f};
+				
+				
+				
+				gCoordinator.AddComponent(
+								entities[i],
+								RenderComponent{
+									.multi_render_parts_vec = temp_body_parts,
+									.multi_part = true
+								}
+							);
+				
+				Vector2 char_position = {40,40};
+				
+				//add render position
+				gCoordinator.AddComponent(
+								entities[i],
+								RenderPosition{
+									.overall_position = char_position
+								}
+							);
+				
+				
+				//add player info component
+				
+				std::string name = "Player" + std::to_string(i+1);
+				std::string partner_name = "none";
+				std::uint16_t balance = 200;
+				std::uint8_t hp = 100;
+				std::string job = "none";
+				LooksStatus look = LooksStatus::NORMAL;
+				PlayerTimeStatus time_stat = PlayerTimeStatus::NONE;
+				ActivityStatus activity_stat = ActivityStatus::ROAMING_WORLD;
+				gCoordinator.AddComponent(entities[i], Player{.name = name, .romantic_partner_name = partner_name,
+														.time_status=time_stat,
+														.money = balance,
+														.health = hp,
+														.job_occupation = job,
+														.look_status = look,
+														.activity_status = activity_stat,
+														.num_player = i + 1} );
+														
+				//add input react component
+				InputReact react;
+				react.actor_type = InputReactorType::PLAYER;
+				react.reactToInput = true;
+				react.player_num = i + 1;
+								 
+				gCoordinator.AddComponent(
+								entities[i],
+								react
+								);
+				
+				//add transform
+				Vector2 initP = {2.0f,2.0f};
+				gCoordinator.AddComponent(
+							entities[i],
+							Transform2D{
+								.position = initP
+							}
+						);
+				
+				//add rigid body
+				Vector2 initV = {0.0f,0.0f};
+				gCoordinator.AddComponent(
+							entities[i],
+							RigidBody2D{
+								.velocity = initV
+							}
+						);
+						
+				//add gravity component for later use
+				Vector2 grav = {0.0f,0.0f};
+				gCoordinator.AddComponent(
+							entities[i],
+							Gravity2D{
+								.force = grav 
+							}
+						);
+						
+				//add physics type
+				PhysicsType pType = PhysicsType::LIFE_RPG;
+				gCoordinator.AddComponent(
+							entities[i],
+							PhysicsTypeComponent{
+								.phy_type = pType 
+							}
+						);
+						
+				//add animation component
+				AnimationInfo aInfo;
+				aInfo.anim_actor_type = AnimatedActorType::PLAYER;
+				aInfo.horiz_frame_offset = 0;
+				aInfo.frame_size = 30;
+				aInfo.frame_count = 0;
+				gCoordinator.AddComponent(
+							entities[i],
+							Animation{
+								.info = aInfo
+							}
+						);
+			}
 			
 			//move to next state
 			m_game_state = GameState::GAME;
@@ -385,7 +513,7 @@ void InitRaylibSystem()
 	
 	SetConfigFlags(FLAG_MSAA_4X_HINT);  // Set MSAA 4X hint before windows creation
 	
-    InitWindow(screenWidth, screenHeight, "Meta Game Fun");
+    InitWindow(screenWidth, screenHeight, "Tile Editor");
 	
 	
 	// initialize SDL2 for gamepad handling
