@@ -61,6 +61,7 @@ bool TileEditor::LoadDataBasedOnTilesheetDescription(std::string filepath)
 												pugi::parse_default);
     if (!result)
     {
+		std::cout << "File: " << filepath << std::endl;
         std::cout << "Parse error: " << result.description()
             << ", character pos= " << result.offset;
         return false;
@@ -69,10 +70,13 @@ bool TileEditor::LoadDataBasedOnTilesheetDescription(std::string filepath)
     pugi::xml_node root = doc.child("TileDescriptionXML");
     
     //save path to tilesheet
-    pugi::xml_node tilesheet_node = root.child("TileSheet");
+    pugi::xml_node tilesheet_node = root.child("Tilesheet");
     std::string ts_path = tilesheet_node.attribute("path").value();
     
     m_tilesheet_path = ts_path;
+    
+    //load tile sheet
+    m_tilesheet_texture = LoadTexture(m_tilesheet_path.c_str());
     
     //set up tile selector based on data
     pugi::xml_node tileRoot = root.child("Tiles");
@@ -126,7 +130,7 @@ bool TileEditor::LoadDataBasedOnTilesheetDescription(std::string filepath)
 	for(size_t i = 0; i < m_tile_selector.select_tiles.size(); i++)
 	{
 		 
-		if(i % 3)
+		if(i % 2)
 		{
 			x_offset = 0;
 			y_offset += m_tile_selector.select_tiles[i].frame_clip.height;
@@ -238,6 +242,15 @@ void TileEditor::SaveDataToXMLFile(std::string filepath)
 void TileEditor::handleInputMouse()
 {
 	//save last mouse click position
+	
+	
+	m_click = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+	
+	if(m_click)
+	{
+		m_mouseX = GetMousePosition().x;
+		m_mouseY = GetMousePosition().y;
+	}
 }
 	
 void TileEditor::logic()
@@ -255,6 +268,7 @@ void TileEditor::logic()
 			{
 				//set current tile to the one that was clicked on. use index of vector to set pointer
 				m_tile_selector.current_tile = &m_tile_selector.select_tiles[i];
+				m_tile_selector.current_tile_index = i;
 			}
 			
 		}
@@ -310,8 +324,7 @@ void TileEditor::render()
 	//render tile placement area
 	for(size_t i = 0; i < m_tiles_vec.size(); i++)
 	{
-		Vector2 pos = {m_tiles_vec[i].x,
-					   m_tiles_vec[i].y};
+		Vector2 pos = {m_tiles_vec[i].x,m_tiles_vec[i].y};
 		
 		if(m_tiles_vec[i].frame_clip_ptr)
 		{

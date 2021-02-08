@@ -144,8 +144,7 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		std::string path = "./tilesheet-descr.xml";
-		if(!gTileEditor.LoadDataBasedOnTilesheetDescription(path))
+		if(!gTileEditor.LoadDataBasedOnTilesheetDescription(tilesheet_descr_xml))
 		{
 			std::cout << "Failed to load data from tilesheet description!\n";
 			gMediaLoader.freeMedia();
@@ -154,6 +153,7 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
+			gTileEditor.SetLevelDimensions(30,30,300,300);
 			
 			gControllerInput.Init(1);
 			gNumPlayerSetter.Init();
@@ -218,7 +218,8 @@ void handle_events()
 			break;
 		}
 		case GameState::GAME:
-		{			
+		{
+			gTileEditor.handleInputMouse();			
 			input_ReactSystem->Update(gControllerInput);
 				
 			break;
@@ -405,7 +406,9 @@ void logic()
 			break;
 		}
 		case GameState::GAME:
-		{			
+		{
+			gTileEditor.logic();			
+			
 			physicsSystem->Update(dt);
 			
 			//set up frame for render
@@ -435,10 +438,13 @@ void render()
 		case GameState::GAME:
 		{
 			
+			
 			cameraSystem->Update();
 			
 		    //render any entity that has render component
 			renderSystem->Update();
+			
+			gTileEditor.render();
 						
 			break;
 		}
