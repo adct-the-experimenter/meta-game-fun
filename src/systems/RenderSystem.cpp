@@ -10,9 +10,7 @@
 
 extern Coordinator gCoordinator;
 
-#define max(a, b) ((a)>(b)? (a) : (b))
-#define min(a, b) ((a)<(b)? (a) : (b))
-
+#include "misc/level_maps.h"
 
 void RenderSystem::Init(std::vector <CustomCamera> *cameras,std::uint8_t num_players)
 {
@@ -48,9 +46,53 @@ bool IsObjectInCameraView(float& posX, float& posY, Rectangle& camera_rect)
 	return true;
 }
 
+void RenderLevelMapRelativeToCamera(Texture2D* tilesheet_ptr, std::vector <Tile> *levelmap_ptr,Rectangle& camera)
+{
+	bool render = true;
+	if(!tilesheet_ptr)
+	{
+		std::cout << "Level map tilesheet texture is uninitialized in render!\n";
+		render = false;
+	}
+	if(!levelmap_ptr)
+	{
+		std::cout << "Level map pointer is uninitialized in render!\n";
+		render = false;
+	}
+	
+	if(render)
+	{
+		for(size_t i = 0; i < levelmap_ptr->size(); i++)
+		{
+			bool renderTile = false;
+			
+			if((levelmap_ptr->at(i).x > camera.x) && 
+				(levelmap_ptr->at(i).x < camera.x + camera.width) &&
+				(levelmap_ptr->at(i).y > camera.y) &&
+				(levelmap_ptr->at(i).y < camera.y + camera.height))
+			{
+				renderTile = true;
+			}
+			
+			if( renderTile )
+			{
+				
+				Vector2 pos = {levelmap_ptr->at(i).x - camera.x,levelmap_ptr->at(i).y - camera.y};
+				if(levelmap_ptr->at(i).frame_clip_ptr)
+				{
+					DrawTextureRec(*tilesheet_ptr, 
+							   *levelmap_ptr->at(i).frame_clip_ptr, 
+							   pos, 
+							   WHITE);
+				}
+			}
+			
+		}
+	}
+}
+
 void RenderSystem::Update()
 {
-	
 		
 	if(this->m_cameras_ptr)
 	{			
@@ -61,6 +103,12 @@ void RenderSystem::Update()
 			//if renderable object is within camera bounds.
 			
 				BeginTextureMode(m_viewports[i].target_texture);
+				
+				//render tiles
+				if(levelOne_tilemap_ptr)
+				{
+					RenderLevelMapRelativeToCamera(levelOne_tilemap_texture_ptr,levelOne_tilemap_ptr,m_cameras_ptr->at(i).camera_rect);
+				}
 				
 				//render texture background color
 				ClearBackground(RAYWHITE);

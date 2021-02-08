@@ -3,6 +3,11 @@
 #include "pugixml.hpp"
 #include <iostream>
 
+std::vector <Tile> *levelOne_tilemap_ptr;
+Texture2D* levelOne_tilemap_texture_ptr;
+std::uint32_t levelOne_tilewidth;
+std::uint32_t levelOne_tileheight;
+
 TileEditor::TileEditor()
 {
 	//tile placement area
@@ -77,6 +82,8 @@ bool TileEditor::LoadDataBasedOnTilesheetDescription(std::string filepath)
     
     //load tile sheet
     m_tilesheet_texture = LoadTexture(m_tilesheet_path.c_str());
+    
+    levelOne_tilemap_texture_ptr = &m_tilesheet_texture;
     
     //set up tile selector based on data
     pugi::xml_node tileRoot = root.child("Tiles");
@@ -165,7 +172,7 @@ void TileEditor::SetLevelDimensions(std::uint32_t tileWidth, std::uint32_t tileH
 	//intiialize tile 
 	for(size_t i = 0; i < m_tiles_vec.size(); i++)
 	{
-		if(i == num_tiles_horiz)
+		if(i % num_tiles_horiz == 0)
 		{
 			x_offset = 0;
 			y_offset += tileHeight;
@@ -180,6 +187,11 @@ void TileEditor::SetLevelDimensions(std::uint32_t tileWidth, std::uint32_t tileH
 	
 	m_tile_width = tileWidth;
 	m_tile_height = tileHeight;
+	
+	levelOne_tilewidth = m_tile_width;
+	levelOne_tileheight = m_tile_height;
+	
+	levelOne_tilemap_ptr = &m_tiles_vec;
 }
 
 void TileEditor::SaveDataToXMLFile(std::string filepath)
@@ -262,7 +274,10 @@ void TileEditor::logic()
 		
 		for(size_t i = 0; i < m_tile_selector.select_tiles.size(); i++)
 		{
-			Rectangle box = {m_tiles_vec[i].x,m_tiles_vec[i].y,m_tile_width,m_tile_height};
+			Rectangle box = {m_tile_selector.select_tiles[i].select_box.x,
+							m_tile_selector.select_tiles[i].select_box.y,
+							m_tile_width,m_tile_height};
+							
 			//set tile type in array
 			if(MouseInBox(m_mouseX,m_mouseY,box))
 			{
@@ -302,25 +317,20 @@ void TileEditor::render()
 		Vector2 pos = {m_tile_selector.select_tiles[i].select_box.x,
 						m_tile_selector.select_tiles[i].select_box.y};
 		
-		//if a tile is selected render it with yellow tint
-		if(i == m_tile_selector.current_tile_index)
-		{
-			DrawTextureRec(m_tilesheet_texture, 
-						   m_tile_selector.select_tiles[i].frame_clip, 
-						   pos, 
-						   YELLOW);
-		}
-		//else render it normally
-		else
-		{
-			
-			DrawTextureRec(m_tilesheet_texture, 
+		//render texture
+		DrawTextureRec(m_tilesheet_texture, 
 						   m_tile_selector.select_tiles[i].frame_clip, 
 						   pos, 
 						   WHITE);
+						   
+		//if a tile is selected render it with yellow rectangle beside it
+		if(i == m_tile_selector.current_tile_index)
+		{
+			DrawRectangleRec((Rectangle){pos.x - 30,pos.y + 10,m_tile_width/2,m_tile_height/2}, YELLOW);
 		}
 	}
 	
+	/*
 	//render tile placement area
 	for(size_t i = 0; i < m_tiles_vec.size(); i++)
 	{
@@ -335,4 +345,5 @@ void TileEditor::render()
 		}
 		
 	}
+	*/
 }

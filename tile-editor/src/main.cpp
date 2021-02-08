@@ -437,15 +437,13 @@ void render()
 		}
 		case GameState::GAME:
 		{
-			
-			
 			cameraSystem->Update();
 			
 		    //render any entity that has render component
 			renderSystem->Update();
 			
 			gTileEditor.render();
-						
+			
 			break;
 		}
 	}

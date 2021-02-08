@@ -6,15 +6,7 @@
 #include <vector>
 #include <string>
 
-enum class TileType : std::uint8_t {NONE=0, PUSH_BACK, BACKGROUND};
-
-struct Tile
-{
-	std::uint32_t x;
-	std::uint32_t y;
-	TileType type;
-	Rectangle* frame_clip_ptr;
-};
+#include "../src/misc/level_maps.h"
 
 struct SelectableTile
 {
