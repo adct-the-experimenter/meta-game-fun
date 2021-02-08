@@ -95,7 +95,7 @@ std::int8_t gNumPlayers = 0;
 const std::int16_t screenWidth = 800;
 const std::int16_t screenHeight = 600;
 
-int main()
+int main(int argc, char* args[])
 {
 	InitRaylibSystem();
 	

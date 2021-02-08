@@ -25,10 +25,13 @@ struct SelectableTile
 
 struct TileBox
 {
+	//position of tile box
 	std::uint32_t x;
 	std::uint32_t y;
+	
 	std::vector <SelectableTile> select_tiles;
 	SelectableTile* current_tile;
+	size_t current_tile_index;
 };
 
 class TileEditor
@@ -39,12 +42,13 @@ public:
 	~TileEditor();
 	
 //Set up
-	void LoadDataBasedOnTilesheetDescription(std::string filepath);
+	bool LoadDataBasedOnTilesheetDescription(std::string filepath);
 
 	void SetLevelDimensions(std::uint32_t tileWidth, std::uint32_t tileHeight, 
 							std::uint32_t levelWidth, std::uint32_t levelHeight);
 	
 	void SaveDataToXMLFile(std::string filepath);
+	
 	
 //Game loop
 	void handleInputMouse();
@@ -56,8 +60,10 @@ public:
 	
 private:
 	//path to tilesheet
+	std::string m_tilesheet_path;
 	
-	//path to xml file describing tile sheet
+	//Tile sheet texture
+	Texture2D m_tilesheet_texture;
 	
 	//box that allows selecting from tiles
 	TileBox m_tile_selector;

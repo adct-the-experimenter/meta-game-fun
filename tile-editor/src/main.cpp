@@ -30,6 +30,8 @@
 
 #include "tile_editor.h"
 
+#include <fstream>
+
 //main
 
 //initialize manager for levels
@@ -96,8 +98,40 @@ const std::int16_t screenHeight = 600;
 
 TileEditor gTileEditor;
 
-int main()
+int main(int argc, char* argv[])
 {
+	
+	std::string tilesheet_descr_xml;
+	for (size_t i = 1; i < argc; ++i) 
+	{
+		if(std::string(argv[i]) == "--ts")
+		{
+			if (i + 1 < argc) 
+			{ 
+				// Make sure we aren't at the end of argv!
+				tilesheet_descr_xml = std::string(argv[i+1]); // Increment 'i' so we don't get the argument as the next argv[i].
+				
+				if(tilesheet_descr_xml == "")
+				{
+					std::cout << "Put in an xml file describing layout of frames tile sheet.\
+					\n Example: ./tile-editor --ts something.xml";
+				}
+					
+				std::ifstream ifile(tilesheet_descr_xml);
+				if((bool)ifile)
+				{
+					std::cout << "Using " << tilesheet_descr_xml << std::endl;
+				}
+				else
+				{
+					std::cout << "Failed to find file " << tilesheet_descr_xml << ". It does not exist!\n";
+					return 0;
+				}
+
+			}
+		}
+	}
+	
 	InitRaylibSystem();
 	
 	//initialize tile editor
@@ -110,12 +144,22 @@ int main()
 	}
 	else
 	{
-		gControllerInput.Init(1);
-		gNumPlayerSetter.Init();
+		std::string path = "./tilesheet-descr.xml";
+		if(!gTileEditor.LoadDataBasedOnTilesheetDescription(path))
+		{
+			std::cout << "Failed to load data from tilesheet description!\n";
+			gMediaLoader.freeMedia();
+			CloseRaylibSystem();
+			return 0;
+		}
+		else
+		{
+			
+			gControllerInput.Init(1);
+			gNumPlayerSetter.Init();
 		
-		InitMainECS();
-		
-		
+			InitMainECS();
+		}
 		
 		
 		bool quit = false;
