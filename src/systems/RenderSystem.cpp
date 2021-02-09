@@ -49,6 +49,7 @@ bool IsObjectInCameraView(float& posX, float& posY, Rectangle& camera_rect)
 void RenderLevelMapRelativeToCamera(Texture2D* tilesheet_ptr, std::vector <Tile> *levelmap_ptr,Rectangle& camera)
 {
 	bool render = true;
+	
 	if(!tilesheet_ptr)
 	{
 		std::cout << "Level map tilesheet texture is uninitialized in render!\n";
@@ -104,11 +105,13 @@ void RenderSystem::Update()
 			
 				BeginTextureMode(m_viewports[i].target_texture);
 				
+				#ifdef TILE_EDITOR_H
 				//render tiles
 				if(levelOne_tilemap_ptr)
 				{
 					RenderLevelMapRelativeToCamera(levelOne_tilemap_texture_ptr,levelOne_tilemap_ptr,m_cameras_ptr->at(i).camera_rect);
 				}
+				#endif
 				
 				//render texture background color
 				ClearBackground(RAYWHITE);

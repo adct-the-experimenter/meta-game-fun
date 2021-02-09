@@ -22,6 +22,8 @@ TileEditor::TileEditor()
 	m_tile_selector.x = 30;
 	m_tile_selector.y = 100;
 	
+	m_save_buttton.box = {30,200,60,30};
+	
 }
 
 TileEditor::~TileEditor()
@@ -158,6 +160,9 @@ bool TileEditor::LoadDataBasedOnTilesheetDescription(std::string filepath)
 void TileEditor::SetLevelDimensions(std::uint32_t tileWidth, std::uint32_t tileHeight, 
 							std::uint32_t levelWidth, std::uint32_t levelHeight)
 {
+	m_levelWidth = levelWidth;
+	m_levelHeight = levelHeight;
+	
 	//set vector of tiles based on level dimensions
 	std::uint32_t num_tiles_horiz = levelWidth / tileWidth;
 	std::uint32_t num_tiles_vert = levelHeight / tileHeight;
@@ -194,6 +199,8 @@ void TileEditor::SetLevelDimensions(std::uint32_t tileWidth, std::uint32_t tileH
 	levelOne_tilemap_ptr = &m_tiles_vec;
 }
 
+void TileEditor::SetSaveXMLFile(std::string filepath){m_save_data_file = filepath;}
+
 void TileEditor::SaveDataToXMLFile(std::string filepath)
 {
 	std::cout << "Creating level map xml file...\n";
@@ -210,10 +217,25 @@ void TileEditor::SaveDataToXMLFile(std::string filepath)
     // A valid XML doc must contain a single root node of any name
     auto root = doc.append_child("LevelMap");
     
+    //save path to tile sheet
+    pugi::xml_node tilesheetNode = root.append_child("Tilesheet");
+    
+    tilesheetNode.append_attribute("path").set_value( m_tilesheet_path.c_str() );
+    
     //save number of tiles in level
 	std::cout << "Number of tiles: " << m_tiles_vec.size() << std::endl;
 	
 	//save level dimensions
+    pugi::xml_node dimensionsNode = root.append_child("Dimensions");
+    
+    dimensionsNode.append_attribute("width").set_value( std::to_string(int(m_levelWidth)).c_str() );
+    dimensionsNode.append_attribute("height").set_value( std::to_string(int(m_levelHeight)).c_str() );
+    
+    //save tile width tile height
+    pugi::xml_node tile_dimensionsNode = root.append_child("TileDimensions");
+    
+    tile_dimensionsNode.append_attribute("width").set_value( std::to_string(int(m_tile_width)).c_str() );
+    tile_dimensionsNode.append_attribute("height").set_value( std::to_string(int(m_tile_height)).c_str() );
     
     //create tiles node
     pugi::xml_node tilesNode = root.append_child("Tiles");
@@ -229,7 +251,7 @@ void TileEditor::SaveDataToXMLFile(std::string filepath)
 		{
 			case TileType::PUSH_BACK:{ nodeChild.append_child(pugi::node_pcdata).set_value("PUSHBACK"); break;}
 			case TileType::BACKGROUND:{ nodeChild.append_child(pugi::node_pcdata).set_value("BACKGROUND"); break;}
-			default:{std::cout << "Tile type not handled!\n"; break;}
+			default:{nodeChild.append_child(pugi::node_pcdata).set_value("NONE"); std::cout << "Tile type not handled! Placing None.\n"; break;}
 		}
 		
 	}
@@ -242,36 +264,50 @@ void TileEditor::SaveDataToXMLFile(std::string filepath)
 	
 	if(saveSucceeded)
 	{
-		std::cout << "Error! Save was not successful!\n";
+		std::cout << "Finished saving level map xml file!\n";
 	}
 	else
 	{
-		std::cout << "Finished saving level map xml file!\n";
+		std::cout << "Error! Save was not successful!\n";
 	}
 	
 }
 
-void TileEditor::handleInputMouse()
+bool TileEditor::LoadDataFromXMLFile(std::string mapFilePath, std::string tilesheetDescriptionFilePath)
+{
+	//read tilesheet description xml file for tile parameters
+	if(!TileEditor::LoadDataBasedOnTilesheetDescription(tilesheetDescriptionFilePath))
+	{
+		std::cout << "Failed to read tilesheet description xml!\n";
+		return false;
+	}
+	else
+	{
+		//read data from level map xml file
+		
+	}
+	
+	return true;
+    
+}
+
+void TileEditor::handleInputMouse(MouseInput& input)
 {
 	//save last mouse click position
 	
 	
-	m_click = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+	m_click = input.mouse_info.clicked;
+		
+	m_mouseX = input.mouse_info.x;
+	m_mouseY = input.mouse_info.y;
 	
-	if(m_click)
-	{
-		m_mouseX = GetMousePosition().x;
-		m_mouseY = GetMousePosition().y;
-	}
 }
 	
 void TileEditor::logic()
 {
 	if(m_click)
 	{
-		//if tile box tile is clicked on 
-		//for loop here
-		
+		//if tile box tile is clicked on 		
 		for(size_t i = 0; i < m_tile_selector.select_tiles.size(); i++)
 		{
 			Rectangle box = {m_tile_selector.select_tiles[i].select_box.x,
@@ -289,7 +325,6 @@ void TileEditor::logic()
 		}
 		
 		//if area for placing tiles was clicked on
-		//for loop here
 		for(size_t i = 0;i < m_tiles_vec.size(); i++)
 		{
 			Rectangle box = {m_tiles_vec[i].x,m_tiles_vec[i].y,m_tile_width,m_tile_height};
@@ -304,11 +339,17 @@ void TileEditor::logic()
 				
 			}
 		}
-			
+		
+		//if save button clicked on
+		if(MouseInBox(m_mouseX,m_mouseY,m_save_buttton.box))
+		{
+			//Save file 
+			TileEditor::SaveDataToXMLFile(m_save_data_file);
+		}
 	}
 	
 }
-	
+
 void TileEditor::render()
 {
 	//render tile box 
@@ -330,6 +371,10 @@ void TileEditor::render()
 		}
 	}
 	
+	//render save button
+	
+	DrawRectangleRec(m_save_buttton.box, GRAY);
+	DrawText("Save",m_save_buttton.box.x,m_save_buttton.box.y,12, BLACK);
 	/*
 	//render tile placement area
 	for(size_t i = 0; i < m_tiles_vec.size(); i++)

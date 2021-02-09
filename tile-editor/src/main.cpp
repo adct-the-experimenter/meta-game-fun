@@ -16,6 +16,9 @@
 #include "core/KeyboardTypingInputHandler.h"
 #include "core/KeyboardInput.h"
 
+#include "core/MouseInputHandler.h"
+#include "core/MouseInput.h"
+
 #include "misc/camera.h"
 #include "misc/MediaLoader.h"
 #include "misc/globalvariables.h"
@@ -45,6 +48,9 @@ ControllerInputHandler gControllerInputHandler;
 
 KeyboardInput gKeyboardInput;
 KeyboardTypingInputHandler gKeyboardTypingInputHandler;
+
+MouseInput gMouseInput;
+MouseInputHandler gMouseInputHandler;
 
 std::vector <Entity> entities(MAX_ENTITIES);
 
@@ -97,40 +103,20 @@ const std::int16_t screenWidth = 800;
 const std::int16_t screenHeight = 600;
 
 TileEditor gTileEditor;
+std::string tilesheet_descr_xml;
+std::string map_file_xml;
+bool createNewMapFile;
+
+int CheckConsoleArgs(int argc, char* argv[]);
 
 int main(int argc, char* argv[])
 {
 	
-	std::string tilesheet_descr_xml;
-	for (size_t i = 1; i < argc; ++i) 
+	
+	if( CheckConsoleArgs(argc,argv) == 0)
 	{
-		if(std::string(argv[i]) == "--ts")
-		{
-			if (i + 1 < argc) 
-			{ 
-				// Make sure we aren't at the end of argv!
-				tilesheet_descr_xml = std::string(argv[i+1]); // Increment 'i' so we don't get the argument as the next argv[i].
-				
-				if(tilesheet_descr_xml == "")
-				{
-					std::cout << "Put in an xml file describing layout of frames tile sheet.\
-					\n Example: ./tile-editor --ts something.xml";
-				}
-					
-				std::ifstream ifile(tilesheet_descr_xml);
-				if((bool)ifile)
-				{
-					std::cout << "Using " << tilesheet_descr_xml << std::endl;
-				}
-				else
-				{
-					std::cout << "Failed to find file " << tilesheet_descr_xml << ". It does not exist!\n";
-					return 0;
-				}
-
-			}
-		}
-	}
+		return 0;
+	};
 	
 	InitRaylibSystem();
 	
@@ -153,7 +139,16 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
-			gTileEditor.SetLevelDimensions(30,30,300,300);
+			gTileEditor.SetSaveXMLFile(map_file_xml);
+			
+			if(createNewMapFile)
+			{
+				gTileEditor.SetLevelDimensions(30,30,300,300);
+			}
+			else
+			{
+				//gTileEditor.LoadDataFromXMLFile(map_file_xml);
+			}
 			
 			gControllerInput.Init(1);
 			gNumPlayerSetter.Init();
@@ -210,6 +205,8 @@ void handle_events()
 	
 	gKeyboardTypingInputHandler.Update(&gKeyboardInput);
 	
+	gMouseInputHandler.Update(&gMouseInput);
+	
 	switch(m_game_state)
 	{
 		case GameState::TITLE_MENU:
@@ -219,7 +216,7 @@ void handle_events()
 		}
 		case GameState::GAME:
 		{
-			gTileEditor.handleInputMouse();			
+			gTileEditor.handleInputMouse(gMouseInput);			
 			input_ReactSystem->Update(gControllerInput);
 				
 			break;
@@ -581,3 +578,73 @@ void CloseRaylibSystem()
     CloseWindow();        // Close window and OpenGL context
 }
 
+int CheckConsoleArgs(int argc, char* argv[])
+{
+	for (size_t i = 1; i < argc; ++i) 
+	{
+		//if path to tile sheet description is given
+		if(std::string(argv[i]) == "--tsd")
+		{
+			if (i + 1 < argc) 
+			{ 
+				// Make sure we aren't at the end of argv!
+				tilesheet_descr_xml = std::string(argv[i+1]); // Increment 'i' so we don't get the argument as the next argv[i].
+				
+				if(tilesheet_descr_xml == "")
+				{
+					std::cout << "Put in an xml file describing layout of frames tile sheet.\
+					\n Example: ./tile-editor --tsd something.xml";
+				}
+					
+				std::ifstream ifile(tilesheet_descr_xml);
+				if((bool)ifile)
+				{
+					std::cout << "Using " << tilesheet_descr_xml << std::endl;
+				}
+				else
+				{
+					std::cout << "Failed to find file " << tilesheet_descr_xml << ". It does not exist!\n";
+					return 0;
+				}
+
+			}
+		}
+		//if path to already created xml file is givenn
+		else if(std::string(argv[i]) == "--map_file")
+		{
+			if (i + 1 < argc) 
+			{ 
+				// Make sure we aren't at the end of argv!
+				map_file_xml = std::string(argv[i+1]); // Increment 'i' so we don't get the argument as the next argv[i].
+				
+				if(map_file_xml == "")
+				{
+					std::cout << "Put in a map file describing layour of tiles.\
+					\n Example: ./tile-editor --map_file something.xml";
+				}
+					
+				std::ifstream ifile(map_file_xml);
+				if((bool)ifile)
+				{
+					std::cout << "Using " << map_file_xml << std::endl;
+					createNewMapFile = false;;
+				}
+				else
+				{
+					std::cout << "Failed to find file " << map_file_xml << ". It does not exist!\n";
+					std::cout << "Creating new file " << map_file_xml << std::endl;
+					createNewMapFile = true;
+				}
+
+			}
+		}
+		//else if help is called
+		else if(std::string(argv[i]) == "--help")
+		{
+			std::cout << "\nHelp for Tile Editor\n\n\tflag file \tdescription\n\t--tsd tsd.xml \Set tilesheet description\n\t--map_file map.xml \tSet file to load and/or save from.";
+			return 0;
+		}
+	}
+	
+	return 1;
+}

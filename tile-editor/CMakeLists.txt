@@ -44,6 +44,7 @@ endif ()
 set(SOURCES 
 src/main.cpp
 ../src/misc/num_player_setter.cpp
+
 src/MediaLoader.cpp
 src/tile_editor.cpp
 ../src/misc/globalvariables.cpp
@@ -54,7 +55,7 @@ src/tile_editor.cpp
 ../src/systems/RenderSystem.cpp
 ../src/systems/InputReactorSystem.cpp
 ../src/systems/EnemySystem.cpp
-../src/core/ControllerInputHandler.cpp ../src/core/KeyboardTypingInputHandler.cpp
+../src/core/MouseInputHandler.cpp ../src/core/ControllerInputHandler.cpp ../src/core/KeyboardTypingInputHandler.cpp
 			 )
 
 #get_cmake_property(_variableNames VARIABLES)

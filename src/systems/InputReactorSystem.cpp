@@ -63,6 +63,5 @@ void InputReactorSystem::Update(ControllerInput& input)
 			default:{break;}
 		}
 		
-		
 	}
 }

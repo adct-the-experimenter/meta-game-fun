@@ -8,6 +8,8 @@
 
 #include "../src/misc/level_maps.h"
 
+#include "../src/core/MouseInput.h"
+
 struct SelectableTile
 {
 	Rectangle frame_clip;
@@ -26,6 +28,13 @@ struct TileBox
 	size_t current_tile_index;
 };
 
+struct SaveButton
+{
+	
+	//position and dimensions of save button
+	Rectangle box;
+};
+
 class TileEditor
 {
 public:
@@ -39,11 +48,14 @@ public:
 	void SetLevelDimensions(std::uint32_t tileWidth, std::uint32_t tileHeight, 
 							std::uint32_t levelWidth, std::uint32_t levelHeight);
 	
+	void SetSaveXMLFile(std::string filepath);
+	
+	bool LoadDataFromXMLFile(std::string mapFilePath, std::string tilesheetDescriptionFilePath);
 	void SaveDataToXMLFile(std::string filepath);
 	
 	
 //Game loop
-	void handleInputMouse();
+	void handleInputMouse(MouseInput& input);
 	
 	void logic();
 	
@@ -51,6 +63,10 @@ public:
 	
 	
 private:
+
+	//path to save file
+	std::string m_save_data_file;
+	
 	//path to tilesheet
 	std::string m_tilesheet_path;
 	
@@ -72,6 +88,11 @@ private:
 	
 	std::uint32_t m_tile_width;
 	std::uint32_t m_tile_height;
+	
+	std::uint32_t m_levelWidth; 
+	std::uint32_t m_levelHeight;
+	
+	SaveButton m_save_buttton;
 };
 
 #endif
