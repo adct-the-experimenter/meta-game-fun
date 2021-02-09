@@ -126,6 +126,13 @@ bool TileEditor::LoadDataBasedOnTilesheetDescription(std::string filepath)
 		
 		sTile.frame_clip = {x,y,width,height};
 		
+		//set tile number
+		valString = tile_node.attribute("num").value();
+		sTile.tile_number = atoi(valString.c_str());
+		
+		//push into frame clip map
+		frame_clip_map[sTile.tile_number] = sTile.frame_clip;
+		
 		//push into vector
 		m_tile_selector.select_tiles.push_back(sTile);
 		
@@ -174,7 +181,7 @@ void TileEditor::SetLevelDimensions(std::uint32_t tileWidth, std::uint32_t tileH
 	std::uint32_t x_offset = 0;
 	std::uint32_t y_offset = 0;
 	
-	//intiialize tile 
+	//initialize tile position
 	for(size_t i = 0; i < m_tiles_vec.size(); i++)
 	{
 		if(i % num_tiles_horiz == 0)
@@ -215,7 +222,7 @@ void TileEditor::SaveDataToXMLFile(std::string filepath)
     declarationNode.append_attribute("standalone") = "yes";
     
     // A valid XML doc must contain a single root node of any name
-    auto root = doc.append_child("LevelMap");
+    auto root = doc.append_child("RootMap");
     
     //save path to tile sheet
     pugi::xml_node tilesheetNode = root.append_child("Tilesheet");
@@ -224,6 +231,9 @@ void TileEditor::SaveDataToXMLFile(std::string filepath)
     
     //save number of tiles in level
 	std::cout << "Number of tiles: " << m_tiles_vec.size() << std::endl;
+	
+	pugi::xml_node numTilesNode = root.append_child("NumberOfTiles");
+	numTilesNode.append_attribute("num").set_value( std::to_string(m_tiles_vec.size()).c_str() );
 	
 	//save level dimensions
     pugi::xml_node dimensionsNode = root.append_child("Dimensions");
@@ -237,6 +247,7 @@ void TileEditor::SaveDataToXMLFile(std::string filepath)
     tile_dimensionsNode.append_attribute("width").set_value( std::to_string(int(m_tile_width)).c_str() );
     tile_dimensionsNode.append_attribute("height").set_value( std::to_string(int(m_tile_height)).c_str() );
     
+    
     //create tiles node
     pugi::xml_node tilesNode = root.append_child("Tiles");
     
@@ -245,14 +256,16 @@ void TileEditor::SaveDataToXMLFile(std::string filepath)
 	for(size_t i = 0; i < m_tiles_vec.size(); i++)
 	{
 		 // Add child based on tile type
-		pugi::xml_node nodeChild = tilesNode.append_child("Type");
+		pugi::xml_node nodeChild = tilesNode.append_child("Tile");
 		
 		switch(m_tiles_vec[i].type)
 		{
-			case TileType::PUSH_BACK:{ nodeChild.append_child(pugi::node_pcdata).set_value("PUSHBACK"); break;}
-			case TileType::BACKGROUND:{ nodeChild.append_child(pugi::node_pcdata).set_value("BACKGROUND"); break;}
-			default:{nodeChild.append_child(pugi::node_pcdata).set_value("NONE"); std::cout << "Tile type not handled! Placing None.\n"; break;}
+			case TileType::PUSH_BACK:{ nodeChild.append_attribute("type").set_value("PUSHBACK"); break;}
+			case TileType::BACKGROUND:{ nodeChild.append_attribute("type").set_value("BACKGROUND"); break;}
+			default:{nodeChild.append_attribute("type").set_value("NONE"); std::cout << "Tile type not handled! Placing None.\n"; break;}
 		}
+		
+		nodeChild.append_attribute("num").set_value( std::to_string(m_tiles_vec[i].tile_number).c_str() );
 		
 	}
 
@@ -283,7 +296,116 @@ bool TileEditor::LoadDataFromXMLFile(std::string mapFilePath, std::string tilesh
 	}
 	else
 	{
+		// Create empty XML document within memory
+		pugi::xml_document doc;
+		
+		// Load XML file into memory
+		// Remark: to fully read declaration entries you have to specify
+		// "pugi::parse_declaration"
+		pugi::xml_parse_result result = doc.load_file(mapFilePath.c_str(),
+													pugi::parse_default);
+		if (!result)
+		{
+			std::cout << "File: " << mapFilePath << std::endl;
+			std::cout << "Parse error: " << result.description()
+				<< ", character pos= " << result.offset;
+			return false;
+		}
+		
+		pugi::xml_node root = doc.child("RootMap");
+		
 		//read data from level map xml file
+		std::string valString;
+		
+		//read number of tiles
+		pugi::xml_node numTilesNode = root.child("NumberOfTiles");
+		
+		valString = numTilesNode.attribute("num").value();
+		
+		m_tiles_vec.resize( size_t( atoi(valString.c_str()) ) );
+		
+		//read level dimensions
+		pugi::xml_node dimensionsNode = root.child("Dimensions");
+		
+		valString = dimensionsNode.attribute("width").value();
+		m_levelWidth = atoi(valString.c_str());
+		
+		valString = dimensionsNode.attribute("height").value();
+		m_levelHeight = atoi(valString.c_str());
+		
+		//read tile dimensions
+		pugi::xml_node tile_dimensions = root.child("TileDimensions");
+		
+		valString = tile_dimensions.attribute("width").value();
+		m_tile_width = atoi(valString.c_str());
+		
+		valString = tile_dimensions.attribute("height").value();
+		m_tile_height = atoi(valString.c_str());
+		
+		//for every tile in xml file
+		
+		pugi::xml_node tileRoot = root.child("Tiles");
+		size_t iterator = 0;
+		
+		//go through each tile in tiles node
+		for (pugi::xml_node tile_node = tileRoot.first_child(); tile_node; tile_node = tile_node.next_sibling())
+		{	
+			Tile tile;
+			
+			//set type
+			TileType type = TileType::NONE;
+			
+			valString = tile_node.attribute("type").value();
+			//std::cout << valString << std::endl;
+			
+			if(valString ==  "PUSHBACK"){type = TileType::PUSH_BACK; }
+			else if(valString ==  "BACKGROUND"){ type = TileType::BACKGROUND; }
+			else{std::cout << "Tile type not handled!" << "i:" << iterator << std::endl; }
+			
+			tile.type = type;
+			
+			//set tile number
+			
+			valString = tile_node.attribute("num").value();
+			tile.tile_number = atoi(valString.c_str());
+			
+			//set frame clip pointer based on tile number
+			
+			tile.frame_clip_ptr = &frame_clip_map[tile.tile_number];
+			
+			//assign to vector
+			m_tiles_vec[iterator] = tile;
+			
+			iterator++;
+		}
+		
+		
+		//set vector of tiles based on level dimensions
+		std::uint32_t num_tiles_horiz = m_levelWidth / m_tile_width;
+		std::uint32_t num_tiles_vert = m_levelHeight / m_tile_height;
+		
+		std::uint32_t x_offset = 0;
+		std::uint32_t y_offset = 0;
+		
+		//initialize tile position
+		for(size_t i = 0; i < m_tiles_vec.size(); i++)
+		{
+			if(i % num_tiles_horiz == 0)
+			{
+				x_offset = 0;
+				y_offset += m_tile_height;
+			}
+			
+			m_tiles_vec[i].x = m_tiles_startx + x_offset;
+			m_tiles_vec[i].y = m_tiles_starty + y_offset;
+			
+			x_offset += m_tile_width;
+		}
+		
+		levelOne_tilewidth = m_tile_width;
+		levelOne_tileheight = m_tile_height;
+	
+		levelOne_tilemap_ptr = &m_tiles_vec;
 		
 	}
 	
@@ -335,6 +457,7 @@ void TileEditor::logic()
 				{
 					m_tiles_vec[i].frame_clip_ptr = &m_tile_selector.current_tile->frame_clip;
 					m_tiles_vec[i].type = m_tile_selector.current_tile->type;
+					m_tiles_vec[i].tile_number = m_tile_selector.current_tile->tile_number;
 				}
 				
 			}
@@ -375,7 +498,10 @@ void TileEditor::render()
 	
 	DrawRectangleRec(m_save_buttton.box, GRAY);
 	DrawText("Save",m_save_buttton.box.x,m_save_buttton.box.y,12, BLACK);
+	
 	/*
+	 * Not needed, done in render system
+	 * Kept here for reference
 	//render tile placement area
 	for(size_t i = 0; i < m_tiles_vec.size(); i++)
 	{

@@ -10,8 +10,11 @@
 
 #include "../src/core/MouseInput.h"
 
+#include <map>
+
 struct SelectableTile
 {
+	std::uint32_t tile_number;
 	Rectangle frame_clip;
 	Rectangle select_box;
 	TileType type;
@@ -93,6 +96,9 @@ private:
 	std::uint32_t m_levelHeight;
 	
 	SaveButton m_save_buttton;
+	
+	//map to keep track of the tile number of a tile from tile sheet.
+	std::map <std::uint32_t, Rectangle> frame_clip_map;
 };
 
 #endif

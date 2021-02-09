@@ -105,7 +105,7 @@ void RenderSystem::Update()
 			
 				BeginTextureMode(m_viewports[i].target_texture);
 				
-				#ifdef TILE_EDITOR_H
+				#ifdef TILE_EDITOR
 				//render tiles
 				if(levelOne_tilemap_ptr)
 				{

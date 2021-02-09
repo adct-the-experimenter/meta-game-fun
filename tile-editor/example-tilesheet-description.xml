@@ -2,7 +2,7 @@
 <TileDescriptionXML>
 	<Tilesheet path="../example-tilesheet.png"/>
 	<Tiles>
-		<Tile type="PUSHBACK" x="0" y="0" width="30" height="30"/>
-		<Tile type="BACKGROUND" x="0" y="30" width="30" height="30"/>
+		<Tile type="PUSHBACK" x="0" y="0" width="30" height="30" num="1"/>
+		<Tile type="BACKGROUND" x="0" y="30" width="30" height="30" num="2"/>
 	</Tiles>
 </TileDescriptionXML>

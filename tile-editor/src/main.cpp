@@ -147,7 +147,7 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				//gTileEditor.LoadDataFromXMLFile(map_file_xml);
+				gTileEditor.LoadDataFromXMLFile(map_file_xml,tilesheet_descr_xml);
 			}
 			
 			gControllerInput.Init(1);
@@ -641,7 +641,7 @@ int CheckConsoleArgs(int argc, char* argv[])
 		//else if help is called
 		else if(std::string(argv[i]) == "--help")
 		{
-			std::cout << "\nHelp for Tile Editor\n\n\tflag file \tdescription\n\t--tsd tsd.xml \Set tilesheet description\n\t--map_file map.xml \tSet file to load and/or save from.";
+			std::cout << "\nHelp for Tile Editor\n\n\tflag file \tdescription\n\t--tsd tsd.xml \Set tilesheet description\n\t--map_file map.xml \tSet file to load and/or save from.\n";
 			return 0;
 		}
 	}
