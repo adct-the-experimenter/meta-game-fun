@@ -447,7 +447,7 @@ void TileEditor::logic()
 		}
 		
 		//if area for placing tiles was clicked on
-		for(size_t i = 0;i < m_tiles_vec.size(); i++)
+		for(size_t i = 0; i < m_tiles_vec.size(); i++)
 		{
 			Rectangle box = {m_tiles_vec[i].x,m_tiles_vec[i].y,m_tile_width,m_tile_height};
 			//set tile type in array
