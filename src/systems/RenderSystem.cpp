@@ -24,6 +24,7 @@ void RenderSystem::Init(std::vector <CustomCamera> *cameras,std::uint8_t num_pla
 
 bool IsObjectInCameraView(float& posX, float& posY, Rectangle& camera_rect)
 {
+	//half the width and height because the camera is centered on a player.
 	
 	if(posX < camera_rect.x)
 	{
@@ -67,7 +68,7 @@ void RenderLevelMapRelativeToCamera(Texture2D* tilesheet_ptr, std::vector <Tile>
 		{
 			bool renderTile = false;
 			
-			if((levelmap_ptr->at(i).x > camera.x) && 
+			if( (levelmap_ptr->at(i).x > camera.x) && 
 				(levelmap_ptr->at(i).x < camera.x + camera.width) &&
 				(levelmap_ptr->at(i).y > camera.y) &&
 				(levelmap_ptr->at(i).y < camera.y + camera.height))
@@ -103,89 +104,92 @@ void RenderSystem::Update()
 		{
 			//if renderable object is within camera bounds.
 			
-				BeginTextureMode(m_viewports[i].target_texture);
+			//draw to viewport texture
+			BeginTextureMode(m_viewports[i].target_texture);
 				
-				#ifdef TILE_EDITOR
-				//render tiles
-				if(levelOne_tilemap_ptr)
-				{
-					RenderLevelMapRelativeToCamera(levelOne_tilemap_texture_ptr,levelOne_tilemap_ptr,m_cameras_ptr->at(i).camera_rect);
-				}
-				#endif
+			#ifdef TILE_EDITOR
+			//render tiles
+			if(levelOne_tilemap_ptr)
+			{
+				RenderLevelMapRelativeToCamera(levelOne_tilemap_texture_ptr,levelOne_tilemap_ptr,m_cameras_ptr->at(i).camera_rect);
+			}
+			#endif
+			
+			//render texture background color
+			ClearBackground(RAYWHITE);
+			
+			//for every entity
+			for (auto const& entity : mEntities)
+			{
+				auto& render_comp = gCoordinator.GetComponent<RenderComponent>(entity);
+				auto& transform = gCoordinator.GetComponent<Transform2D>(entity);
 				
-				//render texture background color
-				ClearBackground(RAYWHITE);
-				for (auto const& entity : mEntities)
+				bool renderObjectBool = IsObjectInCameraView(transform.position.x,transform.position.y,m_cameras_ptr->at(i).camera_rect);
+				if(renderObjectBool)
 				{
-					auto& render_comp = gCoordinator.GetComponent<RenderComponent>(entity);
-					auto& transform = gCoordinator.GetComponent<Transform2D>(entity);
-					
-					bool renderObjectBool = IsObjectInCameraView(transform.position.x,transform.position.y,m_cameras_ptr->at(i).camera_rect);
-					if(renderObjectBool)
-					{
-						//change render position of renderable object relative to camera
-						auto& render_position = gCoordinator.GetComponent<RenderPosition>(entity);
-							
-						render_position.overall_position.x = transform.position.x - m_cameras_ptr->at(i).camera_rect.x;
-						render_position.overall_position.y = transform.position.y - m_cameras_ptr->at(i).camera_rect.y;
+					//change render position of renderable object relative to camera
+					auto& render_position = gCoordinator.GetComponent<RenderPosition>(entity);
 						
-						//render object
-						//if not multi part render
-						if(!render_comp.multi_part)
+					render_position.overall_position.x = transform.position.x - m_cameras_ptr->at(i).camera_rect.x;
+					render_position.overall_position.y = transform.position.y - m_cameras_ptr->at(i).camera_rect.y;
+					
+					//render object
+					//if not multi part render
+					if(!render_comp.multi_part)
+					{
+						if(render_comp.single_render_part.texture_ptr)
 						{
-							if(render_comp.single_render_part.texture_ptr)
-							{
-								//adjust render component positions according to overall position
-								Vector2 pos = {render_position.overall_position.x + render_comp.single_render_part.position.x,
-											  render_position.overall_position.y + render_comp.single_render_part.position.y};
-								
-								
-								DrawTextureRec(*render_comp.single_render_part.texture_ptr, 
-												render_comp.single_render_part.frame_rect, 
-												pos, 
-												render_comp.single_render_part.tint);
-							}
+							//adjust render component positions according to overall position
+							Vector2 pos = {render_position.overall_position.x + render_comp.single_render_part.position.x,
+										  render_position.overall_position.y + render_comp.single_render_part.position.y};
+							
+							
+							DrawTextureRec(*render_comp.single_render_part.texture_ptr, 
+											render_comp.single_render_part.frame_rect, 
+											pos, 
+											render_comp.single_render_part.tint);
 						}
-						else
+					}
+					else
+					{
+						if(render_comp.multi_render_parts_vec[0].texture_ptr)
 						{
-							if(render_comp.multi_render_parts_vec[0].texture_ptr)
+							for(int c = render_comp.multi_render_parts_vec.size() - 1; c >= 0; c--)
 							{
-								for(size_t c = render_comp.multi_render_parts_vec.size(); c >= 1; c--)
-								{
-									//render from last to first to make hair render over head
-									
-									//adjust render component positions according to overall position
-									Vector2 pos = {render_position.overall_position.x + render_comp.multi_render_parts_vec[c-1].position.x,
-												  render_position.overall_position.y + render_comp.multi_render_parts_vec[c-1].position.y};
-															
-									DrawTextureRec(*render_comp.multi_render_parts_vec[c-1].texture_ptr, 
-													render_comp.multi_render_parts_vec[c-1].frame_rect, 
-													pos, 
-													render_comp.multi_render_parts_vec[c-1].tint);
-								}
+								//render from last to first to make hair render over head
+								
+								//adjust render component positions according to overall position
+								Vector2 pos = {render_position.overall_position.x + render_comp.multi_render_parts_vec[c].position.x,
+											  render_position.overall_position.y + render_comp.multi_render_parts_vec[c].position.y};
+														
+								DrawTextureRec(*render_comp.multi_render_parts_vec[c].texture_ptr, 
+												render_comp.multi_render_parts_vec[c].frame_rect, 
+												pos, 
+												render_comp.multi_render_parts_vec[c].tint);
 							}
 						}
 					}
 				}
+			}
 			
 			EndTextureMode();
 			
 		}
 		
 	}
-		
 	
-	
+	//for every viewport	
 	for(size_t it = 0; it < m_viewports.size(); it++)
 	{
-		Rectangle source = {m_cameras_ptr->at(it).camera_rect.x, m_cameras_ptr->at(it).camera_rect.y, 
+		Rectangle clip = {m_cameras_ptr->at(it).camera_rect.x, m_cameras_ptr->at(it).camera_rect.y, 
 							(float)m_viewports.at(it).target_texture.texture.width, 
 							(float)-m_viewports.at(it).target_texture.texture.height};
 		
 			   
 		Vector2 position = {m_viewports.at(it).rect.x,m_viewports.at(it).rect.y};
-		DrawTextureRec(m_viewports.at(it).target_texture.texture, source, position, WHITE);
+		DrawTextureRec(m_viewports.at(it).target_texture.texture, clip, position, WHITE);
 	}
+	
 }
 
 void RenderSystem::UnloadTexture()
@@ -204,11 +208,6 @@ void RenderSystem::InitViewportsForThisNumberOfPlayers(std::uint8_t num_players)
 	std::int32_t screenWidth = GetScreenWidth();
 	std::int32_t screenHeight = GetScreenHeight();
 	
-	for(size_t i = 0; i < m_viewports.size(); i++)
-	{
-		m_viewports[i].target_texture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
-		SetTextureFilter(m_viewports[i].target_texture.texture, FILTER_BILINEAR);  // Texture scale filter to use
-	}
 	
 	switch(num_players)
 	{
@@ -224,13 +223,13 @@ void RenderSystem::InitViewportsForThisNumberOfPlayers(std::uint8_t num_players)
 			m_viewports[0].rect.width = screenWidth; m_viewports[0].rect.height = screenHeight / 2;
 			
 			m_viewports[1].rect.x = 0; m_viewports[1].rect.y = screenHeight / 2;
-			m_viewports[1].rect.width = screenWidth / 2; m_viewports[1].rect.height = screenHeight / 2;
+			m_viewports[1].rect.width = screenWidth; m_viewports[1].rect.height = screenHeight / 2;
 			break;
 		}
 		case 3:
 		{
 			m_viewports[0].rect.x = 0; m_viewports[0].rect.y = 0;
-			m_viewports[0].rect.width = screenWidth; m_viewports[0].rect.height = screenHeight;
+			m_viewports[0].rect.width = screenWidth / 2; m_viewports[0].rect.height = screenHeight / 2;
 			
 			m_viewports[1].rect.x = screenWidth / 2; m_viewports[1].rect.y = 0;
 			m_viewports[1].rect.width = screenWidth / 2; m_viewports[1].rect.height = screenHeight / 2;
@@ -242,7 +241,7 @@ void RenderSystem::InitViewportsForThisNumberOfPlayers(std::uint8_t num_players)
 		case 4:
 		{
 			m_viewports[0].rect.x = 0; m_viewports[0].rect.y = 0;
-			m_viewports[0].rect.width = screenWidth; m_viewports[0].rect.height = screenHeight;
+			m_viewports[0].rect.width = screenWidth / 2; m_viewports[0].rect.height = screenHeight / 2;
 			
 			m_viewports[1].rect.x = screenWidth / 2; m_viewports[1].rect.y = 0;
 			m_viewports[1].rect.width = screenWidth / 2; m_viewports[1].rect.height = screenHeight / 2;
@@ -256,4 +255,11 @@ void RenderSystem::InitViewportsForThisNumberOfPlayers(std::uint8_t num_players)
 		}
 		default:{std::cout << "Unsupported number of players in viewports init!\n";}
 	}
+	
+	for(size_t i = 0; i < m_viewports.size(); i++)
+	{
+		m_viewports[i].target_texture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+		SetTextureFilter(m_viewports[i].target_texture.texture, FILTER_BILINEAR);  // Texture scale filter to use
+	}
+	
 }

@@ -43,7 +43,8 @@ void CameraSystem::Update()
 		//15 is half of the width of the player character
 		
 		m_cameras_ptr->at(player.num_player - 1).camera_rect.x = (transform.position.x + 15) - (m_cameras_ptr->at(player.num_player - 1).camera_rect.width / 2);
-		m_cameras_ptr->at(player.num_player - 1).camera_rect.y = (transform.position.y + 15) - (m_cameras_ptr->at(player.num_player - 1).camera_rect.height / 2);
+		m_cameras_ptr->at(player.num_player - 1).camera_rect.y = (transform.position.y + 60) - (m_cameras_ptr->at(player.num_player - 1).camera_rect.height / 2);
+		
 		
 		//bounds check
 		if(m_cameras_ptr->at(player.num_player - 1).camera_rect.x < 0)
@@ -56,6 +57,11 @@ void CameraSystem::Update()
 			m_cameras_ptr->at(player.num_player - 1).camera_rect.y = 0;
 		}
 		
+		/*
+		std::cout << "Player " << int(player.num_player) << " , Camera(x,y): " << m_cameras_ptr->at(player.num_player - 1).camera_rect.x << "," 
+		<< m_cameras_ptr->at(player.num_player - 1).camera_rect.y << " Player transform(x,y): " << 
+		transform.position.x << "," << transform.position.y << std::endl;
+		*/
 		
 	}
 	
