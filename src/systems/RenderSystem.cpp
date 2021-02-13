@@ -181,7 +181,7 @@ void RenderSystem::Update()
 	//for every viewport	
 	for(size_t it = 0; it < m_viewports.size(); it++)
 	{
-		Rectangle clip = {m_cameras_ptr->at(it).camera_rect.x, m_cameras_ptr->at(it).camera_rect.y, 
+		Rectangle clip = {0,0, 
 							(float)m_viewports.at(it).target_texture.texture.width, 
 							(float)-m_viewports.at(it).target_texture.texture.height};
 		
