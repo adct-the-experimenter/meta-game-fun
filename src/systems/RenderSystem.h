@@ -12,6 +12,9 @@ struct RenderViewport
 {
 	Rectangle rect;
 	RenderTexture2D target_texture;
+	
+	Rectangle clip;
+	Vector2 position;
 };
 
 class RenderSystem : public System

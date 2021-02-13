@@ -181,13 +181,11 @@ void RenderSystem::Update()
 	//for every viewport	
 	for(size_t it = 0; it < m_viewports.size(); it++)
 	{
-		Rectangle clip = {0,0, 
-							(float)m_viewports.at(it).target_texture.texture.width, 
-							(float)-m_viewports.at(it).target_texture.texture.height};
 		
-			   
-		Vector2 position = {m_viewports.at(it).rect.x,m_viewports.at(it).rect.y};
-		DrawTextureRec(m_viewports.at(it).target_texture.texture, clip, position, WHITE);
+		DrawTextureRec(m_viewports.at(it).target_texture.texture, 
+						m_viewports.at(it).clip, 
+						m_viewports.at(it).position, 
+						WHITE);
 	}
 	
 }
@@ -260,6 +258,13 @@ void RenderSystem::InitViewportsForThisNumberOfPlayers(std::uint8_t num_players)
 	{
 		m_viewports[i].target_texture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
 		SetTextureFilter(m_viewports[i].target_texture.texture, FILTER_BILINEAR);  // Texture scale filter to use
+		
+		m_viewports[i].clip = {0,0, 
+							(float)m_viewports.at(i).target_texture.texture.width, 
+							(float)-m_viewports.at(i).target_texture.texture.height};
+		
+			   
+		m_viewports[i].position = Vector2{m_viewports.at(i).rect.x,m_viewports.at(i).rect.y};
 	}
 	
 }

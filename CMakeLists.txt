@@ -43,6 +43,7 @@ endif ()
 
 set(SOURCES 
 src/main.cpp
+src/misc/TileManager.cpp
 src/misc/num_player_setter.cpp
 src/misc/globalvariables.cpp
 src/misc/MediaLoader.cpp

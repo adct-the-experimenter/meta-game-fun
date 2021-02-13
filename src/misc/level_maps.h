@@ -1,6 +1,7 @@
 #ifndef LEVEL_MAP_H
 #define LEVEL_MAP_H
 
+#include "raylib.h"
 #include <vector>
 #include <cstdint>
 #include <iostream>
@@ -21,5 +22,20 @@ extern Texture2D* levelOne_tilemap_texture_ptr;
 extern std::vector <Tile> *levelOne_tilemap_ptr;
 extern std::uint32_t levelOne_tilewidth;
 extern std::uint32_t levelOne_tileheight;
+
+struct TileMap
+{
+	std::vector <Tile> tiles;
+	std::vector <Rectangle> frame_clip_map;
+
+	std::uint32_t levelWidth;
+	std::uint32_t levelHeight;
+	std::uint32_t tiles_startx;
+	std::uint32_t tiles_starty;
+	
+	std::uint32_t tileWidth;
+	std::uint32_t tileHeight;
+	Texture2D tilesheetTexture;
+};
 
 #endif
