@@ -12,6 +12,7 @@ extern Coordinator gCoordinator;
 
 #include "misc/level_maps.h"
 
+
 void RenderSystem::Init(std::vector <CustomCamera> *cameras,std::uint8_t num_players)
 {
 	m_cameras_ptr = cameras;
@@ -68,10 +69,10 @@ void RenderLevelMapRelativeToCamera(Texture2D* tilesheet_ptr, std::vector <Tile>
 		{
 			bool renderTile = false;
 			
-			if( (levelmap_ptr->at(i).x > camera.x) && 
-				(levelmap_ptr->at(i).x < camera.x + camera.width) &&
-				(levelmap_ptr->at(i).y > camera.y) &&
-				(levelmap_ptr->at(i).y < camera.y + camera.height))
+			if( (levelmap_ptr->at(i).x >= camera.x) && 
+				(levelmap_ptr->at(i).x <= camera.x + camera.width) &&
+				(levelmap_ptr->at(i).y >= camera.y) &&
+				(levelmap_ptr->at(i).y <= camera.y + camera.height))
 			{
 				renderTile = true;
 			}
@@ -114,6 +115,13 @@ void RenderSystem::Update()
 				RenderLevelMapRelativeToCamera(levelOne_tilemap_texture_ptr,levelOne_tilemap_ptr,m_cameras_ptr->at(i).camera_rect);
 			}
 			#endif
+			
+			
+			if(levelOne_map)
+			{
+				RenderLevelMapRelativeToCamera(&levelOne_map->tilesheetTexture,&levelOne_map->tiles,m_cameras_ptr->at(i).camera_rect);
+			}
+				
 			
 			//render texture background color
 			ClearBackground(RAYWHITE);

@@ -11,12 +11,14 @@ public:
 	
 	TileManager();
 	
-	void ImportTileMapAsALevel(TileMap* thisTileMap, std::uint16_t level);
+	bool LoadLevel(std::uint16_t level);
 	
 	bool LoadDataBasedOnTilesheetDescription(std::string filepath, TileMap& tile_map);
 	
 	bool LoadDataFromXMLFile(std::string mapFilePath, std::string tilesheetDescriptionFilePath,
 									TileMap& thisTileMap);
+	
+	void FreeLevels();
 	
 private:
 	

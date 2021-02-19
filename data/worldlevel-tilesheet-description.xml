@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!--Num must be ordered sequentially for the TileManager and editor to pick it up well.-->
+<TileDescriptionXML>
+	<Tilesheet path="example-tilesheet.png"/>
+	<Tiles>
+		<Tile type="PUSHBACK" x="0" y="0" width="30" height="30" num="0"/>
+		<Tile type="BACKGROUND" x="0" y="30" width="30" height="30" num="1"/>
+	</Tiles>
+</TileDescriptionXML>

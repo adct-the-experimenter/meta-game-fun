@@ -38,4 +38,6 @@ struct TileMap
 	Texture2D tilesheetTexture;
 };
 
+extern TileMap* levelOne_map;
+
 #endif

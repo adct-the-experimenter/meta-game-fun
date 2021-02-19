@@ -20,6 +20,8 @@
 #include "misc/MediaLoader.h"
 #include "misc/globalvariables.h"
 
+#include "misc/TileManager.h"
+
 #include "misc/num_player_setter.h" //for NumPlayerSetter class
 #include "misc/char_creator.h" //for CharacterCreator class
 
@@ -55,9 +57,10 @@ std::shared_ptr <AnimationSystem> animationSystem;
 std::shared_ptr <InputReactorSystem> input_ReactSystem;
 
 
+std::shared_ptr <PhysicsSystem> physicsSystem;
+
 //function to initialize video game ECS
 void InitVideoGameECS();
-std::shared_ptr <PhysicsSystem> physicsSystem;
 
 //function to init raylib system
 void InitRaylibSystem();
@@ -95,6 +98,8 @@ std::int8_t gNumPlayers = 0;
 const std::int16_t screenWidth = 800;
 const std::int16_t screenHeight = 600;
 
+TileManager gTileManager;
+
 int main(int argc, char* args[])
 {
 	InitRaylibSystem();
@@ -106,32 +111,41 @@ int main(int argc, char* args[])
 	}
 	else
 	{
+	
 		gControllerInput.Init(1);
 		gNumPlayerSetter.Init();
 		
 		InitMainECS();
 		
-		
-		bool quit = false;
-	
-		while (!quit)
+		//if first level loaded well
+		if(gTileManager.LoadLevel(0))
 		{
-			// Detect window close button or ESC key
-			if(WindowShouldClose())
+			bool quit = false;
+	
+			while (!quit)
 			{
-				quit = true;
-			}    
-			
-			// Main game loop
-						
-			GameLoop();
+				// Detect window close button or ESC key
+				if(WindowShouldClose())
+				{
+					quit = true;
+				}    
 				
+				// Main game loop
+							
+				GameLoop();
+					
+			}
 		}
+		else
+		{
+			std::cout << "Failed to load first level. Quitting.";
+		}
+		
 	}
 	
 	renderSystem->UnloadTexture();
 	gMediaLoader.freeMedia();
-	
+	gTileManager.FreeLevels();
 	
     //Quit SDL subsystems
     SDL_Quit();

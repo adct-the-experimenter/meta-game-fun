@@ -3,16 +3,56 @@
 #include "pugixml.hpp"
 #include <iostream>
 
+#include "globalvariables.h"
+#include "raylib.h"
+
+TileMap* levelOne_map;
+
 TileManager::TileManager()
 {
 	
 }
 
-void TileManager::ImportTileMapAsALevel(TileMap* thisTileMap, std::uint16_t level)
+bool TileManager::LoadLevel(std::uint16_t level)
 {
 	//load map
 	
+	std::string mapFilePath;
+	std::string tilesheetDescriptionFilePath;
+	
+	TileMap* tile_map;
+	
+	switch(level)
+	{
+		case 0:
+		{  
+			mapFilePath = DATADIR_STR + "/world-level-map.xml";
+			tilesheetDescriptionFilePath = DATADIR_STR + "/worldlevel-tilesheet-description.xml";
+			tile_maps_vec.push_back(TileMap());
+			tile_map = &tile_maps_vec[0];
+			levelOne_map = tile_map;
+			break;
+		}
+	}
+	
+	if(mapFilePath != "" && tilesheetDescriptionFilePath != "")
+	{
+		if( !TileManager::LoadDataFromXMLFile(mapFilePath, tilesheetDescriptionFilePath,
+												*tile_map) )
+		{
+			std::cout << "Failed to load level" << int(level) << "!\n";
+			return false;
+		}
+	}
+	else
+	{
+		std::cout << "Uninitialized map file path and tilesheet description path.";
+		return false;
+	}
+	
+	return true;
 }
+
 
 bool TileManager::LoadDataBasedOnTilesheetDescription(std::string filepath, TileMap& tile_map)
 {
@@ -40,11 +80,11 @@ bool TileManager::LoadDataBasedOnTilesheetDescription(std::string filepath, Tile
     pugi::xml_node tilesheet_node = root.child("Tilesheet");
     std::string ts_path = tilesheet_node.attribute("path").value();
     
+    //add data directory
+    ts_path = DATADIR_STR + "/" + ts_path;
     
     //load tile sheet
     tile_map.tilesheetTexture = LoadTexture(ts_path.c_str());
-    
-    //levelOne_tilemap_texture_ptr = &m_tilesheet_texture;
     
     //set up tile selector based on data
     pugi::xml_node tileRoot = root.child("Tiles");
@@ -88,7 +128,7 @@ bool TileManager::LoadDataBasedOnTilesheetDescription(std::string filepath, Tile
 		std::uint32_t tile_number = atoi(valString.c_str());
 		
 		//push into frame clip map
-		tile_map.frame_clip_map[tile_number] = frame_clip;
+		tile_map.frame_clip_map.push_back(frame_clip);
 		
 	}
 	
@@ -191,8 +231,8 @@ bool TileManager::LoadDataFromXMLFile(std::string mapFilePath, std::string tiles
 		
 		
 		//set vector of tiles based on level dimensions
-		std::uint32_t num_tiles_horiz = tile_map.tileWidth / tile_map.tileWidth;
-		std::uint32_t num_tiles_vert = tile_map.tileHeight / tile_map.tileHeight;
+		std::uint32_t num_tiles_horiz = tile_map.levelWidth / tile_map.tileWidth;
+		std::uint32_t num_tiles_vert = tile_map.levelHeight / tile_map.tileHeight;
 		
 		std::uint32_t x_offset = 0;
 		std::uint32_t y_offset = 0;
@@ -213,12 +253,8 @@ bool TileManager::LoadDataFromXMLFile(std::string mapFilePath, std::string tiles
 			tile_map.tiles[i].y = tile_map.tiles_starty + y_offset;
 			
 			x_offset += tile_map.tileWidth;
+			
 		}
-		
-		//levelOne_tilewidth = m_tile_width;
-		//levelOne_tileheight = m_tile_height;
-	
-		//levelOne_tilemap_ptr = &m_tiles_vec;
 		
 	}
 	
@@ -226,3 +262,10 @@ bool TileManager::LoadDataFromXMLFile(std::string mapFilePath, std::string tiles
     
 }
 
+void TileManager::FreeLevels()
+{
+	for(size_t i = 0; i < tile_maps_vec.size(); i++)
+	{
+		UnloadTexture(tile_maps_vec[i].tilesheetTexture);
+	}
+}
