@@ -26,8 +26,8 @@ bool TileManager::LoadLevel(std::uint16_t level)
 	{
 		case 0:
 		{  
-			mapFilePath = DATADIR_STR + "/world-level-map.xml";
-			tilesheetDescriptionFilePath = DATADIR_STR + "/worldlevel-tilesheet-description.xml";
+			mapFilePath = DATADIR_STR + "/suburb-level-map.xml";
+			tilesheetDescriptionFilePath = DATADIR_STR + "/suburb-tilesheet-description.xml";
 			tile_maps_vec.push_back(TileMap());
 			tile_map = &tile_maps_vec[0];
 			levelOne_map = tile_map;
