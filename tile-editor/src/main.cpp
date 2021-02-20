@@ -99,8 +99,11 @@ bool video_game_playing = false;
 NumPlayerSetter gNumPlayerSetter;
 std::int8_t gNumPlayers = 0;
 
-const std::int16_t screenWidth = 800;
-const std::int16_t screenHeight = 600;
+const std::uint16_t screenWidth = 800;
+const std::uint16_t screenHeight = 600;
+
+std::uint32_t levelWidth;
+std::uint32_t levelHeight;
 
 TileEditor gTileEditor;
 std::string tilesheet_descr_xml;
@@ -130,31 +133,38 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		if(!gTileEditor.LoadDataBasedOnTilesheetDescription(tilesheet_descr_xml))
+		gTileEditor.SetSaveXMLFile(map_file_xml);
+		
+		bool levelInitialized = true;
+			
+		if(createNewMapFile)
 		{
-			std::cout << "Failed to load data from tilesheet description!\n";
-			gMediaLoader.freeMedia();
-			CloseRaylibSystem();
-			return 0;
+			if(!gTileEditor.LoadDataBasedOnTilesheetDescription(tilesheet_descr_xml))
+			{
+				std::cout << "Failed to load data from tilesheet description!\n";
+				gMediaLoader.freeMedia();
+				CloseRaylibSystem();
+				return 0;
+			}
+			
+			gTileEditor.SetLevelDimensions(30,30,levelWidth,levelHeight);
+			
 		}
 		else
 		{
-			gTileEditor.SetSaveXMLFile(map_file_xml);
-			
-			if(createNewMapFile)
+			if(!gTileEditor.LoadDataFromXMLFile(map_file_xml,tilesheet_descr_xml))
 			{
-				gTileEditor.SetLevelDimensions(30,30,300,300);
+				std::cout << "Failed to load data from tilesheet description!\n";
+				gMediaLoader.freeMedia();
+				CloseRaylibSystem();
+				return 0;
 			}
-			else
-			{
-				gTileEditor.LoadDataFromXMLFile(map_file_xml,tilesheet_descr_xml);
-			}
-			
-			gControllerInput.Init(1);
-			gNumPlayerSetter.Init();
-		
-			InitMainECS();
 		}
+		
+		gControllerInput.Init(1);
+		gNumPlayerSetter.Init();
+	
+		InitMainECS();
 		
 		
 		bool quit = false;
@@ -404,7 +414,7 @@ void logic()
 		}
 		case GameState::GAME:
 		{
-			gTileEditor.logic();			
+			gTileEditor.logic(player_cameras[0].camera_rect);			
 			
 			physicsSystem->Update(dt);
 			
@@ -638,10 +648,26 @@ int CheckConsoleArgs(int argc, char* argv[])
 
 			}
 		}
+		else if(std::string(argv[i]) == "--levelwidth")
+		{
+			if (i + 1 < argc) 
+			{ 
+				// Make sure we aren't at the end of argv!
+				levelWidth = atoi( argv[i+1] ); // Increment 'i' so we don't get the argument as the next argv[i].
+			}
+		}
+		else if(std::string(argv[i]) == "--levelheight")
+		{
+			if (i + 1 < argc) 
+			{ 
+				// Make sure we aren't at the end of argv!
+				levelHeight = atoi( argv[i+1] ); // Increment 'i' so we don't get the argument as the next argv[i].
+			}
+		}
 		//else if help is called
 		else if(std::string(argv[i]) == "--help")
 		{
-			std::cout << "\nHelp for Tile Editor\n\n\tflag file \tdescription\n\t--tsd tsd.xml \Set tilesheet description\n\t--map_file map.xml \tSet file to load and/or save from.\n";
+			std::cout << "\nHelp for Tile Editor\n\n\tflag file \tdescription\n\t--tsd tsd.xml \tSet tilesheet description\n\t--map_file map.xml \tSet file to load and/or save from.\n";
 			return 0;
 		}
 	}

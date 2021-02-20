@@ -60,7 +60,7 @@ public:
 //Game loop
 	void handleInputMouse(MouseInput& input);
 	
-	void logic();
+	void logic(Rectangle& camera);
 	
 	void render();
 	

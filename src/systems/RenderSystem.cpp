@@ -116,12 +116,12 @@ void RenderSystem::Update()
 			}
 			#endif
 			
-			
+			#ifndef TILE_EDITOR
 			if(levelOne_map)
 			{
 				RenderLevelMapRelativeToCamera(&levelOne_map->tilesheetTexture,&levelOne_map->tiles,m_cameras_ptr->at(i).camera_rect);
 			}
-				
+			#endif
 			
 			//render texture background color
 			ClearBackground(RAYWHITE);

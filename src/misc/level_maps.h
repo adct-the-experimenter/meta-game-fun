@@ -36,6 +36,7 @@ struct TileMap
 	std::uint32_t tileWidth;
 	std::uint32_t tileHeight;
 	Texture2D tilesheetTexture;
+	
 };
 
 extern TileMap* levelOne_map;

@@ -22,7 +22,7 @@ TileEditor::TileEditor()
 	m_tile_selector.x = 30;
 	m_tile_selector.y = 100;
 	
-	m_save_buttton.box = {30,200,60,30};
+	m_save_buttton.box = {130,50,60,30};
 	
 }
 
@@ -140,16 +140,16 @@ bool TileEditor::LoadDataBasedOnTilesheetDescription(std::string filepath)
 	
 	//set select box for each select tile
 	
-	std::uint32_t x_offset = 0;
-	std::uint32_t y_offset = 0;
+	std::uint32_t x_offset = 20;
+	std::uint32_t y_offset = 10;
 	
 	for(size_t i = 0; i < m_tile_selector.select_tiles.size(); i++)
 	{
 		 
-		if(i % 2)
+		if((i+1) % 3 == 0)
 		{
-			x_offset = 0;
-			y_offset += m_tile_selector.select_tiles[i].frame_clip.height;
+			x_offset = 20;
+			y_offset += m_tile_selector.select_tiles[i].frame_clip.height + 10;
 		}
 		
 		m_tile_selector.select_tiles[i].select_box.x = m_tile_selector.x + x_offset;
@@ -425,7 +425,7 @@ void TileEditor::handleInputMouse(MouseInput& input)
 	
 }
 	
-void TileEditor::logic()
+void TileEditor::logic(Rectangle& camera)
 {
 	if(m_click)
 	{
@@ -449,7 +449,7 @@ void TileEditor::logic()
 		//if area for placing tiles was clicked on
 		for(size_t i = 0; i < m_tiles_vec.size(); i++)
 		{
-			Rectangle box = {m_tiles_vec[i].x,m_tiles_vec[i].y,m_tile_width,m_tile_height};
+			Rectangle box = {m_tiles_vec[i].x - camera.x,m_tiles_vec[i].y - camera.y,m_tile_width,m_tile_height};
 			//set tile type in array
 			if(MouseInBox(m_mouseX,m_mouseY,box))
 			{
