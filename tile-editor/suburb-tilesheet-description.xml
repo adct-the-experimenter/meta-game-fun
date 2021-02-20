@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<TileDescriptionXML>
-	<Tilesheet path="../example-tilesheet.png"/>
-	<Tiles>
-		<Tile type="BACKGROUND" x="0" y="0" width="30" height="30" num="1"/>
-		<Tile type="BACKGROUND" x="0" y="30" width="30" height="30" num="2"/>
-		<Tile type="BACKGROUND" x="0" y="30" width="30" height="30" num="2"/>
-	</Tiles>
-</TileDescriptionXML>
