@@ -305,6 +305,17 @@ void CharacterCreator::logic()
 							}
 						);
 						
+				//add collision box
+				std::uint32_t width = 30;
+				std::uint32_t height = 90;
+				
+				gCoordinator.AddComponent(
+										*player_entities_vec.at(i),
+										CollisionBox{
+											.width = width,
+											.height = height
+										});
+				
 				//add animation component
 				AnimationInfo aInfo;
 				aInfo.anim_actor_type = AnimatedActorType::PLAYER;

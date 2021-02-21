@@ -338,6 +338,7 @@ void InitMainECS()
 	gCoordinator.RegisterComponent<InputReact>();
 	gCoordinator.RegisterComponent<PhysicsTypeComponent>();
 	gCoordinator.RegisterComponent<Animation>();
+	gCoordinator.RegisterComponent<CollisionBox>();
 	
 	//make world system that only reacts to entitties
 	//with signature that has player component
@@ -380,6 +381,7 @@ void InitMainECS()
 	phys_sys_signature.set(gCoordinator.GetComponentType<RigidBody2D>());
 	phys_sys_signature.set(gCoordinator.GetComponentType<Transform2D>());
 	phys_sys_signature.set(gCoordinator.GetComponentType<PhysicsTypeComponent>());
+	phys_sys_signature.set(gCoordinator.GetComponentType<CollisionBox>());
 	gCoordinator.SetSystemSignature<PhysicsSystem>(phys_sys_signature);
 	
 	//make camera system that only reacts to entities

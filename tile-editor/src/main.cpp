@@ -406,6 +406,17 @@ void logic()
 								.info = aInfo
 							}
 						);
+				
+				//add collision box
+				std::uint32_t width = 30;
+				std::uint32_t height = 90;
+				
+				gCoordinator.AddComponent(
+										entities[i],
+										CollisionBox{
+											.width = width,
+											.height = height
+										});
 			}
 			
 			//move to next state
@@ -493,8 +504,7 @@ void InitMainECS()
 	gCoordinator.RegisterComponent<InputReact>();
 	gCoordinator.RegisterComponent<PhysicsTypeComponent>();
 	gCoordinator.RegisterComponent<Animation>();
-	
-	
+	gCoordinator.RegisterComponent<CollisionBox>();
 	
 	//make rendering system that only reacts to entities
 	//with render info component
@@ -528,6 +538,7 @@ void InitMainECS()
 	phys_sys_signature.set(gCoordinator.GetComponentType<RigidBody2D>());
 	phys_sys_signature.set(gCoordinator.GetComponentType<Transform2D>());
 	phys_sys_signature.set(gCoordinator.GetComponentType<PhysicsTypeComponent>());
+	phys_sys_signature.set(gCoordinator.GetComponentType<CollisionBox>());
 	gCoordinator.SetSystemSignature<PhysicsSystem>(phys_sys_signature);
 	
 	//make camera system that only reacts to entities
