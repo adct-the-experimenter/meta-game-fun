@@ -270,7 +270,7 @@ void CharacterCreator::logic()
 								);
 				
 				//add transform
-				Vector2 initP = {2.0f,2.0f};
+				Vector2 initP = {10.0f,60.0f};
 				gCoordinator.AddComponent(
 							*player_entities_vec.at(i),
 							Transform2D{
@@ -307,7 +307,7 @@ void CharacterCreator::logic()
 						
 				//add collision box
 				std::uint32_t width = 30;
-				std::uint32_t height = 90;
+				std::uint32_t height = 60;
 				
 				gCoordinator.AddComponent(
 										*player_entities_vec.at(i),

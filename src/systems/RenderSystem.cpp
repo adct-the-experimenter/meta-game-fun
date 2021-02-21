@@ -174,7 +174,14 @@ void RenderSystem::Update()
 												render_comp.multi_render_parts_vec[c].frame_rect, 
 												pos, 
 												render_comp.multi_render_parts_vec[c].tint);
+								
+								
 							}
+							
+							//draw collision box
+							Rectangle collision_rect = {render_position.overall_position.x,render_position.overall_position.y,30,60};
+								
+							DrawRectangleRec(collision_rect, RED);
 						}
 					}
 				}
