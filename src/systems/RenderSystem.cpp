@@ -179,9 +179,9 @@ void RenderSystem::Update()
 							}
 							
 							//draw collision box
-							Rectangle collision_rect = {render_position.overall_position.x,render_position.overall_position.y,30,60};
+							//Rectangle collision_rect = {render_position.overall_position.x,render_position.overall_position.y,30,60};
 								
-							DrawRectangleRec(collision_rect, RED);
+							//DrawRectangleRec(collision_rect, RED);
 						}
 					}
 				}
