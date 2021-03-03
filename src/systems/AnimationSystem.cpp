@@ -14,6 +14,8 @@ void AnimationSystem::Init()
 	m_time_counter = 0;
 }
 
+//face direction order: SOUTH=0,SOUTHWEST,WEST,NORTHWEST,NORTH,NORTHEAST,EAST,SOUTHEAST
+
 void AnimationSystem::Update(float& dt)
 {
 	
@@ -66,7 +68,17 @@ void AnimationSystem::Update(float& dt)
 					}
 					
 				}
-				
+				else if(north)
+				{
+					
+				}
+				else
+				{
+					if(west)
+					{
+						anim_comp.info.horiz_frame_offset = 6;
+					}
+				}
 				
 				//increment frame count
 				m_time_counter += dt;
@@ -90,7 +102,8 @@ void AnimationSystem::Update(float& dt)
 					RenderPartDescription& descr = render_comp.multi_render_parts_vec[i].part_description;
 					
 					if( descr == RenderPartDescription::UPPER_BODY_CLOTHING ||
-						descr == RenderPartDescription::LOWER_BODY_CLOTHING)
+						descr == RenderPartDescription::LOWER_BODY_CLOTHING || 
+						descr == RenderPartDescription::HEAD)
 					{
 						//change x position of frame selector
 						render_comp.multi_render_parts_vec[i].frame_rect.x = (anim_comp.info.frame_count + anim_comp.info.horiz_frame_offset)*anim_comp.info.frame_size;

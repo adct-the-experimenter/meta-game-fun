@@ -145,6 +145,7 @@ void PhysicsSystem::CheckCollisionWithTilesRPG(float& obj_x, float& obj_y,
 		std::uint32_t col = obj_x * levelOne_map->tileWidth / levelOne_map->levelWidth;
 		std::uint32_t row = obj_y * levelOne_map->tileHeight / levelOne_map->levelHeight;
 		
+		
 		size_t player_index = 0; 
 		
 		player_index = col + trunc(row * (levelOne_map->levelHeight / levelOne_map->tileHeight));
@@ -156,7 +157,8 @@ void PhysicsSystem::CheckCollisionWithTilesRPG(float& obj_x, float& obj_y,
 		if(start_index >= levelOne_map->tiles.size()){start_index = levelOne_map->tiles.size() - 20;}
 		
 		//only check for 3 rows of tiles below player index
-		size_t end_index = player_index + 3*(levelOne_map->levelWidth / levelOne_map->tileWidth);
+		//size_t end_index = player_index + 3*(levelOne_map->levelWidth / levelOne_map->tileWidth);
+		size_t end_index = player_index - 1*(levelOne_map->levelWidth / levelOne_map->tileWidth);
 		
 		if(end_index >= levelOne_map->tiles.size()){end_index = levelOne_map->tiles.size() - 1;}
 		//std::cout << "start index: " << start_index << std::endl;

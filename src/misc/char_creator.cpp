@@ -194,8 +194,8 @@ void CharacterCreator::logic()
 				Texture2D* texture_player = &rpg_sprite_sheet_texture;
 				
 				std::array <RenderPartDescription,6> descript_array = {RenderPartDescription::HAIR,
-																		RenderPartDescription::HEAD,
 																		RenderPartDescription::EYE,
+																		RenderPartDescription::HEAD,
 																		RenderPartDescription::UPPER_BODY_CLOTHING,
 																		RenderPartDescription::LOWER_BODY_CLOTHING,
 																		RenderPartDescription::SHOES};
