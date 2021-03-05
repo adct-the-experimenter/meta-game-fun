@@ -7,6 +7,7 @@
 #include "misc/level_maps.h"
 #include <iostream>
 #include <cmath> //for rounding
+#include <array>
 
 extern Coordinator gCoordinator;
 
@@ -41,6 +42,50 @@ void PushBack(float& posX, float& posY, float& velX, float& velY, float& dt)
 
 bool CollisionWithTileDetected(std::uint32_t& tile_x, std::uint32_t& tile_y, std::uint32_t tile_width,
 						   float& obj_x, float& obj_y, std::uint32_t obj_width, std::uint32_t& obj_height)
+{
+	//assuming object has width and height of 30 and it is centered
+	
+	float objLeftX = obj_x;
+	float objRightX = obj_x + obj_width;
+	float objTopY = obj_y;
+	float objBottomY = obj_y + obj_height;
+	
+	std::uint32_t tileLeftX = tile_x;
+	std::uint32_t tileRightX = tile_x + tile_width;
+	std::uint32_t tileTopY = tile_y;
+	std::uint32_t tileBottomY = tile_y + tile_width;
+	
+	//for collision to be true, all conditions must be true. AABB square collsion detection, all
+	//The left edge x-position of [A] must be less than the right edge x-position of [B].
+    //The right edge x-position of [A] must be greater than the left edge x-position of [B].
+    //The top edge y-position of [A] must be less than the bottom edge y-position of [B].
+    //The bottom edge y-position of [A] must be greater than the top edge y-position of [B].
+    
+    if(objBottomY <= tileTopY)
+	{
+		return false;
+	}
+	
+	if(objTopY >= tileBottomY)
+	{
+		return false;
+	}
+    
+    if(objRightX <= tileLeftX)
+	{
+		return false;
+	}
+	
+	if(objLeftX >= tileRightX)
+	{
+		return false;
+	}
+	
+	return true;
+}
+
+bool CollisionWithTileDetected_Alt(std::uint32_t& tile_x, std::uint32_t& tile_y, std::uint32_t tile_width,
+						   std::uint32_t& obj_x, std::uint32_t& obj_y, std::uint32_t obj_width, std::uint32_t& obj_height)
 {
 	//assuming object has width and height of 30 and it is centered
 	
@@ -140,52 +185,72 @@ void PhysicsSystem::CheckCollisionWithTilesRPG(float& obj_x, float& obj_y,
 	#ifndef TILE_EDITOR
 	if(levelOne_map)
 	{
-		//get start index for tiles close to player,
-		//done to skip tiles not close to player
-		std::uint32_t col = obj_x * levelOne_map->tileWidth / levelOne_map->levelWidth;
-		std::uint32_t row = obj_y * levelOne_map->tileHeight / levelOne_map->levelHeight;
+		//std::cout << "objx:" << obj_x << std::endl;
+		//std::cout << "objy:" << obj_y << std::endl;
 		
+		size_t row_height = size_t(levelOne_map->levelHeight / levelOne_map->tileHeight);
+		size_t col_width = size_t(levelOne_map->levelWidth / levelOne_map->tileWidth);
+		
+		//factor used to make the grid tiles same size as tile width
+		//std::uint32_t posX = trunc(obj_x * levelOne_map->tileWidth*tile_dim_factor) / levelOne_map->tileWidth;
+		std::uint32_t posX = trunc(obj_x * col_width) / levelOne_map->tileWidth;
+		//std::uint32_t posY = trunc(obj_y * levelOne_map->tileHeight*tile_dim_factor) / levelOne_map->tileHeight;
+		std::uint32_t posY = trunc(obj_y * row_height) / levelOne_map->tileHeight;
+		
+		//std::cout << "grid square pixel x:" << posX << std::endl;
+		//std::cout << "grid square pixel y:" << posY << std::endl;
+		
+		std::uint32_t col = (posX * levelOne_map->tileWidth) / levelOne_map->levelWidth;
+		std::uint32_t row = (posY * levelOne_map->tileHeight) / levelOne_map->levelHeight;
+		
+		
+		if(col >= col_width){col = col_width - 1;}
+		if(row >= row_height){row = row_height - 1;}
+		
+		//std::cout << "col:" << col << std::endl;
+		//std::cout << "row:" << row << std::endl;
 		
 		size_t player_index = 0; 
 		
-		player_index = col + trunc(row * (levelOne_map->levelHeight / levelOne_map->tileHeight));
+		player_index = col + trunc( row * row_height );
 		//std::cout << "player index:" << player_index << std::endl;
 		
-		//set start index relative to player
-		size_t start_index = player_index / 2;
-		
-		if(start_index >= levelOne_map->tiles.size()){start_index = levelOne_map->tiles.size() - 20;}
-		
-		//only check for 3 rows of tiles below player index
-		//size_t end_index = player_index + 3*(levelOne_map->levelWidth / levelOne_map->tileWidth);
-		size_t end_index = player_index - 1*(levelOne_map->levelWidth / levelOne_map->tileWidth);
-		
-		if(end_index >= levelOne_map->tiles.size()){end_index = levelOne_map->tiles.size() - 1;}
-		//std::cout << "start index: " << start_index << std::endl;
-		//std::cout << "end index: " << end_index << std::endl;
+		std::array <size_t,9> tiles_around_player;
 		
 		
-		//start_index = 0;
-		//end_index = levelOne_map->tiles.size() - 1;
-		for(size_t i = start_index; i < end_index; i++)
+		tiles_around_player[0] = player_index - row_height - 1;
+		tiles_around_player[1] = player_index - row_height;
+		tiles_around_player[2] = player_index - row_height + 1;
+		tiles_around_player[3] = player_index - 1;
+		tiles_around_player[4] = player_index;
+		tiles_around_player[5] = player_index + 1;
+		tiles_around_player[6] = player_index + row_height - 1;
+		tiles_around_player[7] = player_index + row_height;
+		tiles_around_player[8] = player_index + row_height + 1;
+		
+		
+		for(size_t i = 0; i < tiles_around_player.size(); i++)
 		{
-			Tile* tile =  &levelOne_map->tiles[i];
-			if(tile->type == TileType::PUSH_BACK)
+			if(tiles_around_player[i] < levelOne_map->tiles.size())
 			{
+				Tile* tile =  &levelOne_map->tiles[tiles_around_player[i]];
 				
-				if(CollisionWithTileDetected(tile->x, tile->y, levelOne_map->tileWidth,
-						obj_x, obj_y, 
-						obj_width, obj_height)
-					)
-				{
-					
-					//std::cout << "Collision detected for tile " << i << " !\n";
-					//push back player 
-					PushBack(obj_x, obj_y, 
-							obj_vx, obj_vy, 
-							dt);
+				if(tile->type == TileType::PUSH_BACK)
+				{					
+					if(CollisionWithTileDetected(tile->x, tile->y, levelOne_map->tileWidth,
+							obj_x, obj_y, 
+							obj_width, obj_height)
+						)
+					{
+						
+						//push back player 
+						PushBack(obj_x, obj_y, 
+								obj_vx, obj_vy, 
+								dt);
+					}
 				}
 			}
+			
 		}
 	}
 	#endif
