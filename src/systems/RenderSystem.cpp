@@ -162,10 +162,10 @@ void RenderSystem::Update()
 					{
 						if(render_comp.multi_render_parts_vec[0].texture_ptr)
 						{
-							//draw collision box
-							Rectangle collision_rect = {render_position.overall_position.x,render_position.overall_position.y,30,60};
+							//draw collision box for debugging
+							//Rectangle collision_rect = {render_position.overall_position.x,render_position.overall_position.y,30,60};
 								
-							DrawRectangleRec(collision_rect, RED);
+							//DrawRectangleRec(collision_rect, RED);
 							
 							for(int c = render_comp.multi_render_parts_vec.size() - 1; c >= 0; c--)
 							{
