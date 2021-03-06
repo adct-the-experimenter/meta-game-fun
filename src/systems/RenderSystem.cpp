@@ -162,13 +162,19 @@ void RenderSystem::Update()
 					{
 						if(render_comp.multi_render_parts_vec[0].texture_ptr)
 						{
+							//draw collision box
+							Rectangle collision_rect = {render_position.overall_position.x,render_position.overall_position.y,30,60};
+								
+							DrawRectangleRec(collision_rect, RED);
+							
 							for(int c = render_comp.multi_render_parts_vec.size() - 1; c >= 0; c--)
 							{
 								//render from last to first to make hair render over head
 								
 								//adjust render component positions according to overall position
-								Vector2 pos = {render_position.overall_position.x + render_comp.multi_render_parts_vec[c].position.x,
-											  render_position.overall_position.y + render_comp.multi_render_parts_vec[c].position.y};
+								//for centering to collision box
+								Vector2 pos = {render_position.overall_position.x + (render_comp.multi_render_parts_vec[c].position.x / 2),
+											  render_position.overall_position.y + (render_comp.multi_render_parts_vec[c].position.y / 2) };
 														
 								DrawTextureRec(*render_comp.multi_render_parts_vec[c].texture_ptr, 
 												render_comp.multi_render_parts_vec[c].frame_rect, 
@@ -178,10 +184,7 @@ void RenderSystem::Update()
 								
 							}
 							
-							//draw collision box
-							//Rectangle collision_rect = {render_position.overall_position.x,render_position.overall_position.y,30,60};
-								
-							//DrawRectangleRec(collision_rect, RED);
+							
 						}
 					}
 				}

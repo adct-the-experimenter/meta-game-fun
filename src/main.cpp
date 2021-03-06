@@ -147,8 +147,6 @@ int main(int argc, char* args[])
 	gMediaLoader.freeMedia();
 	gTileManager.FreeLevels();
 	
-    //Quit SDL subsystems
-    SDL_Quit();
     
 	CloseRaylibSystem();
 	
@@ -440,5 +438,8 @@ void InitRaylibSystem()
 void CloseRaylibSystem()
 {
     CloseWindow();        // Close window and OpenGL context
+    
+    //Quit SDL subsystems
+    SDL_Quit();
 }
 

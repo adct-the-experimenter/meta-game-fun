@@ -211,12 +211,13 @@ void CharacterCreator::logic()
 					temp_body_parts[slot_it].position = {2.0f,2.0f};
 				}
 				
-				temp_body_parts[0].position = {5.0f,10.0f};
-				temp_body_parts[1].position = {5.0f,15.0f};
-				temp_body_parts[2].position = {5.0f,17.0f};
-				temp_body_parts[3].position = {5.0f,40.0f};
-				temp_body_parts[4].position = {5.0f,65.0f};
-				temp_body_parts[5].position = {5.0f,75.0f};
+				//decide this based on render results
+				temp_body_parts[0].position = {0.0f,-35.0f};
+				temp_body_parts[1].position = {0.0f,-25.0f};
+				temp_body_parts[2].position = {0.0f,-20.0f};
+				temp_body_parts[3].position = {0.0f,20.0f};
+				temp_body_parts[4].position = {0.0f,60.0f};
+				temp_body_parts[5].position = {0.0f,70.0f};
 				
 				
 				
