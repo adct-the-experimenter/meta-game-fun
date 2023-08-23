@@ -1,5 +1,7 @@
 # Meta Game Fun( tentative title)
 
+## Moved to new location: https://gitlab.com/pab44/meta-game-fun
+
 This game is a work in progress. 
 
 Entity Component System code adapted from Austin Morlan's ECS code.
